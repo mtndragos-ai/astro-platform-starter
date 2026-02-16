@@ -1,52 +1,70 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Aici poți pune logica de verificare login pe viitor
-const pageTitle = "AgroConcept Training | Portal Tehnicieni";
+// Aici poți importa imaginea dacă o ai în src/assets, sau o referi direct din public/
+const backgroundUrl = "/img/tractor-bg.jpg"; // Asigură-te că ai o poză în public/img/
 ---
 
-<Layout title={pageTitle}>
-	<main class="landing-container">
+<Layout title="Login | AgroConcept Training">
+	<main class="login-container">
         
-        <div class="hero-background">
+        <!-- Fundalul vizual (Exportat din Canva) -->
+        <!-- Dacă nu ai poza încă, folosim un gradient albastru temporar -->
+		<div class="hero-background">
             <div class="overlay"></div>
         </div>
 
-        <div class="content-wrapper">
-            <header>
-                <h1 class="brand">Agro<span class="highlight">Concept</span> Training</h1>
-                <p class="subtitle">Platformă dedicată echipei tehnice</p>
-            </header>
+        <div class="login-wrapper">
+            <!-- Header -->
+            <div class="brand-header">
+                <h1 class="title">AGRO<span class="highlight">CONCEPT</span></h1>
+                <p class="subtitle">PORTAL TEHNIC SERVICE</p>
+            </div>
 
+            <!-- Cardul de Login -->
             <div class="login-card">
-                <h2>Autentificare Tehnician</h2>
-                <form action="/categorii" method="GET"> 
+                <form id="loginForm">
                     <div class="input-group">
-                        <label for="user">Utilizator</label>
-                        <input type="text" id="user" placeholder="nume.prenume" required />
+                        <label for="username">Utilizator</label>
+                        <input type="text" id="username" name="username" placeholder="ex: ion.popescu" required />
                     </div>
                     
                     <div class="input-group">
-                        <label for="pass">Parolă</label>
-                        <input type="password" id="pass" placeholder="••••••••" required />
+                        <label for="password">Parolă</label>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required />
                     </div>
 
-                    <button type="submit" class="cta-button">
-                        ACCESEAZĂ MATERIALELE
+                    <!-- Butonul simulează login-ul și duce la categorii -->
+                    <button type="submit" class="login-btn">
+                        AUTENTIFICARE
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
                 </form>
-                
-                <p class="support-text">Ai uitat parola? Contactează IT.</p>
+                <div id="error-msg" class="error-message">Date incorecte.</div>
             </div>
-		</div>
+
+            <p class="footer-note">© 2024 AgroConcept. Uz Intern.</p>
+        </div>
 
 	</main>
 </Layout>
 
-<style>
-    /* Stiluri specifice acestei pagini */
+<script>
+    // Script simplu pentru redirecționare (Frontend Only)
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('error-msg');
 
-    .landing-container {
+    form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Aici poți pune o logică simplă de verificare sau doar redirect
+        // Fiind site static, securitatea reală se face la nivel de server/backend
+        // Pentru demo, redirectăm direct:
+        window.location.href = '/categorii';
+    });
+</script>
+
+<style>
+    .login-container {
         position: relative;
         height: 100vh;
         width: 100%;
@@ -56,112 +74,131 @@ const pageTitle = "AgroConcept Training | Portal Tehnicieni";
         overflow: hidden;
     }
 
-    /* Fundalul din Canva */
+    /* Fundal */
     .hero-background {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        /* Aici pui imaginea ta din Canva */
-        background-image: url('/background-tractor.jpg'); 
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: #002050; /* Fallback color */
+        background-image: url('/background-tractor.jpg'); /* Pune poza ta din Canva aici */
         background-size: cover;
         background-position: center;
         z-index: -1;
     }
 
-    /* Strat întunecat peste imagine pentru a se vedea scrisul */
     .overlay {
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6); 
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, rgba(0,48,135,0.8) 0%, rgba(0,0,0,0.6) 100%);
     }
 
-    .content-wrapper {
+    .login-wrapper {
         z-index: 10;
-        text-align: center;
-        max-width: 500px;
         width: 90%;
+        max-width: 400px;
+        text-align: center;
+        animation: fadeIn 0.8s ease-out;
     }
 
-    .brand {
+    .title {
         font-size: 2.5rem;
         font-weight: 900;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        color: white;
+        letter-spacing: 2px;
+        margin-bottom: 5px;
     }
 
     .highlight {
-        color: var(--new-holland-yellow);
+        color: var(--nh-yellow);
     }
 
     .subtitle {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin-bottom: 3rem;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.8);
+        letter-spacing: 3px;
+        margin-bottom: 2rem;
+        font-weight: 300;
     }
 
-    /* Cardul de Login */
+    /* Card */
     .login-card {
         background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px); /* Efect de sticlă modern */
-        padding: 2rem;
-        border-radius: 15px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .login-card h2 {
-        margin-top: 0;
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
+        padding: 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
 
     .input-group {
         text-align: left;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .input-group label {
         display: block;
-        font-size: 0.8rem;
-        margin-bottom: 0.3rem;
-        opacity: 0.8;
+        color: rgba(255,255,255,0.9);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
     }
 
     .input-group input {
         width: 100%;
-        padding: 12px;
-        border-radius: 6px;
-        border: none;
-        background: rgba(255,255,255, 0.9);
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(0,0,0,0.2);
+        color: white;
         font-size: 1rem;
-        box-sizing: border-box; /* Important pentru padding */
+        transition: all 0.3s ease;
     }
 
-    .cta-button {
+    .input-group input:focus {
+        outline: none;
+        border-color: var(--nh-yellow);
+        background: rgba(0,0,0,0.4);
+    }
+
+    .login-btn {
         width: 100%;
-        padding: 15px;
-        background-color: var(--new-holland-yellow); /* Galben NH */
+        padding: 14px;
+        background-color: var(--nh-yellow);
         color: #000;
-        font-weight: bold;
         border: none;
-        border-radius: 6px;
-        font-size: 1.1rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 1rem;
         cursor: pointer;
-        transition: transform 0.2s, background-color 0.2s;
-        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: transform 0.2s ease, background 0.2s;
     }
 
-    .cta-button:hover {
+    .login-btn:hover {
         background-color: #ffdb4d;
-        transform: scale(1.02);
+        transform: translateY(-2px);
     }
 
-    .support-text {
+    .error-message {
+        display: none;
+        color: #ff6b6b;
+        font-size: 0.85rem;
         margin-top: 1rem;
-        font-size: 0.8rem;
-        opacity: 0.6;
+    }
+
+    .footer-note {
+        margin-top: 2rem;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.4);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
