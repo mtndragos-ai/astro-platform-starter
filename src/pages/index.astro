@@ -1,19 +1,266 @@
----
-import Layout from '../layouts/Layout.astro';
-import Markdown from '../components/Markdown.astro';
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroConcept Training Center</title>
+    
+    <!-- Librarii necesare rularii in browser fara instalare -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
----
+        // NOTA: Daca rulezi acest fisier local pe Desktop, trebuie sa inlocuiesti {} cu datele tale din Firebase Console
+        let config = {};
+        try {
+            config = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        } catch(e) { console.error("Configuratie lipsa"); }
 
-<Layout title="Welcome to Astro.">
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="mb-10 text-lg" />
-    <p>
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg sm:min-w-64">Read the Docs</a>
-    </p>
-</Layout>
+        if (!config.apiKey) {
+            console.warn("ATENTIE: Configuratia Firebase lipseste. Aplicatia nu se va putea conecta la baza de date.");
+        }
+
+        const app = initializeApp(config);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'agroconcept-training-v1';
+
+        window.AgroFirebase = { auth, db, appId, onAuthStateChanged, signInWithEmailAndPassword, signOut, doc, setDoc, onSnapshot, collection, query };
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .login-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Componenta pentru Iconite (Lucide)
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const iconRef = useRef(null);
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const CATEGORIES = {
+            tractoare: {
+                id: 'tr', title: "Tractoare New Holland", icon: "truck",
+                models: [
+                    { id: 't1', name: "T7.315 HD - PLM Intelligence", duration: "45 min" },
+                    { id: 't2', name: "Transmisie AutoCommand", duration: "30 min" }
+                ]
+            },
+            electrica: {
+                id: 'el', title: "Sisteme Electrice", icon: "zap",
+                models: [
+                    { id: 'e1', name: "Diagnoză CAN-BUS Stage V", duration: "15 min" },
+                    { id: 'e2', name: "Senzori AdBlue NH", duration: "10 pag" }
+                ]
+            }
+        };
+
+        function App() {
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [activeTab, setActiveTab] = useState('tractoare');
+            const [completedDocs, setCompletedDocs] = useState({});
+
+            const fb = window.AgroFirebase;
+
+            useEffect(() => {
+                const checkAuth = setInterval(() => {
+                    if (window.AgroFirebase) {
+                        const unsubscribe = window.AgroFirebase.onAuthStateChanged(window.AgroFirebase.auth, (u) => {
+                            setUser(u);
+                            setLoading(false);
+                        });
+                        clearInterval(checkAuth);
+                        return () => unsubscribe();
+                    }
+                }, 100);
+            }, []);
+
+            useEffect(() => {
+                if (!user || !fb) return;
+                const progressRef = fb.collection(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'progress');
+                const unsubscribe = fb.onSnapshot(fb.query(progressRef), (snap) => {
+                    const map = {};
+                    snap.forEach(d => map[d.id] = d.data().completed);
+                    setCompletedDocs(map);
+                }, (err) => console.error("Eroare Firestore:", err));
+                return () => unsubscribe();
+            }, [user, fb]);
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setError('');
+                if (!fb || !fb.auth) {
+                    setError("Eroare: Firebase nu este configurat.");
+                    return;
+                }
+                try {
+                    await fb.signInWithEmailAndPassword(fb.auth, email, password);
+                } catch (err) {
+                    setError("Email sau parolă incorectă.");
+                }
+            };
+
+            const handleToggle = async (id) => {
+                const isDone = completedDocs[id] || false;
+                const docRef = fb.doc(fb.db, 'artifacts', fb.appId, 'users', user.uid, 'progress', id);
+                await fb.setDoc(docRef, { completed: !isDone, updatedAt: new Date().toISOString() }, { merge: true });
+            };
+
+            if (loading) {
+                return (
+                    <div className="h-screen flex flex-col items-center justify-center bg-slate-50">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mb-4"></div>
+                        <p className="font-bold text-blue-900 uppercase tracking-widest text-sm">Se încarcă AgroConcept...</p>
+                    </div>
+                );
+            }
+
+            if (!user) {
+                return (
+                    <div className="h-screen flex items-center justify-center p-4 login-gradient">
+                        <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl w-full max-w-md transform transition-all">
+                            <div className="text-center mb-10">
+                                <div className="bg-yellow-500 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-yellow-500/20 rotate-3">
+                                    <Icon name="lock" size={36} className="text-blue-900" />
+                                </div>
+                                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Portal Training</h1>
+                                <p className="text-slate-400 text-sm font-medium mt-2">Acces restricționat pentru tehnicieni</p>
+                            </div>
+                            
+                            <form onSubmit={handleLogin} className="space-y-5">
+                                {error && (
+                                    <div className="text-red-600 text-xs font-bold bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center gap-2">
+                                        <Icon name="alert-circle" size={16} /> {error}
+                                    </div>
+                                )}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Oficial</label>
+                                    <input 
+                                        type="email" 
+                                        placeholder="nume.prenume@agroconcept.ro" 
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                        onChange={e => setEmail(e.target.value)} 
+                                        required 
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Parolă</label>
+                                    <input 
+                                        type="password" 
+                                        placeholder="••••••••" 
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                                        onChange={e => setPassword(e.target.value)} 
+                                        required 
+                                    />
+                                </div>
+                                <button className="w-full bg-blue-900 hover:bg-blue-800 text-white p-5 rounded-2xl font-bold shadow-2xl shadow-blue-900/30 transition-all active:scale-95 flex items-center justify-center gap-2 mt-4">
+                                    CONECTARE <Icon name="chevron-right" size={18} />
+                                </button>
+                            </form>
+                            <p className="text-center text-[10px] text-slate-300 font-bold uppercase mt-8 tracking-widest">AgroConcept Romania © 2024</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <header className="bg-white border-b border-slate-100 p-5 flex justify-between items-center sticky top-0 z-10 shadow-sm px-8">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-blue-900 p-2 rounded-xl text-white">
+                                <Icon name="settings" size={20} />
+                            </div>
+                            <div className="font-black text-2xl tracking-tighter">AGRO<span className="text-yellow-500">CONCEPT</span></div>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            <div className="hidden md:block text-right">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase leading-none">Tehnician</p>
+                                <p className="text-xs font-bold text-slate-700">{user.email}</p>
+                            </div>
+                            <button onClick={() => fb.signOut(fb.auth)} className="bg-slate-50 p-3 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all">
+                                <Icon name="log-out" size={20} />
+                            </button>
+                        </div>
+                    </header>
+                    
+                    <div className="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full px-4 py-8 gap-8">
+                        <aside className="w-full md:w-72 space-y-2">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest px-2">Categorii Utilaje</p>
+                            {Object.keys(CATEGORIES).map(key => (
+                                <button 
+                                    key={key} 
+                                    onClick={() => setActiveTab(key)}
+                                    className={`w-full flex items-center gap-4 p-4 rounded-2xl mb-2 font-bold text-sm transition-all ${activeTab === key ? 'bg-blue-900 text-white shadow-xl shadow-blue-900/20' : 'bg-white border border-transparent hover:border-slate-200 text-slate-500'}`}
+                                >
+                                    <Icon name={CATEGORIES[key].icon} size={18} />
+                                    {CATEGORIES[key].title}
+                                </button>
+                            ))}
+                        </aside>
+
+                        <main className="flex-1">
+                            <div className="mb-8">
+                                <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">{CATEGORIES[activeTab].title}</h1>
+                                <p className="text-slate-400 font-medium">Materiale tehnice și diagnoză pentru rețeaua de service.</p>
+                            </div>
+
+                            <div className="grid gap-4">
+                                {CATEGORIES[activeTab].models.map(m => (
+                                    <div key={m.id} className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-50 flex items-center justify-between hover:shadow-md transition-shadow group">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-4 rounded-2xl ${completedDocs[m.id] ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-300'}`}>
+                                                <Icon name="play-circle" size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-900 transition-colors">{m.name}</h3>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{m.duration}</span>
+                                                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Modul Video</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => handleToggle(m.id)} 
+                                            className={`h-12 w-12 flex items-center justify-center rounded-2xl transition-all ${completedDocs[m.id] ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-200 hover:text-blue-800'}`}
+                                        >
+                                            <Icon name="check-circle" size={24} className={completedDocs[m.id] ? "fill-current" : ""} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
