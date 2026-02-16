@@ -1,34 +1,49 @@
 ---
-import '../../src/styles/globals.css';
-import '@fontsource-variable/inter/wght.css';
-import interWoff2 from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-
 interface Props {
-    title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>{title}</title>
-        <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="preload" as="font" type="font/woff2" href={interWoff2} crossorigin />
-    </head>
-    <body class="antialiased text-white bg-complementary">
-        <div class="flex flex-col min-h-screen px-6 bg-noise sm:px-12">
-            <div class="flex flex-col w-full max-w-5xl mx-auto grow">
-                <Header />
-                <main class="grow"><slot /></main>
-                <Footer />
-            </div>
-        </div>
-    </body>
+<html lang="ro">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="AgroConcept Training Hub" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<slot />
+	</body>
 </html>
+
+<style is:global>
+	:root {
+        /* Culori inspirate de New Holland / AgroConcept */
+		--new-holland-blue: #003087;
+		--new-holland-yellow: #F4D03F;
+		--dark-bg: #1a1a1a;
+		--text-light: #ffffff;
+	}
+	html {
+		font-family: 'Roboto', sans-serif;
+		background: var(--dark-bg);
+		color: var(--text-light);
+	}
+	body {
+		margin: 0;
+		padding: 0;
+        min-height: 100vh;
+	}
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
