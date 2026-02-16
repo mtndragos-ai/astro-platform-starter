@@ -10,14 +10,15 @@ const { title } = Astro.props;
 <html lang="ro">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="AgroConcept Training Hub" />
+		<meta name="description" content="Platforma de Training AgroConcept" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+        <!-- Font: Roboto pentru aspect tehnic -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
 	</head>
 	<body>
 		<slot />
@@ -26,24 +27,39 @@ const { title } = Astro.props;
 
 <style is:global>
 	:root {
-        /* Culori inspirate de New Holland / AgroConcept */
-		--new-holland-blue: #003087;
-		--new-holland-yellow: #F4D03F;
-		--dark-bg: #1a1a1a;
+        /* Paleta de culori AgroConcept / New Holland */
+		--nh-blue: #003087;
+		--nh-yellow: #F4D03F;
+        --kverneland-red: #E30613;
+		--dark-bg: #111827;
 		--text-light: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.95);
 	}
-	html {
+	
+    html {
 		font-family: 'Roboto', sans-serif;
 		background: var(--dark-bg);
 		color: var(--text-light);
+        scroll-behavior: smooth;
 	}
-	body {
+	
+    body {
 		margin: 0;
 		padding: 0;
         min-height: 100vh;
 	}
+
+    /* Resetare de bază */
+    * {
+        box-sizing: border-box;
+    }
+
     a {
         text-decoration: none;
         color: inherit;
+    }
+
+    h1, h2, h3 {
+        margin: 0;
     }
 </style>
