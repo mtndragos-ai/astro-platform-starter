@@ -1,0 +1,215 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Aici definim categoriile. Le poți modifica oricând.
+const categorii = [
+    { 
+        nume: "Tractoare", 
+        icon: "🚜", 
+        culoare: "#003087", // Albastru NH
+        descriere: "Seria T5, T6, T7, T8",
+        link: "#" // Aici vei pune linkul către pagina cu tractoare
+    },
+    { 
+        nume: "Combine", 
+        icon: "🌾", 
+        culoare: "#F4D03F", // Galben NH
+        descriere: "CR, CX, TC",
+        link: "#" 
+    },
+    { 
+        nume: "Prese Balotat", 
+        icon: "📦", 
+        culoare: "#E30613", 
+        descriere: "Rotunde și Paralelipipedice",
+        link: "#" 
+    },
+    { 
+        nume: "PLM & GPS", 
+        icon: "📡", 
+        culoare: "#27ae60", 
+        descriere: "Ghidare și Telemetrie",
+        link: "#" 
+    },
+    { 
+        nume: "Încărcătoare", 
+        icon: "🏗️", 
+        culoare: "#d35400", 
+        descriere: "Telescopice și Frontale",
+        link: "#" 
+    },
+    { 
+        nume: "Documentație", 
+        icon: "📄", 
+        culoare: "#7f8c8d", 
+        descriere: "Manuale și Proceduri",
+        link: "#" 
+    },
+];
+---
+
+<Layout title="Dashboard | AgroConcept">
+    <div class="dashboard-container">
+        
+        <!-- Bara de sus (Navbar) -->
+        <nav class="navbar">
+            <div class="nav-brand">AGRO<span>CONCEPT</span></div>
+            <a href="/" class="logout-btn">Deconectare</a>
+        </nav>
+
+        <!-- Conținut Principal -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1>Bine ai venit</h1>
+                <p>Selectează categoria de echipament pentru a accesa materialele de training.</p>
+            </header>
+
+            <!-- Grila de Categorii -->
+            <div class="grid-container">
+                {categorii.map((item) => (
+                    <a href={item.link} class="card">
+                        <div class="card-icon" style={`background-color: ${item.culoare}20; color: ${item.culoare}`}>
+                            {item.icon}
+                        </div>
+                        <div class="card-content">
+                            <h3>{item.nume}</h3>
+                            <p>{item.descriere}</p>
+                        </div>
+                        <span class="arrow">→</span>
+                    </a>
+                ))}
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<style>
+    /* Stiluri pentru fundal și structură */
+    .dashboard-container {
+        background-color: #f3f4f6;
+        min-height: 100vh;
+        color: #1f2937;
+    }
+
+    /* Bara de navigare */
+    .navbar {
+        background: var(--nh-blue);
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-brand {
+        font-weight: 900;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+    .nav-brand span { color: var(--nh-yellow); }
+
+    .logout-btn {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 5px 12px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.1); opacity: 1; }
+
+    /* Conținutul central */
+    .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        color: var(--nh-blue);
+        margin-bottom: 0.5rem;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        color: #6b7280;
+    }
+
+    /* Grila de carduri (butoane) */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-color: var(--nh-yellow);
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .card-content h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .card-content p {
+        margin: 0.5rem 0 0 0;
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    .arrow {
+        margin-top: 1.5rem;
+        color: var(--nh-blue);
+        font-weight: bold;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.2s;
+    }
+
+    .card:hover .arrow {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+        .main-content { padding: 1.5rem; }
+        .grid-container { grid-template-columns: 1fr; }
+    }
+</style>
