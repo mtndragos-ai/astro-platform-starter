@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="Kverneland | AgroConcept Training">
     <div class="dashboard-container">
         
-        <!-- HEADER FIX (Identic cu cel principal) -->
+        <!-- HEADER FIX -->
         <header class="sticky-header">
             <div class="header-content">
                 <div class="logo-section">
@@ -16,7 +16,9 @@ import Layout from '../layouts/Layout.astro';
                 </div>
 
                 <nav class="center-nav">
-                    <a href="/categorii" class="nav-link">← Înapoi</a>
+                    <!-- Butonul 'Inapoi' controlat din script -->
+                    <a href="/categorii" id="header-back-btn" class="nav-link">← Înapoi</a>
+                    
                     <a href="#" class="nav-link">Electrica</a>
                     <a href="#" class="nav-link">Hidraulica</a>
                     <a href="/categorii" class="nav-link">Tractoare</a>
@@ -33,25 +35,38 @@ import Layout from '../layouts/Layout.astro';
             </div>
         </header>
 
-        <!-- Conținut Principal -->
         <main class="main-content">
             
-            <!-- BREADCRUMBS (Navigare sus stânga, stil poza 3) -->
+            <!-- BREADCRUMBS (Firimituri) - ACUM CU 5 PASI -->
             <div class="breadcrumbs">
-                <span class="crumb-gray">Kverneland</span>
-                <span class="separator">/</span>
-                <span class="crumb-blue" id="breadcrumb-current">Gama de Utilaje</span>
+                <!-- Pasul 1: Kverneland -->
+                <span class="crumb-link" onclick="goToSelection()">Kverneland</span>
+                <span class="separator" id="sep-1" style="display:none">/</span>
+                
+                <!-- Pasul 2: Utilaj (ex: Semănători) -->
+                <span class="crumb-link crumb-blue" id="crumb-machine" style="display:none">Utilaj</span>
+                <span class="separator" id="sep-2" style="display:none">/</span>
+                
+                <!-- Pasul 3: Resursă (ex: Manual Service) -->
+                <span class="crumb-link crumb-blue" id="crumb-resource" style="display:none">Resursă</span>
+                <span class="separator" id="sep-3" style="display:none">/</span>
+
+                <!-- Pasul 4: Model (ex: Optima HD) -->
+                <span class="crumb-link crumb-blue" id="crumb-model" style="display:none">Model</span>
+                <span class="separator" id="sep-4" style="display:none">/</span>
+
+                <!-- Pasul 5: Subcategorie (ex: Ghid RO) - STATIC -->
+                <span class="crumb-blue" id="crumb-subcat" style="display:none">Categorie</span>
             </div>
 
             <!-- VIEW 1: SELECȚIE UTILAJ -->
             <div id="view-selection">
                 <header class="section-header">
-                    <h1>Alege Tipul de Utilaj</h1>
+                    <h1>Gama Kverneland</h1>
                     <p>Selectează categoria pentru a vedea documentația tehnică.</p>
                 </header>
 
                 <div class="machines-grid">
-                    <!-- Card Semănători -->
                     <div class="machine-card" onclick="openMachine('Semănători')">
                         <div class="machine-image">🌱</div>
                         <h3>Semănători</h3>
@@ -59,7 +74,6 @@ import Layout from '../layouts/Layout.astro';
                         <span class="machine-link">Selectează →</span>
                     </div>
 
-                    <!-- Card Sprayer -->
                     <div class="machine-card" onclick="openMachine('Sprayer')">
                         <div class="machine-image">💦</div>
                         <h3>Sprayer (Erbicidat)</h3>
@@ -67,7 +81,6 @@ import Layout from '../layouts/Layout.astro';
                         <span class="machine-link">Selectează →</span>
                     </div>
 
-                    <!-- Card Spreader -->
                     <div class="machine-card" onclick="openMachine('Spreader')">
                         <div class="machine-image">🌾</div>
                         <h3>Spreader (Fertilizat)</h3>
@@ -77,59 +90,89 @@ import Layout from '../layouts/Layout.astro';
                 </div>
             </div>
 
-            <!-- VIEW 2: RESURSE (Stilul din Poza 3 - Senzori și Actuatori) -->
+            <!-- VIEW 2: LISTA RESURSE -->
             <div id="view-resources" style="display: none;">
                 <header class="section-header">
-                    <h1 id="resource-title">Semănători - Program Training</h1>
-                    <p id="resource-subtitle">Documentație completă și proceduri de service.</p>
+                    <h1 id="resource-title">Titlu Utilaj</h1>
+                    <p>Documentație completă și proceduri de service.</p>
                 </header>
 
                 <div class="resources-grid">
-                    
-                    <!-- Card 1: Manual Service -->
-                    <div class="resource-card">
+                    <!-- Manual Service -->
+                    <div class="resource-card" onclick="openModelList('Manual Service')">
                         <div class="icon-box blue-box">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         </div>
                         <h3>Manual Service</h3>
-                        <p>Descarcă schemele explodate și instrucțiunile de asamblare pas cu pas.</p>
-                        <a href="#" class="resource-link">Accesează PDF →</a>
+                        <p>Descarcă schemele explodate și instrucțiunile de asamblare.</p>
+                        <span class="resource-btn">Accesează PDF →</span>
                     </div>
 
-                    <!-- Card 2: Manual Operare -->
-                    <div class="resource-card">
+                    <!-- Manual Operare -->
+                    <div class="resource-card" onclick="openModelList('Manual Operare')">
                         <div class="icon-box purple-box">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                         </div>
                         <h3>Manual Operare</h3>
-                        <p>Ghidul operatorului pentru setări în câmp și calibrare terminal.</p>
-                        <a href="#" class="resource-link">Accesează PDF →</a>
+                        <p>Ghidul operatorului pentru setări în câmp și calibrare.</p>
+                        <span class="resource-btn">Accesează PDF →</span>
                     </div>
 
-                    <!-- Card 3: Tutorial Video -->
-                    <div class="resource-card">
+                    <!-- Tutorial Video -->
+                    <div class="resource-card" onclick="openModelList('Tutorial Video')">
                         <div class="icon-box red-box">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                         </div>
                         <h3>Tutorial Video</h3>
-                        <p>Vizualizează procedura de punere în funcțiune și teste.</p>
-                        <a href="#" class="resource-link">Urmărește Video →</a>
+                        <p>Vizualizează procedura de punere în funcțiune.</p>
+                        <span class="resource-btn">Urmărește Video →</span>
                     </div>
 
-                    <!-- Card 4: Coduri de Eroare -->
-                    <div class="resource-card">
+                     <!-- Coduri Eroare -->
+                     <div class="resource-card" onclick="openModelList('Coduri Eroare')">
                         <div class="icon-box green-box">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                         </div>
                         <h3>Coduri de Eroare</h3>
-                        <p>Baza de date cu erori ISOBUS și soluții de remediere rapidă.</p>
-                        <a href="#" class="resource-link">Caută Erori →</a>
+                        <p>Identificare erori și soluții rapide.</p>
+                        <span class="resource-btn">Caută Erori →</span>
                     </div>
-
                 </div>
+            </div>
 
-                <div style="margin-top: 2rem;">
-                    <button onclick="closeMachine()" class="back-button">← Înapoi la Lista Kverneland</button>
+            <!-- VIEW 3: LISTA MODELE (Selectare Model) -->
+            <div id="view-models" style="display: none;">
+                <header class="section-header">
+                    <h1 id="models-title">Selectează Modelul</h1>
+                    <p>Alege modelul specific pentru a vedea variantele disponibile.</p>
+                </header>
+
+                <div class="models-list" id="dynamic-models-list">
+                    <!-- Se umple automat din JS -->
+                </div>
+            </div>
+
+            <!-- VIEW 4: LISTA VERSIUNI/CATEGORII (Selectare Limba/An sau Download Direct) -->
+            <div id="view-versions" style="display: none;">
+                <header class="section-header">
+                    <h1 id="versions-title">Versiuni Disponibile</h1>
+                    <p>Selectează opțiunea dorită.</p>
+                </header>
+
+                <div class="models-list" id="dynamic-versions-list">
+                    <!-- Aici apar folderele (Ghid RO) sau butoanele de download -->
+                </div>
+            </div>
+
+            <!-- VIEW 5: LISTA FISIERE FINALE (Doar Download) - NOU -->
+            <div id="view-files" style="display: none;">
+                <header class="section-header">
+                    <h1 id="files-title">Fișiere de Descărcat</h1>
+                    <p>Descarcă documentele necesare.</p>
+                </header>
+
+                <div class="models-list" id="dynamic-files-list">
+                    <!-- Aici apar fișierele finale -->
                 </div>
             </div>
 
@@ -137,223 +180,502 @@ import Layout from '../layouts/Layout.astro';
     </div>
 </Layout>
 
+<!-- SCRIPT BAZA DE DATE & NAVIGARE -->
 <script is:inline>
-    // Logică simplă pentru schimbarea ferestrelor
+    // --- BAZA DE DATE --- 
+    /* STRUCTURA:
+       Utilaj -> Tip Resursă -> Listă Modele -> Listă Versiuni
+       Dacă versiunea are 'isFolder: true' și 'fisiere: []', se deschide o nouă fereastră.
+       Dacă versiunea are doar 'link', este buton de download direct.
+    */
+    const dateUtilaje = {
+        
+        // === SEMĂNĂTORI ===
+        "Semănători": {
+            "Manual Service": [
+                { 
+                    nume: "Optima HD", 
+                    descriere: "Manual service",
+                    versiuni: [
+                        { an: "Model 2016", link: "https://drive.google.com/uc?export=download&id=1GAGZGfy2xqnehOYCnZPB1xqeihsA4c3-" }
+                    ] 
+                },
+                { 
+                    nume: "Optima V", 
+                    descriere: "Manual service",
+                    versiuni: [
+                        { an: "Model 2017", link: "https://drive.google.com/uc?export=download&id=1NaLW_TPkiZWXpwEtZzv1RYmR6qMSg8qy" },
+                        { an: "Model 2021", link: "https://drive.google.com/uc?export=download&id=1G30NZVOXCO6U8UBvKGG3rNLZDhPtkm5C" }
+                    ] 
+                },
+                { 
+                    nume: "Optima RS", 
+                    descriere: "Manual service",
+                    versiuni: [
+                        { an: "Model 2021", link: "https://drive.google.com/uc?export=download&id=1qJhukbPy4rGldPynFYOD5daffmAHZVpD" }
+                    ] 
+                },
+                { 
+                    nume: "Optima TF Profi", 
+                    descriere: "Manual service",
+                    versiuni: [
+                        { an: "Model 2016", link: "https://drive.google.com/uc?export=download&id=1Uo4S7eWPluuJykGWnRZ8CwtH_xiqxVf2" },
+                        { an: "Model 2017", link: "https://drive.google.com/uc?export=download&id=1UqC4kaVl5S_NqHJp-Bcorq4v1tX6ZDmV" },
+                        { an: "Model 2019 - HD II/SX", link: "https://drive.google.com/uc?export=download&id=1jBcac3F1rB1yDtTe0bbbzLKQ4Nql-S38" },
+                        { an: "Model 2021 - HD II/SX", link: "https://drive.google.com/uc?export=download&id=16AJ8ZIEzp6aDi7Y9EwnKPmxiDQKIUSYs" },
+                        { an: "Model 2023 - HD II/SX", link: "https://drive.google.com/uc?export=download&id=195TKbvcnMU5FVw7LH7l3Hi7nz0Q1Csxn" }
+                    ] 
+                },
+                { 
+                    nume: "Optima TF Maxi", 
+                    descriere: "Manual service",
+                    versiuni: [
+                         { an: "Model 2019", link: "https://drive.google.com/uc?export=download&id=1812AyEUy-Q4Nau1JYtODln9PwYypcgK9" }
+                    ]
+                }
+            ],
+            "Manual Operare": [
+                { 
+                    nume: "Optima HD", 
+                    descriere: "Ghid Operator", 
+                    versiuni: [ 
+                        { 
+                            an: "Ghid RO", 
+                            isFolder: true, 
+                            fisiere: [
+                                { nume: "Manual Semănătoare", link: "https://drive.google.com/uc?export=download&id=1uzyt1Ud-wjyh3OZEO1IjtQbHAerCDo5i" },
+                                { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1JaJ-drSqhO2aQsc7NIbMMtjeXHoKq-ga" }
+                            ]
+                        }, 
+                        { 
+                            an: "Ghid EN", 
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Operator Manual", link: "https://drive.google.com/file/d/14p7TsVe_Rz2NeHpZ582P9N2fBS35lCjU/view?usp=drive_link" },
+                                { nume: "Terminal Manual", link: "https://drive.google.com/file/d/1R0qcEgl8A_bMULwSoH_05JTSxdwUBVg6/view?usp=drive_link" }
+                            ]
+                        } 
+                    ]
+                },
+                { 
+                    nume: "Optima V", 
+                    descriere: "Ghid Operator", 
+                    versiuni: [ 
+                        { 
+                            an: "Ghid RO",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Manual Semănătoare", link: "#" },
+                                { nume: "Manual Terminal", link: "#" }
+                            ]
+                        }, 
+                        {
+                            an: "Ghid EN",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Operator Manual", link: "#" },
+                                { nume: "Terminal Manual", link: "#" }
+                            ]
+                        }
+                    ]
+                },
+                { 
+                    nume: "Optima RS", 
+                    descriere: "Ghid Operator", 
+                    versiuni: [
+                        { 
+                            an: "Ghid RO",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Manual Semănătoare", link: "#" },
+                                { nume: "Manual Terminal", link: "#" }
+                            ]
+                        }, 
+                        {
+                            an: "Ghid EN",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Operator Manual", link: "#" },
+                                { nume: "Terminal Manual", link: "#" }
+                            ]
+                        }
+                    ]
+                },
+                { 
+                    nume: "Optima TF Profi", 
+                    descriere: "Ghid Operator", 
+                    versiuni: [
+                        { 
+                            an: "Ghid RO",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Manual Semănătoare", link: "#" },
+                                { nume: "Manual Terminal", link: "#" }
+                            ]
+                        }, 
+                        {
+                            an: "Ghid EN",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Operator Manual", link: "#" },
+                                { nume: "Terminal Manual", link: "#" }
+                            ]
+                        }
+                    ]
+                },
+                { 
+                    nume: "Optima TF Maxi", 
+                    descriere: "Ghid Operator", 
+                    versiuni: [
+                        { 
+                            an: "Ghid RO",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Manual Semănătoare", link: "#" },
+                                { nume: "Manual Terminal", link: "#" }
+                            ]
+                        }, 
+                        {
+                            an: "Ghid EN",
+                            isFolder: true,
+                            fisiere: [
+                                { nume: "Operator Manual", link: "#" },
+                                { nume: "Terminal Manual", link: "#" }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "Tutorial Video": [],
+            "Coduri Eroare": []
+        },
+
+        // === SPRAYER ===
+        "Sprayer": {
+            "Manual Service": [], "Manual Operare": [], "Tutorial Video": [], "Coduri Eroare": []
+        },
+
+        // === SPREADER ===
+        "Spreader": {
+            "Manual Service": [], "Manual Operare": [], "Tutorial Video": [], "Coduri Eroare": []
+        }
+    };
+
+
+    /* --- REFERINȚE DOM --- */
     const viewSelection = document.getElementById('view-selection');
     const viewResources = document.getElementById('view-resources');
-    const breadcrumbCurrent = document.getElementById('breadcrumb-current');
-    const resourceTitle = document.getElementById('resource-title');
+    const viewModels = document.getElementById('view-models');
+    const viewVersions = document.getElementById('view-versions'); 
+    const viewFiles = document.getElementById('view-files'); // NOU
+    
+    // Breadcrumbs
+    const crumbMachine = document.getElementById('crumb-machine');
+    const crumbResource = document.getElementById('crumb-resource');
+    const crumbModel = document.getElementById('crumb-model'); 
+    const crumbSubcat = document.getElementById('crumb-subcat'); // NOU
 
-    function openMachine(numeMasina) {
-        // Ascundem selecția, arătăm resursele
+    const sep1 = document.getElementById('sep-1');
+    const sep2 = document.getElementById('sep-2');
+    const sep3 = document.getElementById('sep-3'); 
+    const sep4 = document.getElementById('sep-4'); // NOU
+    
+    // Titluri
+    const resourceTitle = document.getElementById('resource-title');
+    const modelsTitle = document.getElementById('models-title');
+    const versionsTitle = document.getElementById('versions-title'); 
+    const filesTitle = document.getElementById('files-title'); // NOU
+    const headerBackBtn = document.getElementById('header-back-btn');
+    
+    // Liste
+    const modelsListContainer = document.getElementById('dynamic-models-list');
+    const versionsListContainer = document.getElementById('dynamic-versions-list'); 
+    const filesListContainer = document.getElementById('dynamic-files-list'); // NOU
+
+    let currentMachineName = "";
+    let currentResourceType = "";
+    let currentModelName = "";
+    let currentSubcatName = "";
+
+    /* --- FUNCȚII NAVIGARE --- */
+    
+    // 1. Deschide Meniul Utilaj
+    window.openMachine = function(numeMasina) {
+        currentMachineName = numeMasina;
+        
         viewSelection.style.display = 'none';
         viewResources.style.display = 'block';
-        
-        // Actualizăm titlurile
-        breadcrumbCurrent.innerText = numeMasina;
-        breadcrumbCurrent.style.color = '#003087'; // Albastru activ
-        breadcrumbCurrent.style.fontWeight = 'bold';
-        
-        resourceTitle.innerText = numeMasina + " - Documentație";
+        viewModels.style.display = 'none';
+        viewVersions.style.display = 'none';
+        viewFiles.style.display = 'none';
 
-        // Scroll sus
+        // Breadcrumbs
+        crumbMachine.innerText = numeMasina;
+        crumbMachine.style.display = 'inline';
+        crumbMachine.onclick = function() { openMachine(numeMasina); };
+        
+        sep1.style.display = 'inline';
+        crumbResource.style.display = 'none';
+        sep2.style.display = 'none';
+        crumbModel.style.display = 'none';
+        sep3.style.display = 'none';
+        crumbSubcat.style.display = 'none';
+        sep4.style.display = 'none';
+
+        resourceTitle.innerText = numeMasina + " - Documentație";
+        headerBackBtn.setAttribute('href', "javascript:goToSelection()");
+        window.scrollTo(0,0);
+    };
+
+    // 2. Deschide Lista Modele
+    window.openModelList = function(tipResursa) {
+        currentResourceType = tipResursa;
+
+        viewResources.style.display = 'none';
+        viewModels.style.display = 'block';
+        viewVersions.style.display = 'none';
+        viewFiles.style.display = 'none';
+
+        crumbResource.innerText = tipResursa;
+        crumbResource.style.display = 'inline';
+        crumbResource.onclick = function() { openModelList(tipResursa); };
+        
+        sep2.style.display = 'inline';
+        crumbModel.style.display = 'none';
+        sep3.style.display = 'none';
+        crumbSubcat.style.display = 'none';
+        sep4.style.display = 'none';
+
+        modelsTitle.innerText = currentMachineName + ": " + tipResursa;
+        headerBackBtn.setAttribute('href', "javascript:openMachine('" + currentMachineName + "')");
+
+        modelsListContainer.innerHTML = "";
+        const categorie = dateUtilaje[currentMachineName];
+        const modele = categorie ? categorie[tipResursa] : [];
+
+        if (modele && modele.length > 0) {
+            modele.forEach(m => {
+                const html = `
+                    <div class="model-item-wide clickable" onclick="openVersions('${m.nume}')">
+                        <div class="model-info">
+                            <h3>${m.nume}</h3>
+                            <p>${m.descriere}</p>
+                        </div>
+                        <span class="action-arrow">
+                            Selectează
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </span>
+                    </div>
+                `;
+                modelsListContainer.innerHTML += html;
+            });
+        } else {
+            modelsListContainer.innerHTML = `<p style="text-align:center; color:#9ca3af; padding: 2rem;">Nu există modele definite.</p>`;
+        }
+        window.scrollTo(0,0);
+    };
+
+    // 3. Deschide Lista Versiuni (Sau Foldere gen "Ghid RO")
+    window.openVersions = function(numeModel) {
+        currentModelName = numeModel;
+
+        viewModels.style.display = 'none';
+        viewVersions.style.display = 'block';
+        viewFiles.style.display = 'none';
+
+        crumbModel.innerText = numeModel;
+        crumbModel.style.display = 'inline';
+        crumbModel.onclick = function() { openVersions(numeModel); }; // Facem si acest breadcrumb activ
+        // Daca nu e link, scoatem clasa clickable si onclick (optional), dar pentru navigare inapoi e util
+        crumbModel.classList.add('crumb-link'); 
+
+        sep3.style.display = 'inline';
+        crumbSubcat.style.display = 'none';
+        sep4.style.display = 'none';
+
+        versionsTitle.innerText = currentMachineName + ": " + numeModel;
+        headerBackBtn.setAttribute('href', "javascript:openModelList('" + currentResourceType + "')");
+
+        versionsListContainer.innerHTML = "";
+        const categorie = dateUtilaje[currentMachineName];
+        const modele = categorie ? categorie[currentResourceType] : [];
+        const modelSelectat = modele.find(m => m.nume === numeModel);
+
+        if (modelSelectat && modelSelectat.versiuni && modelSelectat.versiuni.length > 0) {
+            modelSelectat.versiuni.forEach(v => {
+                // VERIFICĂM DACĂ ESTE FOLDER SAU BUTON DIRECT
+                if (v.isFolder) {
+                    // ESTE FOLDER (Ghid RO) - Deschide View 5
+                    const html = `
+                        <div class="model-item-wide clickable" onclick="openFinalFiles('${v.an}')">
+                            <div class="model-info">
+                                <h3>${v.an}</h3>
+                                <p>Deschide dosarul</p>
+                            </div>
+                            <span class="action-arrow">
+                                Deschide
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </span>
+                        </div>
+                    `;
+                    versionsListContainer.innerHTML += html;
+                } else {
+                    // ESTE BUTON DOWNLOAD DIRECT (Vechiul stil)
+                    const html = `
+                        <div class="model-item-wide">
+                            <div class="model-info">
+                                <h3>${v.an}</h3>
+                                <p>Descarcă fișierul</p>
+                            </div>
+                            <a href="${v.link}" target="_blank" class="action-btn-wide">
+                                Descarcă
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </a>
+                        </div>
+                    `;
+                    versionsListContainer.innerHTML += html;
+                }
+            });
+        } else {
+            versionsListContainer.innerHTML = `<p style="text-align:center; color:#9ca3af; padding: 2rem;">Nu există opțiuni disponibile.</p>`;
+        }
         window.scrollTo(0,0);
     }
 
-    function closeMachine() {
+    // 4. Deschide Fișierele Finale (Nivelul 5 - Ex: Manualele din Ghid RO)
+    window.openFinalFiles = function(subCatName) {
+        currentSubcatName = subCatName;
+
+        viewVersions.style.display = 'none';
+        viewFiles.style.display = 'block';
+
+        crumbSubcat.innerText = subCatName;
+        crumbSubcat.style.display = 'inline';
+        sep4.style.display = 'inline';
+
+        filesTitle.innerText = currentModelName + ": " + subCatName;
+        headerBackBtn.setAttribute('href', "javascript:openVersions('" + currentModelName + "')");
+
+        filesListContainer.innerHTML = "";
+
+        // Navigăm prin structura de date pentru a găsi fișierele
+        const categorie = dateUtilaje[currentMachineName];
+        const modele = categorie ? categorie[currentResourceType] : [];
+        const modelSelectat = modele.find(m => m.nume === currentModelName);
+        
+        if (modelSelectat) {
+            const subcat = modelSelectat.versiuni.find(v => v.an === subCatName);
+            if (subcat && subcat.fisiere) {
+                subcat.fisiere.forEach(f => {
+                    const html = `
+                        <div class="model-item-wide">
+                            <div class="model-info">
+                                <h3>${f.nume}</h3>
+                                <p>Format PDF</p>
+                            </div>
+                            <a href="${f.link}" target="_blank" class="action-btn-wide">
+                                Descarcă
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </a>
+                        </div>
+                    `;
+                    filesListContainer.innerHTML += html;
+                });
+            } else {
+                filesListContainer.innerHTML = `<p style="text-align:center; color:#9ca3af; padding: 2rem;">Nu există fișiere în acest folder.</p>`;
+            }
+        }
+        window.scrollTo(0,0);
+    }
+
+    // 5. Înapoi la Start
+    window.goToSelection = function() {
         viewSelection.style.display = 'block';
         viewResources.style.display = 'none';
-        
-        // Reset breadcrumbs
-        breadcrumbCurrent.innerText = "Gama de Utilaje";
-        breadcrumbCurrent.style.color = '#6b7280';
-        breadcrumbCurrent.style.fontWeight = 'normal';
-    }
+        viewModels.style.display = 'none';
+        viewVersions.style.display = 'none';
+        viewFiles.style.display = 'none';
+
+        crumbMachine.style.display = 'none';
+        crumbResource.style.display = 'none';
+        crumbModel.style.display = 'none';
+        crumbSubcat.style.display = 'none';
+        sep1.style.display = 'none';
+        sep2.style.display = 'none';
+        sep3.style.display = 'none';
+        sep4.style.display = 'none';
+
+        headerBackBtn.setAttribute('href', "/categorii");
+    };
 </script>
 
 <style>
-    /* STILURI GENERALE */
-    .dashboard-container {
-        background-color: #ffffff; /* Fundal alb curat ca în poză */
-        min-height: 100vh;
-        color: #1f2937;
-        font-family: 'Roboto', sans-serif;
-    }
-
-    /* HEADER (Sticky) */
-    .sticky-header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: #ffffff;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        width: 100%;
-    }
-    .header-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+    /* STILURI CSS */
+    .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
     .logo-section { display: flex; align-items: baseline; gap: 10px; }
     .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; }
     .blue { color: #003087; }
     .yellow { color: #F4D03F; }
     .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
-    
     .center-nav { display: flex; gap: 30px; height: 100%; align-items: center; }
     .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; }
     .nav-link:hover { color: #003087; }
-    .nav-link.active { color: #E30613; border-bottom-color: #E30613; } /* Roșu Kverneland */
-
+    .nav-link.active { color: #003087; border-bottom-color: #003087; } 
     .user-profile { display: flex; align-items: center; gap: 12px; }
     .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
     .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; }
     .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
     .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 
-    /* LAYOUT PRINCIPAL */
-    .main-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
+    /* BREADCRUMBS */
+    .breadcrumbs { font-size: 1rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; align-items: center; }
+    .crumb-link { cursor: pointer; transition: color 0.2s; }
+    .crumb-link:hover { color: #003087; text-decoration: underline; }
+    .crumb-blue { color: #003087; font-weight: 700; }
+    .separator { color: #d1d5db; }
 
-    /* BREADCRUMBS (Stil poza 3) */
-    .breadcrumbs {
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        gap: 8px;
-        color: #6b7280;
-    }
-    .crumb-gray { color: #6b7280; }
-    .crumb-blue { color: #003087; font-weight: 600; }
-    
     .section-header { margin-bottom: 2.5rem; }
     .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
     .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
 
-    /* VIEW 1: MACHINE CARDS (Grila Simplă) */
-    .machines-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-    }
-    .machine-card {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .machine-card:hover {
-        border-color: #E30613;
-        background: #fff;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
+    /* GRILA CARDS */
+    .machines-grid, .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .machine-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .machine-card:hover { border-color: #003087; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .machine-image { font-size: 3rem; margin-bottom: 1rem; }
-    .machine-card h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #111827; }
+    .machine-card h3 { margin: 0; font-size: 1.25rem; font-weight: 700; }
     .machine-card p { color: #6b7280; margin: 0.5rem 0 1.5rem 0; }
-    .machine-link { color: #E30613; font-weight: 600; font-size: 0.9rem; }
+    .machine-link { color: #003087; font-weight: 600; }
 
+    .resource-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; }
+    .resource-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #d1d5db; }
+    .icon-box { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
+    .blue-box { background-color: #eff6ff; color: #2563eb; }
+    .red-box { background-color: #fef2f2; color: #dc2626; }
+    .green-box { background-color: #f0fdf4; color: #16a34a; }
+    .purple-box { background-color: #f3e8ff; color: #9333ea; }
+    .resource-card h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 700; }
+    .resource-card p { margin: 0 0 1.5rem 0; font-size: 0.9rem; line-height: 1.5; color: #6b7280; flex-grow: 1; }
+    .resource-btn { color: #2563eb; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 5px; }
 
-    /* VIEW 2: RESOURCES GRID (STIL POZA 3 - EXACT) */
-    .resources-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 24px;
-    }
+    /* STILURI NOI LISTE - GLOBAL */
+    :global(.models-list) { display: flex; flex-direction: column; gap: 16px; width: 100%; margin-top: 1rem; }
+    :global(.model-item-wide) { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.2s, border-color 0.2s; }
+    :global(.model-item-wide.clickable) { cursor: pointer; }
+    :global(.model-item-wide:hover) { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #003087; }
+    :global(.model-info h3) { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
+    :global(.model-info p) { margin: 4px 0 0 0; color: #6b7280; font-size: 0.9rem; }
+    :global(.action-btn-wide) { background-color: #003087; color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; white-space: nowrap; }
+    :global(.action-btn-wide:hover) { background-color: #001e54; }
+    :global(.action-arrow) { color: #003087; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
 
-    .resource-card {
-        background: #ffffff;
-        border: 1px solid #e5e7eb; /* Bordură subtilă */
-        border-radius: 12px; /* Rotunjire ca în poză */
-        padding: 1.5rem;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .resource-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        border-color: #d1d5db;
-    }
-
-    /* Iconițele colorate (pătrat rotunjit) */
-    .icon-box {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.2rem;
-    }
-    
-    /* Culori specifice pentru iconițe (ca în poză) */
-    .blue-box { background-color: #eff6ff; color: #2563eb; } /* Albastru deschis */
-    .red-box { background-color: #fef2f2; color: #dc2626; } /* Roșu deschis */
-    .green-box { background-color: #f0fdf4; color: #16a34a; } /* Verde deschis */
-    .purple-box { background-color: #f3e8ff; color: #9333ea; } /* Mov deschis */
-
-    .resource-card h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .resource-card p {
-        margin: 0 0 1.5rem 0;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: #6b7280; /* Gri descriere */
-        flex-grow: 1; /* Împinge linkul jos */
-    }
-
-    .resource-link {
-        text-decoration: none;
-        color: #2563eb; /* Albastru link */
-        font-weight: 600;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .resource-link:hover {
-        text-decoration: underline;
-    }
-
-    /* Buton Back */
-    .back-button {
-        background: none;
-        border: 1px solid #d1d5db;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #4b5563;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-    .back-button:hover {
-        background: #f3f4f6;
-        color: #111827;
-    }
-
-    /* Mobile */
     @media (max-width: 768px) {
         .header-content { flex-direction: column; height: auto; padding: 1rem; }
         .center-nav { width: 100%; justify-content: space-between; overflow-x: auto; }
-        .resources-grid { grid-template-columns: 1fr; }
+        :global(.model-item-wide) { flex-direction: column; align-items: flex-start; gap: 16px; }
+        :global(.action-btn-wide) { width: 100%; justify-content: center; }
     }
 </style>
