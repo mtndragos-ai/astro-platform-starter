@@ -22,6 +22,47 @@ const { title } = Astro.props;
 	</head>
 	<body>
 		<slot />
+
+        <!-- SISTEM GLOBAL DE MONITORIZARE -->
+        <script>
+            import { Analytics } from '../utils/analytics.js';
+
+            // 1. Monitorizare Vizualizare Pagină
+            const currentPage = document.title;
+            Analytics.trackPageView(currentPage);
+
+            // 2. Monitorizare Timp Petrecut
+            const startTime = new Date();
+            window.addEventListener('beforeunload', () => {
+                Analytics.trackTime(currentPage, startTime);
+            });
+
+            // 3. Monitorizare Globală Click-uri pe Download/Video
+            // Acest cod prinde orice click pe un link care conține "Descarcă", "PDF" sau iconițe specifice
+            document.addEventListener('click', (e) => {
+                // @ts-ignore
+                const link = e.target.closest('a');
+                
+                if (link) {
+                    const href = link.getAttribute('href');
+                    const text = link.innerText || "Fisier";
+
+                    // Dacă e un link extern sau PDF/Video
+                    if (href && (href.startsWith('http') || href.endsWith('.pdf') || href.includes('drive.google'))) {
+                         // Găsim numele modelului din containerul părinte dacă există
+                        const container = link.closest('.model-item-wide') || link.closest('.resource-card');
+                        let context = "";
+                        if(container) {
+                            const title = container.querySelector('h3');
+                            // @ts-ignore
+                            if(title) context = title.innerText;
+                        }
+
+                        Analytics.trackDownload(`${context} - ${text}`, href);
+                    }
+                }
+            });
+        </script>
 	</body>
 </html>
 

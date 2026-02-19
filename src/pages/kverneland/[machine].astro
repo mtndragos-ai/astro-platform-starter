@@ -1,15 +1,27 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
+import { kvernelandData } from '../../data/kverneland-data.js';
+
+export async function getStaticPaths() {
+  return [
+    { params: { machine: 'semanatori' } },
+    { params: { machine: 'sprayer' } },
+    { params: { machine: 'spreader' } },
+  ];
+}
+
+const { machine } = Astro.params;
+const currentData = kvernelandData[machine];
+const machineTitle = currentData ? currentData.title : "Utilaj";
 ---
 
-<!-- Verificare Sesiune -->
 <script is:inline>
     if (!localStorage.getItem('agro_session')) {
         window.location.href = '/';
     }
 </script>
 
-<Layout title="Kverneland | AgroConcept Training">
+<Layout title={`${machineTitle} | AgroConcept`}>
     <div class="dashboard-container">
         
         <header class="sticky-header">
@@ -19,11 +31,11 @@ import Layout from '../layouts/Layout.astro';
                     <span class="training-text">TRAINING</span>
                 </div>
                 <nav class="center-nav">
-                    <a href="/categorii" class="nav-link">← Înapoi</a>
+                    <a href="/kverneland" class="nav-link">← Înapoi</a>
                     <a href="#" class="nav-link">Electrica</a>
                     <a href="#" class="nav-link">Hidraulica</a>
                     <a href="/categorii" class="nav-link">Tractoare</a>
-                    <a href="#" class="nav-link active">Kverneland</a>
+                    <a href="/kverneland" class="nav-link active">Kverneland</a>
                 </nav>
                 
                 <!-- PROFIL UTILIZATOR CU MENIU LOGOUT -->
@@ -48,35 +60,52 @@ import Layout from '../layouts/Layout.astro';
 
         <main class="main-content">
             <div class="breadcrumbs">
-                <span class="crumb-blue">Kverneland</span>
+                <a href="/kverneland" class="crumb-link">Kverneland</a>
+                <span class="separator">/</span>
+                <span class="crumb-blue">{machineTitle}</span>
             </div>
 
-            <div id="view-selection">
+            <div id="view-resources">
                 <header class="section-header">
-                    <h1>Gama Kverneland</h1>
-                    <p>Selectează categoria pentru a vedea documentația tehnică.</p>
+                    <h1>{machineTitle} - Documentație</h1>
+                    <p>Documentație completă și proceduri de service.</p>
                 </header>
 
-                <div class="machines-grid">
-                    <a href="/kverneland/semanatori" class="machine-card">
-                        <div class="machine-image">🌱</div>
-                        <h3>Semănători</h3>
-                        <p>Painease, Optima, Monopill</p>
-                        <span class="machine-link">Selectează →</span>
+                <div class="resources-grid">
+                    <a href={`/kverneland/${machine}/manual-service`} class="resource-card">
+                        <div class="icon-box blue-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </div>
+                        <h3>Manual Service</h3>
+                        <p>Descarcă schemele explodate și instrucțiunile de asamblare.</p>
+                        <span class="resource-btn">Accesează PDF →</span>
                     </a>
 
-                    <a href="/kverneland/sprayer" class="machine-card">
-                        <div class="machine-image">💦</div>
-                        <h3>Sprayer (Erbicidat)</h3>
-                        <p>iXtrack, iXter, iXtra</p>
-                        <span class="machine-link">Selectează →</span>
+                    <a href={`/kverneland/${machine}/manual-operare`} class="resource-card">
+                        <div class="icon-box purple-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        </div>
+                        <h3>Manual Operare</h3>
+                        <p>Ghidul operatorului pentru setări în câmp și calibrare.</p>
+                        <span class="resource-btn">Accesează PDF →</span>
                     </a>
 
-                    <a href="/kverneland/spreader" class="machine-card">
-                        <div class="machine-image">🌾</div>
-                        <h3>Spreader (Fertilizat)</h3>
-                        <p>Exacta CL, HL, TL, TLX</p>
-                        <span class="machine-link">Selectează →</span>
+                    <a href={`/kverneland/${machine}/video`} class="resource-card">
+                        <div class="icon-box red-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        </div>
+                        <h3>Tutorial Video</h3>
+                        <p>Vizualizează procedura de punere în funcțiune.</p>
+                        <span class="resource-btn">Urmărește Video →</span>
+                    </a>
+
+                    <a href={`/kverneland/${machine}/erori`} class="resource-card">
+                        <div class="icon-box green-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <h3>Coduri de Eroare</h3>
+                        <p>Identificare erori și soluții rapide.</p>
+                        <span class="resource-btn">Caută Erori →</span>
                     </a>
                 </div>
             </div>
@@ -86,11 +115,10 @@ import Layout from '../layouts/Layout.astro';
 
 <script is:inline>
     window.addEventListener('load', function() {
-        // 1. User Info - Afișare Nume și Inițiale
+        // 1. User Info
         const storedUser = localStorage.getItem('agro_user');
         const nameElement = document.querySelector('.user-name');
         const avatarElement = document.querySelector('.avatar-circle');
-        
         if (storedUser && nameElement && avatarElement) {
             const parts = storedUser.split(/[._]/); 
             const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
@@ -106,17 +134,14 @@ import Layout from '../layouts/Layout.astro';
 
         if (profileTrigger && logoutMenu) {
             profileTrigger.addEventListener('click', (e) => {
-                e.stopPropagation(); // Oprește propagarea pentru a nu închide imediat meniul
+                e.stopPropagation();
                 logoutMenu.classList.toggle('show');
             });
-            
-            // Închide meniul dacă dai click oriunde altundeva
             document.addEventListener('click', () => {
                 logoutMenu.classList.remove('show');
             });
         }
 
-        // Acțiune Buton Delogare
         if (logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -129,7 +154,7 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    /* CSS Identic + Meniu Logout */
+    /* CSS Identic */
     .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; }
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
     .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
@@ -143,7 +168,7 @@ import Layout from '../layouts/Layout.astro';
     .nav-link:hover { color: #003087; }
     .nav-link.active { color: #003087; border-bottom-color: #003087; } 
     
-    /* PROFIL + LOGOUT STYLES */
+    /* PROFIL + LOGOUT */
     .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
     .user-profile:hover { background-color: #f3f4f6; }
     .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
@@ -167,12 +192,19 @@ import Layout from '../layouts/Layout.astro';
     .section-header { margin-bottom: 2.5rem; }
     .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
     .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
-    .machines-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .machine-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; }
-    .machine-card:hover { border-color: #003087; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-    .machine-image { font-size: 3rem; margin-bottom: 1rem; }
-    .machine-card h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #1f2937; }
-    .machine-card p { color: #6b7280; margin: 0.5rem 0 1.5rem 0; }
-    .machine-link { color: #003087; font-weight: 600; }
+    
+    /* CSS RESTAURAT PENTRU CARDURI RESURSE */
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .resource-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; text-decoration: none; }
+    .resource-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #d1d5db; }
+    .icon-box { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
+    .blue-box { background-color: #eff6ff; color: #2563eb; }
+    .red-box { background-color: #fef2f2; color: #dc2626; }
+    .green-box { background-color: #f0fdf4; color: #16a34a; }
+    .purple-box { background-color: #f3e8ff; color: #9333ea; }
+    .resource-card h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
+    .resource-card p { margin: 0 0 1.5rem 0; font-size: 0.9rem; line-height: 1.5; color: #6b7280; flex-grow: 1; }
+    .resource-btn { color: #2563eb; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 5px; }
+
     @media (max-width: 768px) { .header-content { flex-direction: column; height: auto; padding: 1rem; } .center-nav { width: 100%; justify-content: space-between; overflow-x: auto; } }
 </style>

@@ -1,0 +1,348 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { kvernelandData } from '../../../data/kverneland-data.js';
+
+export async function getStaticPaths() {
+  const machines = ['semanatori', 'sprayer', 'spreader'];
+  const types = ['manual-service', 'manual-operare', 'video', 'erori'];
+  
+  let paths = [];
+  machines.forEach(m => {
+    types.forEach(t => {
+      paths.push({ params: { machine: m, type: t } });
+    });
+  });
+  return paths;
+}
+
+const { machine, type } = Astro.params;
+const currentMachineData = kvernelandData[machine];
+const currentResourceData = currentMachineData?.resources[type];
+
+const machineTitle = currentMachineData ? currentMachineData.title : "Utilaj";
+const resourceTitle = currentResourceData ? currentResourceData.title : "Resursă";
+---
+
+<script is:inline>
+    if (!localStorage.getItem('agro_session')) {
+        window.location.href = '/';
+    }
+</script>
+
+<Layout title={`${resourceTitle} - ${machineTitle} | AgroConcept`}>
+    <div class="dashboard-container">
+        
+        <header class="sticky-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
+                    <span class="training-text">TRAINING</span>
+                </div>
+                <nav class="center-nav">
+                    <a href={`/kverneland/${machine}`} class="nav-link" id="header-back-link">← Înapoi</a>
+                    <a href="#" class="nav-link">Electrica</a>
+                    <a href="#" class="nav-link">Hidraulica</a>
+                    <a href="/categorii" class="nav-link">Tractoare</a>
+                    <a href="/kverneland" class="nav-link active">Kverneland</a>
+                </nav>
+                <!-- PROFIL UTILIZATOR CU MENIU -->
+                <div class="user-profile" id="user-profile-trigger">
+                    <div class="user-details">
+                        <span class="user-label">TEHNICIAN LOGAT</span>
+                        <span class="user-name">...</span>
+                    </div>
+                    <div class="avatar-circle">AC</div>
+
+                    <!-- MENIU DELOGARE -->
+                    <div class="logout-dropdown" id="logout-menu">
+                        <div class="dropdown-arrow"></div>
+                        <button id="logout-btn" class="logout-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Delogare
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <a href="/kverneland" class="crumb-link">Kverneland</a>
+                <span class="separator">/</span>
+                <a href={`/kverneland/${machine}`} class="crumb-link">{machineTitle}</a>
+                <span class="separator">/</span>
+                <span class="crumb-blue" id="crumb-resource">{resourceTitle}</span>
+                
+                <span class="separator" id="sep-model" style="display:none">/</span>
+                <span class="crumb-blue" id="crumb-model" style="display:none"></span>
+                <span class="separator" id="sep-folder" style="display:none">/</span>
+                <span class="crumb-blue" id="crumb-folder" style="display:none"></span>
+            </div>
+
+            <!-- CONTAINER DINAMIC -->
+            <div id="content-area">
+                <header class="section-header">
+                    <h1 id="page-title">{machineTitle}: {resourceTitle}</h1>
+                    <p id="page-subtitle">Alege modelul specific pentru a vedea variantele disponibile.</p>
+                </header>
+
+                <!-- LISTA MODELE (ACUM E LISTĂ LATĂ) -->
+                <div id="models-view-container" style="display:block;">
+                    <div class="list-wide" id="dynamic-list"></div>
+                </div>
+
+                <!-- LISTA VERSIUNI (LISTĂ LATĂ) -->
+                <div id="versions-view-container" style="display:none;">
+                    <div class="list-wide" id="dynamic-versions-list"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<script define:vars={{ initialData: currentResourceData?.models || [], machineTitle, resourceTitle, machineType: machine }}>
+    window.resourceData = initialData;
+    window.baseTitle = `${machineTitle}: ${resourceTitle}`;
+    window.baseBackLink = document.getElementById('header-back-link').getAttribute('href');
+    window.currentMachineType = machineType;
+</script>
+
+<script is:inline>
+    // User Display Logic
+    window.addEventListener('load', function() {
+        const storedUser = localStorage.getItem('agro_user');
+        const nameElement = document.querySelector('.user-name');
+        const avatarElement = document.querySelector('.avatar-circle');
+        if (storedUser && nameElement && avatarElement) {
+            const parts = storedUser.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            let initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+            nameElement.textContent = fullName;
+            avatarElement.textContent = initials;
+        }
+
+        // Logout Logic
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const logoutMenu = document.getElementById('logout-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (profileTrigger && logoutMenu) {
+            profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.classList.toggle('show'); });
+            document.addEventListener('click', () => { logoutMenu.classList.remove('show'); });
+        }
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                localStorage.removeItem('agro_session');
+                localStorage.removeItem('agro_user');
+                window.location.href = '/';
+            });
+        }
+        
+        handleNavigation();
+    });
+
+    window.addEventListener('popstate', handleNavigation);
+
+    function handleNavigation() {
+        const params = new URLSearchParams(window.location.search);
+        const modelName = params.get('model');
+        const folderName = params.get('folder');
+
+        const modelsContainer = document.getElementById('models-view-container');
+        const versionsContainer = document.getElementById('versions-view-container');
+        
+        const listContainer = document.getElementById('dynamic-list');
+        const versionsList = document.getElementById('dynamic-versions-list');
+        
+        const pageTitle = document.getElementById('page-title');
+        const headerBackLink = document.getElementById('header-back-link');
+        
+        const crumbRes = document.getElementById('crumb-resource');
+        const crumbMod = document.getElementById('crumb-model');
+        const crumbFold = document.getElementById('crumb-folder');
+        const sepMod = document.getElementById('sep-model');
+        const sepFold = document.getElementById('sep-folder');
+
+        // --- NIVEL 1 & 2: VERSIUNI / FISIERE (Listă Lată) ---
+        if (modelName) {
+            modelsContainer.style.display = 'none';
+            versionsContainer.style.display = 'block';
+            versionsList.innerHTML = '';
+            
+            const model = window.resourceData.find(m => m.nume === modelName);
+
+            // Setări comune pentru breadcrumbs
+            crumbRes.classList.add('crumb-link');
+            crumbRes.classList.remove('crumb-blue');
+            crumbRes.onclick = () => { window.history.back(); };
+            crumbMod.style.display = 'inline';
+            crumbMod.innerText = modelName;
+            sepMod.style.display = 'inline';
+
+            // Sub-caz: Folder Specific (ex: Ghid RO)
+            if (folderName && model) {
+                const subcat = model.versiuni.find(v => v.an === folderName);
+                pageTitle.innerText = `${modelName}: ${folderName}`;
+                headerBackLink.href = "javascript:history.back()";
+                
+                crumbMod.classList.add('crumb-link');
+                crumbMod.classList.remove('crumb-blue');
+                crumbMod.onclick = () => { window.history.back(); };
+                crumbFold.style.display = 'inline';
+                crumbFold.innerText = folderName;
+                sepFold.style.display = 'inline';
+
+                if (subcat && subcat.fisiere && subcat.fisiere.length > 0) {
+                    subcat.fisiere.forEach(f => {
+                         versionsList.innerHTML += `
+                            <div class="model-item-wide">
+                                <div class="model-info"><h3>${f.nume}</h3><p>Format PDF</p></div>
+                                <a href="${f.link}" target="_blank" class="action-btn-wide">Descarcă <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
+                            </div>`;
+                    });
+                } else {
+                    versionsList.innerHTML = `<p style="color:#9ca3af;text-align:center;">Nu există fișiere.</p>`;
+                }
+            } 
+            // Sub-caz: Lista Principală Versiuni
+            else if (model) {
+                pageTitle.innerText = `${window.baseTitle} - ${modelName}`;
+                headerBackLink.href = "javascript:history.back()";
+                
+                crumbFold.style.display = 'none'; sepFold.style.display = 'none';
+
+                if (model.versiuni && model.versiuni.length > 0) {
+                    model.versiuni.forEach(v => {
+                        if (v.isFolder) {
+                            versionsList.innerHTML += `
+                                <div class="model-item-wide clickable" onclick="navigateToFolder('${modelName}', '${v.an}')">
+                                    <div class="model-info"><h3>${v.an}</h3><p>Deschide dosarul</p></div>
+                                    <span class="action-arrow">Deschide <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                                </div>`;
+                        } else {
+                            versionsList.innerHTML += `
+                                <div class="model-item-wide">
+                                    <div class="model-info"><h3>${v.an}</h3><p>Descarcă fișierul</p></div>
+                                    <a href="${v.link}" target="_blank" class="action-btn-wide">Descarcă <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
+                                </div>`;
+                        }
+                    });
+                } else {
+                    versionsList.innerHTML = `<p style="color:#9ca3af;text-align:center;">Nu există versiuni.</p>`;
+                }
+            }
+        } 
+        // --- NIVEL 0: LISTA MODELE (ACUM E LISTĂ LATĂ) ---
+        else {
+            modelsContainer.style.display = 'block';
+            versionsContainer.style.display = 'none';
+            listContainer.innerHTML = '';
+
+            pageTitle.innerText = window.baseTitle;
+            headerBackLink.href = window.baseBackLink; 
+
+            crumbRes.className = 'crumb-blue';
+            crumbRes.onclick = null;
+            crumbMod.style.display = 'none'; sepMod.style.display = 'none';
+            crumbFold.style.display = 'none'; sepFold.style.display = 'none';
+
+            if(window.resourceData && window.resourceData.length > 0) {
+                window.resourceData.forEach(m => {
+                    // GENERĂM ITEME LATE (model-item-wide)
+                    listContainer.innerHTML += `
+                        <div class="model-item-wide clickable" onclick="navigateToModel('${m.nume}')">
+                            <div class="model-info">
+                                <h3>${m.nume}</h3>
+                                <p>${m.descriere}</p>
+                            </div>
+                            <span class="action-arrow">
+                                Selectează 
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </span>
+                        </div>`;
+                });
+            } else {
+                listContainer.innerHTML = `<p style="color:#9ca3af;text-align:center;grid-column:1/-1;">Nu există modele definite.</p>`;
+            }
+        }
+    }
+
+    window.navigateToModel = function(modelName) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('model', modelName);
+        window.history.pushState({}, '', newUrl);
+        handleNavigation();
+    }
+
+    window.navigateToFolder = function(modelName, folderName) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('folder', folderName);
+        window.history.pushState({}, '', newUrl);
+        handleNavigation();
+    }
+</script>
+
+<style>
+    /* CSS Standard */
+    .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .logo-section { display: flex; align-items: baseline; gap: 10px; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; }
+    .blue { color: #003087; }
+    .yellow { color: #F4D03F; }
+    .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    .center-nav { display: flex; gap: 30px; height: 100%; align-items: center; }
+    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; }
+    .nav-link:hover { color: #003087; }
+    .nav-link.active { color: #003087; border-bottom-color: #003087; } 
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
+    .user-profile:hover { background-color: #f3f4f6; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; animation: fadeIn 0.2s ease-out; }
+    .logout-dropdown.show { display: block; }
+    .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
+    .logout-item:hover { background-color: #fee2e2; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .breadcrumbs { font-size: 1rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; align-items: center; }
+    .crumb-link { cursor: pointer; transition: color 0.2s; color: #6b7280; text-decoration: none; }
+    .crumb-link:hover { color: #003087; text-decoration: underline; }
+    .crumb-blue { color: #003087; font-weight: 700; }
+    .separator { color: #d1d5db; }
+    .section-header { margin-bottom: 2.5rem; }
+    .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
+    .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
+    
+    /* 2. LISTĂ LATĂ (Folosită peste tot acum) */
+    .list-wide { display: flex; flex-direction: column; gap: 16px; width: 100%; margin-top: 1rem; }
+    .model-item-wide { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.2s, border-color 0.2s; }
+    .model-item-wide.clickable { cursor: pointer; }
+    .model-item-wide:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #003087; }
+    .model-info h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
+    .model-info p { margin: 4px 0 0 0; color: #6b7280; font-size: 0.9rem; }
+    .action-btn-wide { background-color: #003087; color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; white-space: nowrap; }
+    .action-btn-wide:hover { background-color: #001e54; }
+    .action-arrow { color: #003087; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+
+    /* CSS GLOBAL FIX */
+    :global(.list-wide) { display: flex; flex-direction: column; gap: 16px; width: 100%; margin-top: 1rem; }
+    :global(.model-item-wide) { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.2s, border-color 0.2s; }
+    :global(.model-item-wide.clickable) { cursor: pointer; }
+    :global(.model-item-wide:hover) { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #003087; }
+    :global(.model-info h3) { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
+    :global(.model-info p) { margin: 4px 0 0 0; color: #6b7280; font-size: 0.9rem; }
+    :global(.action-btn-wide) { background-color: #003087; color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; white-space: nowrap; }
+    :global(.action-btn-wide:hover) { background-color: #001e54; }
+    :global(.action-arrow) { color: #003087; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+
+    @media (max-width: 768px) { .header-content { flex-direction: column; height: auto; padding: 1rem; } .center-nav { width: 100%; justify-content: space-between; overflow-x: auto; } :global(.model-item-wide) { flex-direction: column; align-items: flex-start; gap: 16px; } :global(.action-btn-wide) { width: 100%; justify-content: center; } }
+</style>

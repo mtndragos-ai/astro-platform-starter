@@ -24,18 +24,15 @@ const categorii = [
         descriere: "Implemente și Utilaje",
         link: "/kverneland" 
     },
-    // Putem adăuga și restul dacă e nevoie (Electrica, Hidraulica) ca și carduri
 ];
 ---
 
 <Layout title="Dashboard | AgroConcept">
     <div class="dashboard-container">
         
-        <!-- HEADER FIX (Conform designului din imagine) -->
+        <!-- HEADER -->
         <header class="sticky-header">
             <div class="header-content">
-                
-                <!-- 1. ZONA LOGO -->
                 <div class="logo-section">
                     <div class="brand-text">
                         <span class="blue">AGRO</span><span class="yellow">CONCEPT</span>
@@ -43,25 +40,32 @@ const categorii = [
                     <span class="training-text">TRAINING</span>
                 </div>
 
-                <!-- 2. MENIU CENTRAL (Navigare) -->
                 <nav class="center-nav">
                     <a href="#" class="nav-link">Electrica</a>
                     <a href="#" class="nav-link">Hidraulica</a>
-                    <!-- Clasa 'active' simulează pagina curentă (ex: Tractoare) -->
                     <a href="#" class="nav-link active">Tractoare</a>
                     <a href="#" class="nav-link">Combine</a>
-                    <a href="#" class="nav-link">Kverneland</a>
+                    <a href="/kverneland" class="nav-link">Kverneland</a>
+                    <!-- BUTON ADMIN - ASCUNS BY DEFAULT -->
+                    <a href="/admin/dashboard" class="nav-link admin-link" id="admin-nav-item" style="display: none; color: #dc2626;">📊 Admin</a>
                 </nav>
 
-                <!-- 3. PROFIL UTILIZATOR (Dreapta) -->
-                <div class="user-profile">
+                <div class="user-profile" id="user-profile-trigger">
                     <div class="user-details">
                         <span class="user-label">TEHNICIAN LOGAT</span>
-                        <span class="user-name">User AgroConcept</span>
+                        <span class="user-name">...</span>
                     </div>
-                    <div class="avatar-circle">AC</div>
-                </div>
+                    <div class="avatar-circle"></div>
 
+                    <!-- MENIU DELOGARE -->
+                    <div class="logout-dropdown" id="logout-menu">
+                        <div class="dropdown-arrow"></div>
+                        <button id="logout-btn" class="logout-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Delogare
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -89,229 +93,122 @@ const categorii = [
             </div>
         </main>
     </div>
+
+    <!-- SCRIPT USER & LOGOUT & ADMIN CHECK -->
+    <script is:inline>
+        window.addEventListener('load', function() {
+            // 1. Recuperare User
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentUser = urlParams.get('user');
+
+            if (!currentUser) {
+                currentUser = localStorage.getItem('agro_user');
+            } else {
+                localStorage.setItem('agro_user', currentUser);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            const nameElement = document.querySelector('.user-name');
+            const avatarElement = document.querySelector('.avatar-circle');
+            const adminNavItem = document.getElementById('admin-nav-item');
+
+            if (currentUser && nameElement && avatarElement) {
+                const parts = currentUser.split(/[._]/); 
+                const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                let initials = "";
+                if (parts.length >= 2) initials = (parts[0][0] + parts[1][0]).toUpperCase();
+                else if (parts.length === 1) initials = parts[0].substring(0, 2).toUpperCase();
+                else initials = "AC";
+
+                nameElement.textContent = fullName;
+                avatarElement.textContent = initials;
+
+                // ⭐ LOGICA PENTRU AFISARE BUTON ADMIN ⭐
+                if (currentUser === 'admin' && adminNavItem) {
+                    adminNavItem.style.display = 'flex';
+                }
+            }
+
+            // 2. Logică Logout
+            const profileTrigger = document.getElementById('user-profile-trigger');
+            const logoutMenu = document.getElementById('logout-menu');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (profileTrigger && logoutMenu) {
+                profileTrigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    logoutMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', () => {
+                    logoutMenu.classList.remove('show');
+                });
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    localStorage.removeItem('agro_session');
+                    localStorage.removeItem('agro_user');
+                    window.location.href = '/';
+                });
+            }
+        });
+    </script>
 </Layout>
 
 <style>
-    /* Reset și Fonturi */
-    .dashboard-container {
-        background-color: #f8f9fa; /* Gri foarte deschis, curat */
-        min-height: 100vh;
-        color: #1f2937;
-    }
-
-    /* --- STILURI HEADER (NOU) --- */
-    .sticky-header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: #ffffff;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        border-bottom: 1px solid #eee;
-        width: 100%;
-    }
-
-    .header-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        height: 70px; /* Înălțime fixă pentru consistență */
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    /* 1. Logo Styles */
-    .logo-section {
-        display: flex;
-        align-items: baseline; /* Aliniem textul la bază */
-        gap: 10px;
-    }
-
-    .brand-text {
-        font-family: 'Roboto', sans-serif;
-        font-weight: 900;
-        font-size: 1.5rem;
-        letter-spacing: -0.5px;
-    }
-
+    /* STILURI CSS */
+    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; }
+    
+    /* HEADER */
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; width: 100%; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .logo-section { display: flex; align-items: baseline; gap: 10px; }
+    .brand-text { font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; }
     .blue { color: #003087; }
     .yellow { color: #F4D03F; }
+    .training-text { font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    
+    .center-nav { display: flex; gap: 30px; height: 100%; align-items: center; }
+    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .nav-link:hover { color: #003087; }
+    .nav-link.active { color: #003087; border-bottom-color: #003087; }
+    .admin-link { font-weight: 800 !important; }
 
-    .training-text {
-        font-family: 'Roboto', sans-serif;
-        font-weight: 300;
-        font-size: 1.5rem;
-        color: #9ca3af; /* Gri deschis */
-        text-transform: uppercase;
-    }
+    /* PROFIL */
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
+    .user-profile:hover { background-color: #f3f4f6; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; min-width: 100px; text-align: right; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
 
-    /* 2. Navigare Centrală */
-    .center-nav {
-        display: flex;
-        gap: 30px;
-        height: 100%;
-        align-items: center;
-    }
+    /* DROPDOWN LOGOUT */
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; animation: fadeIn 0.2s ease-out; }
+    .logout-dropdown.show { display: block; }
+    .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
+    .logout-item:hover { background-color: #fee2e2; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .nav-link {
-        text-decoration: none;
-        color: #4b5563;
-        font-weight: 600;
-        font-size: 0.95rem;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        border-bottom: 3px solid transparent; /* Bordură invizibilă pentru hover */
-        transition: all 0.2s;
-    }
+    /* CONTENT */
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
+    .page-intro { text-align: center; margin-bottom: 3rem; }
+    .page-intro h1 { font-size: 2rem; color: #111827; margin-bottom: 0.5rem; }
 
-    .nav-link:hover {
-        color: #003087;
-    }
+    /* GRILA */
+    .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; }
+    .card { background: white; padding: 2.5rem 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s; border: 1px solid transparent; cursor: pointer; text-decoration: none; height: 100%; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); border-color: #F4D03F; }
+    .card-icon { font-size: 3rem; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
+    .card-content h3 { margin: 0; font-size: 1.4rem; color: #111827; font-weight: 700; }
+    .card-content p { margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #6b7280; }
+    .arrow { margin-top: auto; padding-top: 1.5rem; color: #003087; font-weight: bold; opacity: 0; transform: translateX(-10px); transition: all 0.2s; }
+    .card:hover .arrow { opacity: 1; transform: translateX(0); }
 
-    /* Stilul pentru link-ul activ (ex: Tractoare) */
-    .nav-link.active {
-        color: #003087;
-        border-bottom-color: #003087;
-    }
-
-    /* 3. Profil Utilizator */
-    .user-profile {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .user-details {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end; /* Text aliniat la dreapta */
-        line-height: 1.2;
-    }
-
-    .user-label {
-        font-size: 0.65rem;
-        font-weight: 700;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .user-name {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #111827;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        background-color: #003087; /* Albastru NH */
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.9rem;
-    }
-
-    /* --- RESPONSIVE HEADER --- */
-    @media (max-width: 900px) {
-        .training-text { display: none; } /* Ascundem 'TRAINING' pe tablete */
-        .center-nav { gap: 15px; }
-        .nav-link { font-size: 0.85rem; }
-    }
-
+    /* RESPONSIVE */
     @media (max-width: 768px) {
         .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 1rem; }
-        .center-nav { width: 100%; justify-content: space-between; overflow-x: auto; padding-bottom: 5px;}
-        .user-profile { width: 100%; justify-content: flex-end; }
-        .sticky-header { position: relative; } /* Pe mobil nu recomandăm sticky dacă e prea mare */
-    }
-
-
-    /* --- CONTINUT PAGINA --- */
-    .main-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 3rem 2rem;
-    }
-
-    .page-intro {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .page-intro h1 {
-        font-size: 2rem;
-        color: #111827;
-        margin-bottom: 0.5rem;
-    }
-
-    /* Grila de carduri */
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 25px;
-    }
-
-    .card {
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-        border: 1px solid transparent;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        border-color: #F4D03F; /* Galben la hover */
-    }
-
-    .card-icon {
-        font-size: 2.5rem;
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-    }
-
-    .card-content h3 {
-        margin: 0;
-        font-size: 1.3rem;
-        color: #111827;
-        font-weight: 700;
-    }
-
-    .card-content p {
-        margin: 0.5rem 0 0 0;
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-
-    .arrow {
-        margin-top: 1.5rem;
-        color: #003087;
-        font-weight: bold;
-        opacity: 0;
-        transform: translateX(-10px);
-        transition: all 0.2s;
-    }
-
-    .card:hover .arrow {
-        opacity: 1;
-        transform: translateX(0);
+        .grid-container { grid-template-columns: 1fr; }
     }
 </style>

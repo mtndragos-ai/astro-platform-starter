@@ -1,27 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Aici poți importa imaginea dacă o ai în src/assets, sau o referi direct din public/
-const backgroundUrl = "/img/tractor-bg.jpg"; // Asigură-te că ai o poză în public/img/
+const backgroundUrl = "/img/tractor-bg.jpg"; 
 ---
 
 <Layout title="Login | AgroConcept Training">
 	<main class="login-container">
-        
-        <!-- Fundalul vizual (Exportat din Canva) -->
-        <!-- Dacă nu ai poza încă, folosim un gradient albastru temporar -->
 		<div class="hero-background">
             <div class="overlay"></div>
         </div>
 
         <div class="login-wrapper">
-            <!-- Header -->
             <div class="brand-header">
                 <h1 class="title">AGRO<span class="highlight">CONCEPT</span></h1>
                 <p class="subtitle">PORTAL TEHNIC SERVICE</p>
             </div>
 
-            <!-- Cardul de Login -->
             <div class="login-card">
                 <form id="loginForm">
                     <div class="input-group">
@@ -34,13 +28,12 @@ const backgroundUrl = "/img/tractor-bg.jpg"; // Asigură-te că ai o poză în p
                         <input type="password" id="password" name="password" placeholder="••••••••" required />
                     </div>
 
-                    <!-- Butonul simulează login-ul și duce la categorii -->
                     <button type="submit" class="login-btn">
                         AUTENTIFICARE
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
                 </form>
-                <div id="error-msg" class="error-message">Date incorecte.</div>
+                <div id="error-msg" class="error-message">Date incorecte. Încearcă din nou.</div>
             </div>
 
             <p class="footer-note">© 2024 AgroConcept. Uz Intern.</p>
@@ -50,155 +43,96 @@ const backgroundUrl = "/img/tractor-bg.jpg"; // Asigură-te că ai o poză în p
 </Layout>
 
 <script>
-    // Script simplu pentru redirecționare (Frontend Only)
-    const form = document.getElementById('loginForm');
-    const errorMsg = document.getElementById('error-msg');
+    // --- LISTA UTILIZATORI ---
+    const USERS = [
+        { user: "dragos.munteanu", pass: "suport" },
+        { user: "cristian.boboi", pass: "suport" },
+        { user: "gabriel.chisiu", pass: "suport" },
+        { user: "alexandru.racila", pass: "suportgps" },
+        { user: "florin.marin", pass: "aftersales" },
+        { user: "vladimir.panaite", pass: "suport" },
+        { user: "tehnic", pass: "Agro2024" },
+        { user: "admin", pass: "AdminAgro" }
+    ];
 
-    form?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Aici poți pune o logică simplă de verificare sau doar redirect
-        // Fiind site static, securitatea reală se face la nivel de server/backend
-        // Pentru demo, redirectăm direct:
-        window.location.href = '/categorii';
+    // Resetăm sesiunea la încărcarea paginii
+    localStorage.removeItem('agro_session');
+    localStorage.removeItem('agro_user');
+
+    // Folosim window.onload pentru a fi siguri că elementele există
+    window.addEventListener('load', () => {
+        const form = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('error-msg');
+        const userInput = document.getElementById('username');
+        const passInput = document.getElementById('password');
+
+        if(form) {
+            form.addEventListener('submit', async (e) => {
+                // 1. OPRIM REFRESH-UL IMEDIAT
+                e.preventDefault(); 
+                
+                // @ts-ignore
+                const enteredUser = userInput.value.trim();
+                // @ts-ignore
+                const enteredPass = passInput.value;
+
+                // Verificăm contul
+                const validAccount = USERS.find(account => account.user === enteredUser && account.pass === enteredPass);
+
+                if (validAccount) {
+                    console.log("Login OK:", validAccount.user);
+
+                    // 2. Salvăm sesiunea local
+                    localStorage.setItem('agro_session', 'active');
+                    localStorage.setItem('agro_user', validAccount.user);
+
+                    // 3. Încercăm să trimitem statistica (Dinamica - nu blochează login-ul dacă fișierul lipsește)
+                    try {
+                        const module = await import('../utils/analytics.js');
+                        if(module && module.Analytics) {
+                            module.Analytics.trackLogin(validAccount.user);
+                        }
+                    } catch (err) {
+                        console.warn("Analytics nu a putut fi încărcat (nu afectează login-ul):", err);
+                    }
+
+                    // 4. Redirecționare
+                    window.location.href = `/categorii?user=${validAccount.user}`;
+                } else {
+                    console.log("Login Fail");
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                        form.style.animation = 'shake 0.5s';
+                        setTimeout(() => form.style.animation = '', 500);
+                    }
+                }
+            });
+        }
+
+        // Ascundem eroarea când utilizatorul scrie
+        userInput?.addEventListener('input', () => { if(errorMsg) errorMsg.style.display = 'none'; });
+        passInput?.addEventListener('input', () => { if(errorMsg) errorMsg.style.display = 'none'; });
     });
 </script>
 
 <style>
-    .login-container {
-        position: relative;
-        height: 100vh;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-
-    /* Fundal */
-    .hero-background {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: #002050; /* Fallback color */
-        background-image: url('/background-tractor.jpg'); /* Pune poza ta din Canva aici */
-        background-size: cover;
-        background-position: center;
-        z-index: -1;
-    }
-
-    .overlay {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: linear-gradient(135deg, rgba(0,48,135,0.8) 0%, rgba(0,0,0,0.6) 100%);
-    }
-
-    .login-wrapper {
-        z-index: 10;
-        width: 90%;
-        max-width: 400px;
-        text-align: center;
-        animation: fadeIn 0.8s ease-out;
-    }
-
-    .title {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: white;
-        letter-spacing: 2px;
-        margin-bottom: 5px;
-    }
-
-    .highlight {
-        color: var(--nh-yellow);
-    }
-
-    .subtitle {
-        font-size: 0.9rem;
-        color: rgba(255,255,255,0.8);
-        letter-spacing: 3px;
-        margin-bottom: 2rem;
-        font-weight: 300;
-    }
-
-    /* Card */
-    .login-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 2.5rem;
-        border-radius: 16px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-
-    .input-group {
-        text-align: left;
-        margin-bottom: 1.5rem;
-    }
-
-    .input-group label {
-        display: block;
-        color: rgba(255,255,255,0.9);
-        font-size: 0.85rem;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-    }
-
-    .input-group input {
-        width: 100%;
-        padding: 12px 15px;
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.3);
-        background: rgba(0,0,0,0.2);
-        color: white;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .input-group input:focus {
-        outline: none;
-        border-color: var(--nh-yellow);
-        background: rgba(0,0,0,0.4);
-    }
-
-    .login-btn {
-        width: 100%;
-        padding: 14px;
-        background-color: var(--nh-yellow);
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        font-weight: 800;
-        font-size: 1rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: transform 0.2s ease, background 0.2s;
-    }
-
-    .login-btn:hover {
-        background-color: #ffdb4d;
-        transform: translateY(-2px);
-    }
-
-    .error-message {
-        display: none;
-        color: #ff6b6b;
-        font-size: 0.85rem;
-        margin-top: 1rem;
-    }
-
-    .footer-note {
-        margin-top: 2rem;
-        font-size: 0.75rem;
-        color: rgba(255,255,255,0.4);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    /* STILURI CSS LOGIN */
+    .login-container { position: relative; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .hero-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #002050; background-image: url('/background-tractor.jpg'); background-size: cover; background-position: center; z-index: -1; }
+    .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,48,135,0.85) 0%, rgba(0,0,0,0.7) 100%); }
+    .login-wrapper { z-index: 10; width: 90%; max-width: 400px; text-align: center; animation: fadeIn 0.8s ease-out; }
+    .title { font-size: 2.5rem; font-weight: 900; color: white; letter-spacing: 2px; margin-bottom: 5px; }
+    .highlight { color: var(--nh-yellow); }
+    .subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.8); letter-spacing: 3px; margin-bottom: 2rem; font-weight: 300; }
+    .login-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 2.5rem; border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+    .input-group { text-align: left; margin-bottom: 1.5rem; }
+    .input-group label { display: block; color: rgba(255,255,255,0.9); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; }
+    .input-group input { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-size: 1rem; transition: all 0.3s ease; }
+    .input-group input:focus { outline: none; border-color: var(--nh-yellow); background: rgba(0,0,0,0.4); }
+    .login-btn { width: 100%; padding: 14px; background-color: var(--nh-yellow); color: #000; border: none; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s ease, background 0.2s; }
+    .login-btn:hover { background-color: #ffdb4d; transform: translateY(-2px); }
+    .error-message { display: none; color: #ff6b6b; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px; }
+    .footer-note { margin-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
 </style>
