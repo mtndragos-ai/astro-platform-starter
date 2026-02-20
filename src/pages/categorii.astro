@@ -128,7 +128,7 @@ const categorii = [
 
                 if (manageriCuAcces.includes(currentUser) && adminNavItem) {
                     adminNavItem.style.display = 'flex';
-                    }
+                }
 
             }
 
@@ -161,7 +161,8 @@ const categorii = [
 
 <style>
     /* STILURI CSS */
-    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; }
+    /* Adăugat overflow-x: hidden pentru a bloca orice depășire laterală */
+    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; overflow-x: hidden; }
     
     /* HEADER */
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; width: 100%; }
@@ -173,7 +174,7 @@ const categorii = [
     .training-text { font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
     
     .center-nav { display: flex; gap: 30px; height: 100%; align-items: center; }
-    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
     .nav-link:hover { color: #003087; }
     .nav-link.active { color: #003087; border-bottom-color: #003087; }
     .admin-link { font-weight: 800 !important; }
@@ -191,7 +192,7 @@ const categorii = [
     .logout-dropdown.show { display: block; }
     .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
     .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
-    .logout-item:hover { background-color: #fee2e2; }
+    .logout-item:hover { background: #fee2e2; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* CONTENT */
@@ -209,9 +210,22 @@ const categorii = [
     .arrow { margin-top: auto; padding-top: 1.5rem; color: #003087; font-weight: bold; opacity: 0; transform: translateX(-10px); transition: all 0.2s; }
     .card:hover .arrow { opacity: 1; transform: translateX(0); }
 
-    /* RESPONSIVE */
+    /* RESPONSIVE (Aici am reparat layout-ul pt telefon) */
     @media (max-width: 768px) {
-        .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 1rem; }
+        .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 1rem; width: 100%; }
+        
+        /* Setăm meniul să facă scroll orizontal pe telefon în loc să spargă pagina */
+        .center-nav { 
+            width: 100%; 
+            justify-content: flex-start; 
+            overflow-x: auto; 
+            padding-bottom: 5px; 
+            gap: 20px; 
+            /* Ascunde scrollbar-ul nativ pentru un aspect mai curat */
+            scrollbar-width: none; 
+        }
+        .center-nav::-webkit-scrollbar { display: none; }
+        
         .grid-container { grid-template-columns: 1fr; }
     }
 </style>
