@@ -58,7 +58,7 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Semănătoare", link: "https://drive.google.com/uc?export=download&id=1uzyt1Ud-wjyh3OZEO1IjtQbHAerCDo5i" },
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1uzyt1Ud-wjyh3OZEO1IjtQbHAerCDo5i" },
                                     { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1JaJ-drSqhO2aQsc7NIbMMtjeXHoKq-ga" }
                                 ]
                             }, 
@@ -66,8 +66,8 @@ export const kvernelandData = {
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Operator Manual", link: "https://drive.google.com/file/d/14p7TsVe_Rz2NeHpZ582P9N2fBS35lCjU/view?usp=drive_link" },
-                                    { nume: "Terminal Manual", link: "https://drive.google.com/file/d/1R0qcEgl8A_bMULwSoH_05JTSxdwUBVg6/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=14p7TsVe_Rz2NeHpZ582P9N2fBS35lCjU" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1R0qcEgl8A_bMULwSoH_05JTSxdwUBVg6" }
                                 ]
                             } 
                         ]
@@ -80,16 +80,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Semănătoare", link: "#" },
-                                    { nume: "Manual Terminal", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1gz-nk-6Nas8EdytOvmIctTspXAwPsR9-" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Operator Manual", link: "#" },
-                                    { nume: "Terminal Manual", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1fvit-StYxCcq1MDhFtgEUTqbY9UB4aco" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -102,16 +102,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Semănătoare", link: "#" },
-                                    { nume: "Manual Terminal", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1x7XfCTYpI1Tg5KCmwOg7t8ySGNQSr8ui" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Operator Manual", link: "#" },
-                                    { nume: "Terminal Manual", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1tk5yUZlqlqxSqEmEmnVynicc4_M1RM2M" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -124,16 +124,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Semănătoare", link: "#" },
-                                    { nume: "Manual Terminal", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1JWK_S7vyytMPTO55uqXWPNllxPbe9t7w" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Operator Manual", link: "#" },
-                                    { nume: "Terminal Manual", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1bCj_KWxi4J84jqKcGjFG5AurpTqfCI4p" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -146,16 +146,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Semănătoare", link: "#" },
-                                    { nume: "Manual Terminal", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1OgsL30INQ5FoVILXkg_Bm027gPZHMLcA" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Operator Manual", link: "#" },
-                                    { nume: "Terminal Manual", link: "#" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1ky1Blv_uuOATYru8F5wBE0Kp-E1XEsG1" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]

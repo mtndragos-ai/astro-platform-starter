@@ -12,15 +12,19 @@ import Layout from '../../layouts/Layout.astro';
                         <h1>📊 Control Management</h1>
                         <div class="live-pulse">
                             <span class="pulse-dot"></span>
-                            LIVE
+                            <span id="status-text">LIVE</span>
                         </div>
                     </div>
                     <p>Monitorizare activitate tehnicieni în timp real</p>
                 </div>
                 <div class="header-actions">
+                    <button id="refresh-btn" class="refresh-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                        Actualizează
+                    </button>
                     <a href="/categorii" class="back-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                        Înapoi la Site
+                        Înapoi
                     </a>
                 </div>
             </div>
@@ -34,9 +38,9 @@ import Layout from '../../layouts/Layout.astro';
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-label">UTILIZATORI ACTIVI AZI</span>
+                        <span class="stat-label">UTILIZATORI ACTIVI</span>
                         <span class="stat-value" id="total-users">0</span>
-                        <div class="stat-indicator pos">Tehnicieni pe teren</div>
+                        <div class="stat-indicator pos">În data selectată</div>
                     </div>
                 </div>
 
@@ -45,9 +49,9 @@ import Layout from '../../layouts/Layout.astro';
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-label">TOTAL DESCĂRCĂRI AZI</span>
-                        <span class="stat-value" id="total-downloads">0</span>
-                        <div class="stat-indicator">Documente PDF accesate</div>
+                        <span class="stat-label">TOTAL ACȚIUNI</span>
+                        <span class="stat-value" id="total-actions">0</span>
+                        <div class="stat-indicator">În data selectată</div>
                     </div>
                 </div>
 
@@ -56,18 +60,35 @@ import Layout from '../../layouts/Layout.astro';
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-label">TIMP MEDIU UTILIZARE</span>
-                        <span class="stat-value">18 min</span>
-                        <div class="stat-indicator neg">Per sesiune tehnician</div>
+                        <span class="stat-label">ULTIMA SINCRONIZARE</span>
+                        <span class="stat-value" id="last-update" style="font-size: 2rem; margin-top: 10px;">--:--</span>
+                        <div class="stat-indicator">Date preluate din Google Sheets</div>
                     </div>
                 </div>
             </div>
+
+            <!-- SECȚIUNE PREMIUM: PREZENȚĂ TEHNICIENI -->
+            <section class="active-users-section">
+                <div class="active-users-header">
+                    <div class="icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="header-text-group">
+                        <h3 class="section-title">Prezență Tehnicieni</h3>
+                        <p class="section-desc">Colegii care au accesat platforma în data selectată</p>
+                    </div>
+                </div>
+                <div id="active-users-list" class="users-chips-container">
+                    <span class="loading-text">Se încarcă lista prezenței...</span>
+                </div>
+            </section>
 
             <!-- FEED ACTIVITATE - COLOANE ALINIATE -->
             <section class="activity-section">
                 <div class="section-header">
                     <h2>Flux Activitate Detaliată</h2>
-                    <span class="date-badge" id="current-date">--/--/----</span>
+                    <!-- Input interactiv pentru selectarea datei -->
+                    <input type="date" id="date-picker" class="date-badge" />
                 </div>
 
                 <div class="table-container-custom">
@@ -76,11 +97,13 @@ import Layout from '../../layouts/Layout.astro';
                         <span>TEHNICIAN</span>
                         <span>ACȚIUNE</span>
                         <span>RESURSĂ / DETALII</span>
-                        <span class="text-right">ORA ACCESĂRII</span>
+                        <span class="text-right">DATA / ORA</span>
                     </div>
                     
                     <div id="live-feed" class="list-wrapper">
-                        <!-- Datele sunt injectate aici -->
+                        <div style="padding: 3rem; text-align: center; color: #64748b; font-weight: 600;">
+                            Se încarcă datele din sistem...
+                        </div>
                     </div>
                 </div>
             </section>
@@ -89,76 +112,218 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script is:inline>
+    // =========================================================================
+    // ⚠️ LIPEȘTE AICI LINK-UL OBȚINUT DE LA GOOGLE APPS SCRIPT
+    // =========================================================================
+    const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzQKnNXhg-ujruAchI0CoAEJwnLw2e88pJwau4cfpw36ngCWWYHX2BbkRKLkQIfajVV/exec"; 
+
+    // Transformă data din "YYYY-MM-DD" în "DD.MM.YYYY"
+    function formatDateForSearch(dateStr) {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}.${parts[1]}.${parts[0]}`; 
+        }
+        return dateStr;
+    }
+
     window.addEventListener('load', () => {
-        // Setează data curentă
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ro-RO');
+        const datePicker = document.getElementById('date-picker');
 
-        // Date simulate pentru aspectul vizual
-        const mockData = [
-            { user: "dragos.munteanu", action: "LOGIN", res: "Portal Training", time: "12:40", type: "portal" },
-            { user: "cristian.boboi", action: "DOWNLOAD", res: "Optima TF Profi - Manual Service", time: "12:15", type: "pdf" },
-            { user: "gabriel.chisiu", action: "VIDEO", res: "Tutorial Calibrare Optima", time: "11:58", type: "video" },
-            { user: "alexandru.racila", action: "VIZUALIZARE", res: "Semanatori: Manual Service", time: "11:30", type: "folder" },
-            { user: "florin.marin", action: "DOWNLOAD", res: "iXtrack T3 - Scheme Hidraulice", time: "10:45", type: "pdf" },
-            { user: "vladimir.panaite", action: "LOGIN", res: "Portal Training", time: "09:12", type: "portal" }
-        ];
-
-        document.getElementById('total-users').innerText = new Set(mockData.map(d => d.user)).size;
-        document.getElementById('total-downloads').innerText = mockData.filter(d => d.action === 'DOWNLOAD').length;
-
-        const feed = document.getElementById('live-feed');
+        // Setează automat calendarul pe ziua de azi la deschiderea paginii
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        datePicker.value = `${yyyy}-${mm}-${dd}`;
         
-        mockData.forEach(row => {
-            const icon = row.type === 'pdf' ? '📄' : row.type === 'video' ? '🎬' : row.type === 'folder' ? '📂' : '🖥️';
+        // 🌟 NOU: Deschide calendarul la click oriunde pe câmp 🌟
+        datePicker.addEventListener('click', function(e) {
+            // Previne dubla-activare în unele browsere
+            e.preventDefault();
+            // Folosim API-ul nativ pentru a deschide calendarul (funcționează pe Chrome/Edge/Safari modern)
+            if (typeof this.showPicker === 'function') {
+                this.showPicker();
+            }
+        });
+        
+        fetchData();
+        
+        document.getElementById('refresh-btn').addEventListener('click', () => fetchData());
+        setInterval(() => fetchData(), 30000);
+
+        // Actualizează când managerul schimbă data
+        datePicker.addEventListener('change', () => {
+            fetchData();
+        });
+    });
+
+    async function fetchData() {
+        const feed = document.getElementById('live-feed');
+        const statusText = document.getElementById('status-text');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const datePicker = document.getElementById('date-picker');
+        const activeUsersList = document.getElementById('active-users-list');
+
+        const selectedISODate = datePicker.value; 
+        const searchDateStr = formatDateForSearch(selectedISODate); 
+
+        if (!SHEETS_API_URL.startsWith('http')) {
+            feed.innerHTML = '<div style="padding: 3rem; text-align: center; color: #ef4444; font-weight: 600;">Eroare: Adaugă link-ul Google Apps Script în fișier.</div>';
+            return;
+        }
+
+        try {
+            statusText.innerText = "SE ÎNCARCĂ...";
+            refreshBtn.style.opacity = "0.5";
+
+            const response = await fetch(SHEETS_API_URL);
+            const data = await response.json();
+
+            if (data.error) throw new Error(data.error);
+
+            // Filtrăm rândurile doar pentru data dorită
+            const todaysData = data.reverse().filter(row => {
+                const rowDate = row.DATA || row.Data || row['Marcaj de timp'] || row.Timestamp || ""; 
+                return String(rowDate).includes(searchDateStr);
+            });
+
+            renderData(todaysData);
+            
+            const currentISO = new Date().toISOString().split('T')[0];
+            if (selectedISODate === currentISO) {
+                statusText.innerText = "LIVE";
+            } else {
+                statusText.innerText = "ISTORIC";
+            }
+            
+            document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
+        } catch (err) {
+            console.error("Eroare preluare date: ", err);
+            statusText.innerText = "OFFLINE";
+            feed.innerHTML = `<div style="padding: 3rem; text-align: center; color: #ef4444; font-weight: 600;">Eroare API: ${err.message}</div>`;
+            activeUsersList.innerHTML = '<span class="no-data" style="color: #ef4444;">Eroare la încărcare.</span>';
+        } finally {
+            refreshBtn.style.opacity = "1";
+        }
+    }
+
+    function renderData(data) {
+        const feed = document.getElementById('live-feed');
+        const activeUsersList = document.getElementById('active-users-list');
+        const datePicker = document.getElementById('date-picker');
+        const searchDateStr = formatDateForSearch(datePicker.value);
+
+        feed.innerHTML = '';
+        activeUsersList.innerHTML = '';
+
+        if (data.length === 0) {
+            feed.innerHTML = `<div style="padding: 3rem; text-align: center; color: #64748b; font-weight: 600;">Nicio activitate înregistrată pe ${searchDateStr}.</div>`;
+            activeUsersList.innerHTML = `<span class="no-data">Niciun tehnician înregistrat pe ${searchDateStr}.</span>`;
+            document.getElementById('total-users').innerText = "0";
+            document.getElementById('total-actions').innerText = "0";
+            return;
+        }
+
+        // Extragere useri unici (Filtrare "Necunoscut" și "Anonim")
+        const uniqueUserNamesSet = new Set();
+        data.forEach(d => {
+            const u = d.USER || d.User;
+            if (u && u.trim() !== "" && u.toLowerCase() !== "necunoscut" && u.toLowerCase() !== "anonim") {
+                uniqueUserNamesSet.add(u);
+            }
+        });
+
+        // Transformare în listă și sortare alfabetică
+        const sortedUsers = Array.from(uniqueUserNamesSet).sort((a, b) => a.localeCompare(b));
+
+        // Actualizăm contoarele (acum numără doar tehnicienii reali)
+        document.getElementById('total-users').innerText = sortedUsers.length;
+        document.getElementById('total-actions').innerText = data.length;
+
+        // Randare User Chips (Prezență Tehnicieni)
+        if (sortedUsers.length > 0) {
+            sortedUsers.forEach(user => {
+                const initial = user.charAt(0).toUpperCase();
+                
+                activeUsersList.innerHTML += `
+                    <div class="user-chip active-user">
+                        <div class="chip-avatar">${initial}</div>
+                        <span class="chip-name">${user}</span>
+                    </div>
+                `;
+            });
+        } else {
+            activeUsersList.innerHTML = `<span class="no-data">Doar activitate neînregistrată (Vizitatori/Necunoscut).</span>`;
+        }
+
+        // Randare Tabel Activitate
+        data.forEach(row => {
+            const actiuneRaw = row.ACTIUNE || row.Actiune || "Info";
+            const actiune = String(actiuneRaw).toUpperCase();
+            const actionClass = actiune.toLowerCase().replace(/[^a-z0-9]/g, '-'); 
+            
+            const user = row.USER || row.User || "Anonim";
+            const initial = user.charAt(0).toUpperCase();
+            
+            const details = row.DETALII || row.Detalii || "-";
+            const time = row.DATA || row.Data || row['Marcaj de timp'] || "";
+
+            let icon = '🖥️';
+            if (actiune.includes('DOWNLOAD')) icon = '📄';
+            if (actiune.includes('VIDEO')) icon = '🎬';
+            if (actiune.includes('VIZUALIZARE')) icon = '📂';
+            if (actiune.includes('LOGIN')) icon = '🟢';
             
             feed.innerHTML += `
                 <div class="table-data-row">
                     <div class="user-info">
-                        <div class="mini-avatar">${row.user.charAt(0).toUpperCase()}</div>
+                        <div class="mini-avatar">${initial}</div>
                         <div class="user-text">
-                            <strong>${row.user}</strong>
+                            <strong>${user}</strong>
                         </div>
                     </div>
                     <div class="action-cell">
-                        <span class="badge-status ${row.action.toLowerCase()}">
+                        <span class="badge-status ${actionClass}">
                             <span class="dot"></span>
-                            ${row.action}
+                            ${actiune}
                         </span>
                     </div>
                     <div class="res-info">
                         <span class="res-icon">${icon}</span>
-                        ${row.res}
+                        ${details}
                     </div>
-                    <div class="time-info">${row.time}</div>
+                    <div class="time-info">${time}</div>
                 </div>
             `;
         });
-    });
+    }
 </script>
 
 <style>
+    /* CSS SCOPED (Aplicat doar elementelor statice din pagină) */
     .admin-container { background: #f4f7fa; min-height: 100vh; font-family: 'Roboto', sans-serif; color: #1f2937; }
     
-    /* HEADER STYLES */
     .admin-header { background: #003087; color: white; padding: 2.5rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
     .header-inner { max-width: 1250px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
     
     .title-with-status { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
-    .title-with-status h1 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.5px; }
+    .title-with-status h1 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.5px; margin: 0; }
     
     .live-pulse { background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(239, 68, 68, 0.3); }
     .pulse-dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 0 rgba(239, 68, 68, 0.4); animation: pulse 1.5s infinite; }
-    
     @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-    .brand-info p { opacity: 0.8; font-size: 0.95rem; font-weight: 400; }
+    .brand-info p { opacity: 0.8; font-size: 0.95rem; font-weight: 400; margin: 0; }
     
-    .back-btn { background: rgba(255,255,255,0.1); padding: 0.7rem 1.4rem; border-radius: 10px; color: white; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; }
+    .header-actions { display: flex; align-items: center; gap: 15px; }
+    .refresh-btn { background: #F4D03F; border: none; padding: 0.7rem 1.4rem; border-radius: 10px; color: #111827; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease; cursor: pointer; }
+    .refresh-btn:hover { background: #fde047; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(244, 208, 63, 0.3); }
+
+    .back-btn { background: rgba(255,255,255,0.1); padding: 0.7rem 1.4rem; border-radius: 10px; color: white; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; }
     .back-btn:hover { background: white; color: #003087; transform: translateY(-2px); }
 
-    .stats-content { max-width: 1250px; margin: -3rem auto 4rem auto; padding: 0 2rem; }
+    .stats-content { max-width: 1250px; margin: 2.5rem auto 4rem auto; padding: 0 2rem; }
     
-    /* STAT CARDS */
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
     .stat-card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 20px; transition: transform 0.2s; border: 1px solid #edf2f7; }
     .stat-card:hover { transform: translateY(-5px); }
@@ -172,52 +337,114 @@ import Layout from '../../layouts/Layout.astro';
     .stat-value { font-size: 2.5rem; font-weight: 900; color: #1e293b; line-height: 1.2; display: block; }
     .stat-indicator { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
 
-    /* TABLE LAYOUT - GRID CORECTAT */
-    .activity-section { margin-top: 3.5rem; }
+    /* CSS Secțiune Nouă Prezență */
+    .active-users-section { margin-top: 2.5rem; background: linear-gradient(to right, #ffffff, #f8fafc); padding: 2rem 2.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #edf2f7; border-left: 6px solid #10b981; }
+    .active-users-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; }
+    .icon-wrapper { background: #d1fae5; color: #059669; padding: 12px; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.1); }
+    .header-text-group { display: flex; flex-direction: column; }
+    .section-title { font-size: 1.25rem; font-weight: 900; color: #0f172a; margin: 0; }
+    .section-desc { font-size: 0.85rem; color: #64748b; margin: 4px 0 0 0; font-weight: 600; }
+    .users-chips-container { display: flex; flex-wrap: wrap; gap: 15px; }
+
+    .activity-section { margin-top: 3rem; }
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .section-header h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; }
-    .date-badge { background: #fff; color: #003087; padding: 8px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 800; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+    .section-header h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; margin: 0; }
+    
+    .date-badge { background: #fff; color: #003087; padding: 8px 14px; border-radius: 12px; font-size: 0.9rem; font-weight: 800; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.03); font-family: inherit; cursor: pointer; outline: none; transition: all 0.2s; }
+    .date-badge:focus, .date-badge:hover { border-color: #003087; box-shadow: 0 0 0 2px rgba(0, 48, 135, 0.1); }
 
     .table-container-custom { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.05); border: 1px solid #edf2f7; }
-    
-    /* DEFINIREA COLOANELOR - CRITIC PENTRU ALINIERE */
-    .table-header-row, .table-data-row { 
+    .table-header-row { display: grid; grid-template-columns: 1.5fr 1.2fr 2.5fr 1fr; align-items: center; padding: 1.2rem 2.5rem; background: #f8fafc; border-bottom: 2px solid #f1f5f9; color: #64748b; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.1em; }
+    .text-right { text-align: right; }
+</style>
+
+<!-- ===================================================================== -->
+<!-- CSS GLOBAL PENTRU ELEMENTELE INJECTATE DIN JAVASCRIPT (Rezolvă Eroarea) -->
+<!-- ===================================================================== -->
+<style is:global>
+    /* STIL BULE (CHIPS) TEHNICIENI */
+    .user-chip { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 12px; 
+        background: white; 
+        padding: 6px 20px 6px 6px; 
+        border-radius: 50px; 
+        border: 1px solid #e2e8f0; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: default;
+    }
+    .user-chip.active-user:hover { 
+        transform: translateY(-3px) scale(1.02); 
+        box-shadow: 0 8px 20px rgba(0, 48, 135, 0.12); 
+        border-color: #003087; 
+        background: #f8fafc;
+    }
+    .user-chip .chip-avatar { 
+        width: 36px; 
+        height: 36px; 
+        background: linear-gradient(135deg, #003087, #005ce6); 
+        color: white; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 1.1rem; 
+        font-weight: 900; 
+        box-shadow: 0 2px 8px rgba(0, 48, 135, 0.4); 
+    }
+    .user-chip .chip-name {
+        font-size: 0.95rem; 
+        font-weight: 800; 
+        color: #1e293b;
+    }
+    /* Estompăm "Necunoscut" ca să nu atragă atenția de la tehnicienii reali */
+    .user-chip.unknown {
+        opacity: 0.6;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+    }
+    .user-chip.unknown .chip-avatar {
+        background: #94a3b8;
+        box-shadow: none;
+    }
+    .no-data { color: #94a3b8; font-size: 0.95rem; font-style: italic; font-weight: 600; padding: 1rem 0; }
+
+    /* STILURI TABEL JAVASCRIPT */
+    .table-data-row { 
         display: grid; 
-        grid-template-columns: 1.5fr 1fr 2.5fr 0.8fr; 
+        grid-template-columns: 1.5fr 1.2fr 2.5fr 1fr; 
         align-items: center;
         padding: 1.2rem 2.5rem;
+        border-bottom: 1px solid #f1f5f9; transition: all 0.2s; position: relative; 
     }
-
-    .table-header-row { background: #f8fafc; border-bottom: 2px solid #f1f5f9; color: #64748b; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.1em; }
-    
-    .table-data-row { border-bottom: 1px solid #f1f5f9; transition: all 0.2s; position: relative; }
-    .table-data-row:hover { background: #f1f5f9; }
+    .table-data-row:hover { background: #f8fafc; }
     .table-data-row:last-child { border-bottom: none; }
 
     .user-info { display: flex; align-items: center; gap: 15px; }
     .mini-avatar { width: 36px; height: 36px; background: #003087; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,48,135,0.2); }
     .user-text strong { font-size: 0.95rem; color: #0f172a; }
     
-    /* BADGE STYLES */
     .badge-status { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
     .badge-status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
     
     .login { background: #dcfce7; color: #166534; }
-    .download { background: #dbeafe; color: #1e40af; }
+    .download, .download-video { background: #dbeafe; color: #1e40af; }
     .video { background: #fef3c7; color: #92400e; }
     .vizualizare { background: #f1f5f9; color: #475569; }
+    .timp, .timp-petrecut { background: #f3e8ff; color: #7e22ce; }
 
     .res-info { font-size: 0.95rem; color: #334155; font-weight: 500; display: flex; align-items: center; gap: 10px; }
     .res-icon { font-size: 1.2rem; }
     
     .time-info { text-align: right; color: #64748b; font-weight: 800; font-size: 0.9rem; }
-    .text-right { text-align: right; }
 
+    /* RESPONSIVITATE PENTRU TELEFOANE */
     @media (max-width: 1024px) {
         .stats-grid { grid-template-columns: 1fr; }
         .table-header-row { display: none; }
         .table-data-row { grid-template-columns: 1fr; gap: 10px; padding: 1.5rem; }
         .time-info { text-align: left; background: #f8fafc; padding: 5px 10px; border-radius: 6px; display: inline-block; width: fit-content; }
-        .text-right { text-align: left; }
     }
 </style>

@@ -123,10 +123,13 @@ const categorii = [
                 nameElement.textContent = fullName;
                 avatarElement.textContent = initials;
 
-                // ⭐ LOGICA PENTRU AFISARE BUTON ADMIN ⭐
-                if (currentUser === 'admin' && adminNavItem) {
+                // ⭐ LOGICA PENTRU AFIȘARE BUTON ADMIN (LISTA DE ACCES) ⭐
+                const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu' ]; // Adaugă oricâți manageri vrei aici
+
+                if (manageriCuAcces.includes(currentUser) && adminNavItem) {
                     adminNavItem.style.display = 'flex';
-                }
+                    }
+
             }
 
             // 2. Logică Logout
