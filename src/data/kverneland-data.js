@@ -312,7 +312,7 @@ export const kvernelandData = {
                             { 
                                 an: "Tabel Erori", 
                                 // Am adăugat parametrii pt widget si headers false
-                                link: "/public/coduri.pdf",
+                                link: "/coduri.pdf",
                                 isIframe: true
                             }
                         ] 
