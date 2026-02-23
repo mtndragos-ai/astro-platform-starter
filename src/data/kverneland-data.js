@@ -219,16 +219,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1py4gyKIi7QzpzK5UUC6Z7A0Jz2WbaKHx/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1OgsL30INQ5FoVILXkg_Bm027gPZHMLcA" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1pl-mPJGm9u2l4vZ_Mchp_gg7nlyeSL3I/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1ky1Blv_uuOATYru8F5wBE0Kp-E1XEsG1" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -241,16 +241,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1JBAdGAyulNUKoateDvCV58p29WWQ3qso/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1OgsL30INQ5FoVILXkg_Bm027gPZHMLcA" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1oEqISXeMJAu25L7_iIKyEvKWldRx4kem/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1ky1Blv_uuOATYru8F5wBE0Kp-E1XEsG1" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -263,16 +263,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1n7psk4jKCKcGItUI_QkSXgxvif5nedhp/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1OgsL30INQ5FoVILXkg_Bm027gPZHMLcA" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1IWQrHtmyD3g1m088cxHSaSjYO3TP2hau/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1ky1Blv_uuOATYru8F5wBE0Kp-E1XEsG1" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -285,16 +285,16 @@ export const kvernelandData = {
                                 an: "Ghid RO", 
                                 isFolder: true, 
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1jiItMG8O-bmrqEjRKI7EUQNMSAFqMCLY/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1OgsL30INQ5FoVILXkg_Bm027gPZHMLcA" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=1ron_2LorqNW8EWTK2a942YveIBqcgG8g" }
                                 ]
                             }, 
                             { 
                                 an: "Ghid EN", 
                                 isFolder: true,
                                 fisiere: [
-                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1wEU1bGre8Q4PvSoebvh1ms9rmPE7U8kf/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Operator", link: "https://drive.google.com/uc?export=download&id=1ky1Blv_uuOATYru8F5wBE0Kp-E1XEsG1" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/uc?export=download&id=11bfTBy8qHSeXJE_BhalZYT8ozhoNsBmS" }
                                 ]
                             } 
                         ]
@@ -302,7 +302,23 @@ export const kvernelandData = {
                 ]
             },
             "video": { title: "Tutorial Video", models: [] },
-            "erori": { title: "Coduri de Eroare", models: [] }
+            "erori": { 
+                title: "Coduri de Eroare", 
+                models: [
+                    { 
+                        nume: "Bază de date Erori (Toate Modelele)", 
+                        descriere: "Tabel integrat direct în pagină", 
+                        versiuni: [
+                            { 
+                                an: "Tabel Erori", 
+                                // Am adăugat parametrii pt widget si headers false
+                                link: "/public/coduri.pdf",
+                                isIframe: true
+                            }
+                        ] 
+                    }
+                ] 
+            }
         }
     },
     "sprayer": {
