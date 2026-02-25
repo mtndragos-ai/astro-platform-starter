@@ -83,7 +83,7 @@ import Layout from '../../layouts/Layout.astro';
                 </div>
             </section>
 
-            <!-- FEED ACTIVITATE - COLOANE ALINIATE -->
+            <!-- FEED ACTIVITATE -->
             <section class="activity-section">
                 <div class="section-header">
                     <h2>Flux Activitate Detaliată</h2>
@@ -136,11 +136,9 @@ import Layout from '../../layouts/Layout.astro';
         const yyyy = today.getFullYear();
         datePicker.value = `${yyyy}-${mm}-${dd}`;
         
-        // 🌟 NOU: Deschide calendarul la click oriunde pe câmp 🌟
+        // Deschide calendarul la click oriunde pe câmp
         datePicker.addEventListener('click', function(e) {
-            // Previne dubla-activare în unele browsere
             e.preventDefault();
-            // Folosim API-ul nativ pentru a deschide calendarul (funcționează pe Chrome/Edge/Safari modern)
             if (typeof this.showPicker === 'function') {
                 this.showPicker();
             }
@@ -236,7 +234,7 @@ import Layout from '../../layouts/Layout.astro';
         // Transformare în listă și sortare alfabetică
         const sortedUsers = Array.from(uniqueUserNamesSet).sort((a, b) => a.localeCompare(b));
 
-        // Actualizăm contoarele (acum numără doar tehnicienii reali)
+        // Actualizăm contoarele
         document.getElementById('total-users').innerText = sortedUsers.length;
         document.getElementById('total-actions').innerText = data.length;
 
@@ -244,7 +242,6 @@ import Layout from '../../layouts/Layout.astro';
         if (sortedUsers.length > 0) {
             sortedUsers.forEach(user => {
                 const initial = user.charAt(0).toUpperCase();
-                
                 activeUsersList.innerHTML += `
                     <div class="user-chip active-user">
                         <div class="chip-avatar">${initial}</div>
@@ -356,10 +353,42 @@ import Layout from '../../layouts/Layout.astro';
     .table-container-custom { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.05); border: 1px solid #edf2f7; }
     .table-header-row { display: grid; grid-template-columns: 1.5fr 1.2fr 2.5fr 1fr; align-items: center; padding: 1.2rem 2.5rem; background: #f8fafc; border-bottom: 2px solid #f1f5f9; color: #64748b; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.1em; }
     .text-right { text-align: right; }
+
+    /* =======================================================
+       MEDIA QUERIES - OPTIMIZARE COMPLETĂ PENTRU MOBIL 
+       ======================================================= */
+    @media (max-width: 768px) {
+        /* Header și Titlu pe Mobil */
+        .header-inner { flex-direction: column; gap: 20px; text-align: center; padding: 1.5rem 1rem; }
+        .title-with-status { justify-content: center; flex-wrap: wrap; }
+        .title-with-status h1 { font-size: 1.5rem; }
+        .brand-info p { font-size: 0.9rem; }
+        .header-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .refresh-btn, .back-btn { padding: 0.75rem; font-size: 0.85rem; justify-content: center; }
+
+        /* Container principal pe Mobil */
+        .stats-content { margin-top: 1.5rem; padding: 0 1rem; margin-bottom: 2rem; }
+        
+        /* Secțiunea de Prezență pe Mobil */
+        .active-users-section { padding: 1.5rem; border-left: none; border-top: 6px solid #10b981; text-align: center; }
+        .active-users-header { flex-direction: column; align-items: center; gap: 10px; }
+        .users-chips-container { justify-content: center; }
+
+        /* Titlu Flux Activitate pe Mobil */
+        .section-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .date-badge { width: 100%; text-align: center; padding: 12px; font-size: 1rem; }
+        
+        /* Container Tabel pe Mobil */
+        .table-container-custom { background: transparent; border: none; box-shadow: none; overflow: visible; }
+    }
+
+    @media (max-width: 1024px) {
+        .stats-grid { grid-template-columns: 1fr; } /* Cardurile cu cifre se așează unul sub altul */
+    }
 </style>
 
 <!-- ===================================================================== -->
-<!-- CSS GLOBAL PENTRU ELEMENTELE INJECTATE DIN JAVASCRIPT (Rezolvă Eroarea) -->
+<!-- CSS GLOBAL PENTRU ELEMENTELE INJECTATE DIN JAVASCRIPT -->
 <!-- ===================================================================== -->
 <style is:global>
     /* STIL BULE (CHIPS) TEHNICIENI */
@@ -394,24 +423,13 @@ import Layout from '../../layouts/Layout.astro';
         font-weight: 900; 
         box-shadow: 0 2px 8px rgba(0, 48, 135, 0.4); 
     }
-    .user-chip .chip-name {
-        font-size: 0.95rem; 
-        font-weight: 800; 
-        color: #1e293b;
-    }
-    /* Estompăm "Necunoscut" ca să nu atragă atenția de la tehnicienii reali */
-    .user-chip.unknown {
-        opacity: 0.6;
-        background: #f8fafc;
-        border: 1px dashed #cbd5e1;
-    }
-    .user-chip.unknown .chip-avatar {
-        background: #94a3b8;
-        box-shadow: none;
-    }
+    .user-chip .chip-name { font-size: 0.95rem; font-weight: 800; color: #1e293b; }
+    
+    .user-chip.unknown { opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; }
+    .user-chip.unknown .chip-avatar { background: #94a3b8; box-shadow: none; }
     .no-data { color: #94a3b8; font-size: 0.95rem; font-style: italic; font-weight: 600; padding: 1rem 0; }
 
-    /* STILURI TABEL JAVASCRIPT */
+    /* STILURI TABEL JAVASCRIPT - DESKTOP */
     .table-data-row { 
         display: grid; 
         grid-template-columns: 1.5fr 1.2fr 2.5fr 1fr; 
@@ -437,14 +455,50 @@ import Layout from '../../layouts/Layout.astro';
 
     .res-info { font-size: 0.95rem; color: #334155; font-weight: 500; display: flex; align-items: center; gap: 10px; }
     .res-icon { font-size: 1.2rem; }
-    
     .time-info { text-align: right; color: #64748b; font-weight: 800; font-size: 0.9rem; }
 
-    /* RESPONSIVITATE PENTRU TELEFOANE */
-    @media (max-width: 1024px) {
-        .stats-grid { grid-template-columns: 1fr; }
-        .table-header-row { display: none; }
-        .table-data-row { grid-template-columns: 1fr; gap: 10px; padding: 1.5rem; }
-        .time-info { text-align: left; background: #f8fafc; padding: 5px 10px; border-radius: 6px; display: inline-block; width: fit-content; }
+    /* =======================================================
+       MEDIA QUERIES JAVASCRIPT (Transformare Tabel în Carduri)
+       ======================================================= */
+    @media (max-width: 768px) {
+        .table-header-row { display: none; } /* Ascundem capul de tabel */
+        
+        .table-data-row { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 12px; 
+            padding: 1.5rem; 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 16px; 
+            margin-bottom: 1rem; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .table-data-row:last-child { border-bottom: 1px solid #e2e8f0; }
+        
+        .user-info { width: 100%; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; }
+        .action-cell { width: 100%; }
+        
+        /* Caseta gri pentru resursa accesată */
+        .res-info { 
+            width: 100%; 
+            background: #f8fafc; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            font-size: 0.9rem; 
+            border: 1px solid #f1f5f9; 
+            box-sizing: border-box;
+        }
+        
+        .time-info { 
+            width: 100%; 
+            text-align: left; 
+            background: transparent; 
+            padding: 0; 
+            color: #94a3b8; 
+            font-size: 0.85rem; 
+            margin-top: 5px; 
+        }
     }
 </style>

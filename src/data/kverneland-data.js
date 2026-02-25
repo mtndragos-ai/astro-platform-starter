@@ -330,7 +330,7 @@ export const kvernelandData = {
                     { nume: "Ikarus",
                          descriere: "Manual Service", 
                          versiuni: [
-                            { an: "Ikarus S", link: "#" }
+                            { an: "Ikarus S", link: "https://drive.google.com/file/d/1HNMzoQjOtaqA7NfSUbkxeHM5ffOcWg0Q/view?usp=drive_link" }
 
 
                          ] 
@@ -338,11 +338,15 @@ export const kvernelandData = {
                 { nume: "iXtrack", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "iXtrack T3, T4, T6", link: "#" },
-                            { an: "Boomguide UC5", link: "#" },
-                            { an: "Boomguide UC7", link: "#" },
-                            { an: "iXflow Pulse", link: "#" },
-                            { an: "iXspray Electronics (Terminal)", link: "#" }
+                            { an: "iXtrack T3, T4, T6", link: "https://drive.google.com/file/d/1WRtYjLlL10QRXbtBE2PPU0BgbQvtz-at/view?usp=drive_link" },
+                            { an: "iXspray Electronics (Terminal)", link: "https://drive.google.com/file/d/15Lx39hrtviCNZAUrk14yU3KR9d3glwls/view?usp=drive_link" },
+                            { an: "iXflow Pulse", link: "https://drive.google.com/file/d/1DR54jlPkT0b0emsqLanMFTH1wNSaIcE_/view?usp=drive_link" },
+                            { an: "Boomguide Comfort UC5 (2 senzori)", link: "https://drive.google.com/file/d/1LejbQ7w80FKTixWIAiYmW9lUXnOw3dby/view?usp=drive_link" },
+                            { an: "Boomguide Pro UC5 (3 senzori, 2 roll sensor)", link: "https://drive.google.com/file/d/1Ids2OD9ZMLrqAvZd4oBaBPesf18lCj4Y/view?usp=drive_link" },
+                            { an: "Boomguide Pro Active UC5 (3 senzori, 3 roll sensor)", link: "https://drive.google.com/file/d/1lg8Yv-yGGSAbAlEj0l1xZHmaKXCTirnb/view?usp=drive_link" },
+                            { an: "Boomguide Comfort UC7 (2 senzori)", link: "https://drive.google.com/file/d/1G6N6_DchrBrHr1JUnWsyU0BI0-AQ557W/view?usp=drive_link" },
+                            { an: "Boomguide Pro UC7 (3 senzori)", link: "https://drive.google.com/file/d/1RZ85nI7M96vt2ALj3jsGBFPrNTJBbB5J/view?usp=drive_link" },
+                            { an: "Boomguide Pro Active UC7 (5 senzori)", link: "https://drive.google.com/file/d/1DfyqYuheA2s70nuwSB9WDuwdGPI6nUFa/view?usp=drive_link" }
                             
                             
                             
