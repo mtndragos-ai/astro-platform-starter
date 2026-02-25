@@ -143,14 +143,10 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
                             </div>`;
                     } else if (v.isIframe) {
                         document.getElementById('dynamic-header').style.display = 'none'; 
-                        
-                        // 🌟 MAGIC TRICK: Ascundem barele browserului pentru PDF 🌟
                         let iframeSrc = v.link;
                         if (iframeSrc.includes('.pdf')) {
-                            // Înlăturăm eventualii parametri vechi și forțăm lipsa de toolbar
                             iframeSrc = iframeSrc.split('#')[0] + '#toolbar=0&navpanes=0&view=FitW';
                         }
-
                         listContainer.innerHTML += `
                             <div style="width: 100%; height: 85vh; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-top: -1rem; background: white;">
                                 <iframe src="${iframeSrc}" style="width: 100%; height: 100%; border: none; display: block; background: #fff;"></iframe>
@@ -176,7 +172,6 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
                 const iframeData = window.resourceData[0].versiuni[0];
                 document.getElementById('dynamic-header').style.display = 'none'; 
                 
-                // 🌟 MAGIC TRICK: Ascundem barele browserului pentru PDF 🌟
                 let iframeSrc = iframeData.link;
                 if (iframeSrc.includes('.pdf')) {
                     iframeSrc = iframeSrc.split('#')[0] + '#toolbar=0&navpanes=0&view=FitW';
@@ -203,8 +198,8 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
     window.navigateToFolder = (m, f) => { const u = new URL(window.location); u.searchParams.set('folder', f); window.history.pushState({}, '', u); handleNavigation(); }
 </script>
 
+<!-- STILURI NORMALE (PENTRU STRUCTURA FIXĂ A PAGINII) -->
 <style>
-    /* CSS Standard */
     .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; }
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
     .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
@@ -236,14 +231,22 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
     .section-header { margin-bottom: 2.5rem; }
     .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
 
+    @media (max-width: 768px) { .header-content { flex-direction: column; height: auto; } }
+</style>
+
+<!-- STILURI GLOBALE (PENTRU CEEA CE CREEAZĂ JAVASCRIPTUL DINAMIC - SOLUȚIA PROBLEMEI TALE) -->
+<style is:global>
     .list-wide { display: flex; flex-direction: column; gap: 16px; width: 100%; }
-    .model-item-wide { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; border-left: 4px solid #003087; }
+    .model-item-wide { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
     .model-item-wide.clickable { cursor: pointer; }
-    .model-item-wide:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #003087; background: #f9fafb; }
+    .model-item-wide:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #003087; border-left: 4px solid #003087; padding-left: calc(1.5rem - 3px); background: #f9fafb; transform: translateY(-2px); }
     .model-info h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
     .model-info p { margin: 4px 0 0 0; color: #6b7280; font-size: 0.9rem; }
     .action-btn-wide { background-color: #003087; color: white; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; text-decoration: none;}
     .action-arrow { color: #003087; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
 
-    @media (max-width: 768px) { .header-content { flex-direction: column; height: auto; } .model-item-wide:not(.iframe-wrapper) { flex-direction: column; align-items: flex-start; gap: 15px; } .action-btn-wide { width: 100%; justify-content: center; } }
+    @media (max-width: 768px) { 
+        .model-item-wide:not(.iframe-wrapper) { flex-direction: column; align-items: flex-start; gap: 15px; } 
+        .action-btn-wide { width: 100%; justify-content: center; } 
+    }
 </style>

@@ -51,9 +51,6 @@ const backgroundUrl = "/img/tractor-bg.jpg";
         { user: "alexandru.racila", pass: "suportgps" },
         { user: "florin.marin", pass: "aftersales" },
         { user: "vladimir.panaite", pass: "suport" },
-        { user: "marian.cataonu", pass: "afumati1" },
-        { user: "andrei.pavel", pass: "ceoagc" },
-        { user: "tehnic", pass: "Agro2024" },
         { user: "tehnic", pass: "Agro2024" },
         { user: "admin", pass: "AdminAgro" }
     ];
@@ -79,8 +76,11 @@ const backgroundUrl = "/img/tractor-bg.jpg";
                 // @ts-ignore
                 const enteredPass = passInput.value;
 
-                // Verificăm contul
-                const validAccount = USERS.find(account => account.user === enteredUser && account.pass === enteredPass);
+                // Verificăm contul (Ignorăm literele mari/mici pentru utilizator)
+                const validAccount = USERS.find(account => 
+                    account.user.toLowerCase() === enteredUser.toLowerCase() && 
+                    account.pass === enteredPass
+                );
 
                 if (validAccount) {
                     console.log("Login OK:", validAccount.user);

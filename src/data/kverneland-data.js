@@ -327,7 +327,44 @@ export const kvernelandData = {
             "manual-service": {
                 title: "Manual Service",
                 models: [
-                    { nume: "iXtrack T3", descriere: "Scheme Hidraulice", versiuni: [{ an: "Versiunea T3", link: "#" }] }
+                    { nume: "Ikarus",
+                         descriere: "Manual Service", 
+                         versiuni: [
+                            { an: "Ikarus S", link: "#" }
+
+
+                         ] 
+                },
+                { nume: "iXtrack", 
+                        descriere: "Manual Service",
+                        versiuni: [
+                            { an: "iXtrack T3, T4, T6", link: "#" },
+                            { an: "Boomguide UC5", link: "#" },
+                            { an: "Boomguide UC7", link: "#" },
+                            { an: "iXflow Pulse", link: "#" },
+                            { an: "iXspray Electronics (Terminal)", link: "#" }
+                            
+                            
+                            
+                        ] 
+                
+
+                },
+                { nume: "iXter",
+                     descriere: "Manual Service",
+                      versiuni: [
+                        { an: "iXtra A", link: "#" },
+                        { an: "iXtra B", link: "#" }
+                    ] 
+                },
+                { nume: "iXtra",
+                     descriere: "Manual Service",
+                      versiuni: [
+                        { an: "iXtra", link: "#" },
+                        { an: "iXtra LiFe", link: "#" }
+                    ] 
+                }
+
                 ]
             },
             "manual-operare": { title: "Manual Operare", models: [] },
