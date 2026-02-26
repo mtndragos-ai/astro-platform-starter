@@ -9,47 +9,47 @@ export const kvernelandData = {
                         nume: "Optima HD", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "Model 2016", link: "https://drive.google.com/uc?export=download&id=1GAGZGfy2xqnehOYCnZPB1xqeihsA4c3-" }
+                            { an: "Model 2016", link: "https://drive.google.com/file/d/1GAGZGfy2xqnehOYCnZPB1xqeihsA4c3-/view?usp=drive_link" }
                         ] 
                     },
                     { 
                         nume: "Optima V", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "Model 2017", link: "https://drive.google.com/uc?export=download&id=1NaLW_TPkiZWXpwEtZzv1RYmR6qMSg8qy" },
-                            { an: "Model 2021", link: "https://drive.google.com/uc?export=download&id=1G30NZVOXCO6U8UBvKGG3rNLZDhPtkm5C" }
+                            { an: "Model 2017", link: "https://drive.google.com/file/d/1NaLW_TPkiZWXpwEtZzv1RYmR6qMSg8qy/view?usp=drive_link" },
+                            { an: "Model 2021", link: "https://drive.google.com/file/d/1Id-lF2kT2uF6WwJ9aU71TtQP-goC_Eui/view?usp=drive_link" }
                         ] 
                     },
                     { 
                         nume: "Optima RS", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "Model 2021", link: "https://drive.google.com/uc?export=download&id=1qJhukbPy4rGldPynFYOD5daffmAHZVpD" }
+                            { an: "Model 2021", link: "https://drive.google.com/file/d/1m7OlRSV1KH9h1rtkZbZdqWNA6afFaBFQ/view?usp=drive_link" }
                         ] 
                     },
                     { 
                         nume: "Optima TF Profi", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "Model 2016", link: "https://drive.google.com/uc?export=download&id=1Uo4S7eWPluuJykGWnRZ8CwtH_xiqxVf2" },
-                            { an: "Model 2017", link: "https://drive.google.com/uc?export=download&id=1UqC4kaVl5S_NqHJp-Bcorq4v1tX6ZDmV" },
-                            { an: "Model 2019", link: "https://drive.google.com/uc?export=download&id=1jBcac3F1rB1yDtTe0bbbzLKQ4Nql-S38" },
-                            { an: "Model 2021", link: "https://drive.google.com/uc?export=download&id=16AJ8ZIEzp6aDi7Y9EwnKPmxiDQKIUSYs" },
-                            { an: "Model 2023", link: "https://drive.google.com/uc?export=download&id=195TKbvcnMU5FVw7LH7l3Hi7nz0Q1Csxn" }
+                            { an: "Model 2016", link: "https://drive.google.com/file/d/1ed66waXerHA4RJSWFDgYHpoJc-ndHwo1/view?usp=drive_link" },
+                            { an: "Model 2017", link: "https://drive.google.com/file/d/1sT-YsNlQcdwP6q5e8Jxjlbt_3qy8Tsh-/view?usp=drive_link" },
+                            { an: "Model 2019", link: "https://drive.google.com/file/d/121vpPeFDZBIFznoolD1_NOggPL92cCm3/view?usp=drive_link" },
+                            { an: "Model 2021", link: "https://drive.google.com/file/d/19x6po_uaOaGxHtgVQV5VVSZbGM0eVmRr/view?usp=drive_link" },
+                            { an: "Model 2023", link: "https://drive.google.com/file/d/1qy9AIdZgaeGfDVDW4C4eLNKMcagAqqIU/view?usp=drive_links" }
                         ] 
                     },
                     { 
                         nume: "Optima TF Maxi", 
                         descriere: "Manual Service",
                         versiuni: [
-                             { an: "Model 2019", link: "https://drive.google.com/uc?export=download&id=1812AyEUy-Q4Nau1JYtODln9PwYypcgK9" }
+                             { an: "Model 2019", link: "https://drive.google.com/file/d/1Xd3mtqyTNWHvH66n5qv4YTii7YY82-uR/view?usp=drive_link" }
                         ]
                     },
                     { 
                         nume: "U-Drill/U-Drill Plus", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "U-Drill/U-Drill Plus", link: "https://drive.google.com/uc?export=download&id=1fe333PB4z-UcnmFCg_FzpjQLW-Xpumn7" }
+                            { an: "U-Drill/U-Drill Plus", link: "https://drive.google.com/file/d/1fe333PB4z-UcnmFCg_FzpjQLW-Xpumn7/view?usp=drive_link" }
                         ] 
                     }
                 ]
@@ -357,23 +357,214 @@ export const kvernelandData = {
                 { nume: "iXter",
                      descriere: "Manual Service",
                       versiuni: [
-                        { an: "iXtra A", link: "#" },
-                        { an: "iXtra B", link: "#" }
+                        { an: "iXter A", link: "https://drive.google.com/file/d/1CruWGu6JsxnV9MTpH5ol0Ndgy0haFGIq/view?usp=drive_link" },
+                        { an: "iXter B", link: "https://drive.google.com/file/d/16C1LOCHpy1FqaMXVcD7twClEDTtSxiZ1/view?usp=drive_link" },
+                        { an: "PDI iXter A/B", link: "https://drive.google.com/file/d/1u0fjRpcxM6T1WnHkuQjyLe4kUC8UVr8K/view?usp=drive_link" }
                     ] 
                 },
                 { nume: "iXtra",
                      descriere: "Manual Service",
                       versiuni: [
-                        { an: "iXtra", link: "#" },
-                        { an: "iXtra LiFe", link: "#" }
+                        { an: "iXtra Comfort", link: "https://drive.google.com/file/d/1lRQ550GGW_BRjtZVaNB0HD01wNi83MLb/view?usp=drive_link" },
+                        { an: "iXtra Pro", link: "https://drive.google.com/file/d/1ktLJ0UgFqZJaieNwwBZGE3pZeggnHLEE/view?usp=drive_link" },
+                        { an: "iXtra LiFe", link: "https://drive.google.com/file/d/1HeFEBPszqYH651kKRHPOyRjxULiK2lSO/view?usp=drive_link" }
                     ] 
                 }
 
                 ]
             },
-            "manual-operare": { title: "Manual Operare", models: [] },
+            "manual-operare": { 
+                title: "Manual Operare",
+                models: [
+
+                    { 
+                        nume: "iXtrack T3", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/14re7XfFOSQ57oASE8aAvcPQ1H4HT9Iok/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/13sehZs0rjmRKLS0wx60kJXRHWnImHP5f/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1jWT3NoFsxcR_xk100D9M4YLglynX3Ou2/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1AjHkod-8BP-FErXNhx1PgxbMnjAx7YLC/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    },
+                                        { 
+                        nume: "iXtrack T4", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1ofxmDt-Ux92f0uzqqzIpU0vOVUgJXqDZ/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/13sehZs0rjmRKLS0wx60kJXRHWnImHP5f/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/15wYTEKW_jMszWZ7d1Kfh_ZuDsPGqCKpV/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1AjHkod-8BP-FErXNhx1PgxbMnjAx7YLC/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "iXtrack T6", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1RvItW1o_sjvPfspFscrvqXb6m2ug_9JH/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/13sehZs0rjmRKLS0wx60kJXRHWnImHP5f/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1Hq9PR5zFGTy0msYLLDSlcCNsskvU9TSn/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1AjHkod-8BP-FErXNhx1PgxbMnjAx7YLC/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "iXter A", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1LAorIExDTvforz3SQPpJ2SyLORRGNxRy/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/13sehZs0rjmRKLS0wx60kJXRHWnImHP5f/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1IGmGNMNIXOjtV5xJ-sa_Ne2XepvIxwuO/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1AjHkod-8BP-FErXNhx1PgxbMnjAx7YLC/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "iXter B", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1ZAXDUykbfdyEB0bA_BfZW91_RpFPOHYy/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/13sehZs0rjmRKLS0wx60kJXRHWnImHP5f/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1dpM_O2eNMYPq4HFviWRnT_FAFw0lkm3l/view?usp=drive_link" },
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1AjHkod-8BP-FErXNhx1PgxbMnjAx7YLC/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "iXtra Comfort", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1NY4LW0aGQhOix4xuVX5zZAAJ1eZb9HKO/view?usp=drive_link" }
+                                    
+                                ]
+                            } 
+                        ]
+                    },
+                                        { 
+                        nume: "iXtra Pro", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/17YKlQUJt99TMYUQ0_Sl5FgMUzsqswsxq/view?usp=drive_link" }
+                                    
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/15G5mPn9q-HO52HeoYyxeeT1m4E9qSdEh/view?usp=drive_link" }                    
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "iXtra LiFe", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1j0ZDo49a9RNQW4RVONV3PyLaDrLea0_d/view?usp=drive_link" }
+                                    
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1aiHnYTAYUHyKezKLOsUbSNVRjdqdg3sA/view?usp=drive_link" }
+                                    
+                                ]
+                            } 
+                        ]
+                    }
+                ]
+            },
             "video": { title: "Tutorial Video", models: [] },
-            "erori": { title: "Coduri de Eroare", models: [] }
+            "erori": { 
+                title: "Coduri de Eroare", 
+                models: [
+                    { 
+                        nume: "Bază de date Erori (Toate Modelele)", 
+                        descriere: "Tabel integrat direct în pagină", 
+                        versiuni: [
+                            { 
+                                an: "Tabel Erori", 
+                                // Am adăugat parametrii pt widget si headers false
+                                link: "/codurisprayer.pdf",
+                                isIframe: true
+                            }
+                        ] 
+                    }
+                ] 
+            }
         }
     },
     "spreader": {
