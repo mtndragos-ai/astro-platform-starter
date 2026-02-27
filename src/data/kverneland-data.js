@@ -570,10 +570,171 @@ export const kvernelandData = {
     "spreader": {
         title: "Spreader (Fertilizat)",
         resources: {
-            "manual-service": { title: "Manual Service", models: [] },
-            "manual-operare": { title: "Manual Operare", models: [] },
-            "video": { title: "Tutorial Video", models: [] },
-            "erori": { title: "Coduri de Eroare", models: [] }
-        }
+            
+
+            "manual-service": {
+                title: "Manual Service",
+                models: [
+                    { nume: "Manual Service General Spreader",
+                         descriere: "Manual Service", 
+                         versiuni: [
+                            { an: "Manual Service Spreader", link: "https://drive.google.com/file/d/11QKloBIFb7O9s6SL2b0KOn4_Ln8eg7hM/view?usp=drive_link" }
+                           
+                                
+                         ]
+                    },
+                    { nume: "PDI Spreader",
+                         descriere: "Manual Service", 
+                         versiuni: [
+                            { an: "PDI Spreader", link: "https://drive.google.com/file/d/1azszR4HkXrB9ji2JqWABPUOVH95lIJox/view?usp=drive_link" }
+                           
+                            ]
+                    },
+                    { nume: "Soft EDW2 + calibrare celule cantarire",
+                         descriere: "Manual Service", 
+                         versiuni: [
+                            { an: "PDI Spreader", link: "https://drive.google.com/file/d/1J0VrROU4uxTgf8gZz8LEsKPUlmqAgg2S/view?usp=drive_link" }
+                           
+                            ]
+                    },
+                    { nume: "Soft EDW3 + calibrare celule cantarire",
+                         descriere: "Manual Service", 
+                         versiuni: [
+                            { an: "PDI Spreader", link: "https://drive.google.com/file/d/1VrFmb7QgpVwg8jdKRyv9NF-6RSO9dn3L/view?usp=drive_link" }
+                           
+                            ]
+                    }
+                 ]
+         },
+
+     
+        
+        "manual-operare": {  
+                title: "Manual Operare",
+                models: [
+
+                    { 
+                        nume: "Exacta CL", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1QuaaZMD-fURzRzEq7zW7gubLbnI3cdnu/view?usp=drive_link" }
+                                    
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1IrRa28BR9OgAJajAf6_Wxv38alEao6Db/view?usp=drive_link" }
+                                    
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "Exacta CL EW", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator + Terminal", link: "https://drive.google.com/file/d/1JS17Pzb4-IVFPSt8zoSw4FpyAK3xIT_y/view?usp=drive_link" }
+                                    
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator + Terminal", link: "https://drive.google.com/file/d/1ozzR6zhNg3LIS-G-FAxnUoSTc-1kRTiK/view?usp=drive_link" }
+                                    
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "Exacta CL Geospread", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1ZD2aFu0qBlRVAcwN2Uw_VdjTfnSp9I2O/view?usp=drive_link" },
+                                    { nume: "Manual Operator + Terminal EDW 2", link: "https://drive.google.com/file/d/1sucSe3dt9vIyJDFT0INmpNoekcus_qJN/view?usp=drive_link" },
+                                    { nume: "Manual Terminal EDW 3", link: "https://drive.google.com/file/d/1Y6PwDZ46KVvP-aKCX1RoRHXX6RM41GV0/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1oq387lJInpVbiDkG9OxkEMgH421kekOK/view?usp=drive_link" },
+                                    { nume: "Manual Operator +Terminal EDW 2", link: "https://drive.google.com/file/d/1cQIudMlUjdJ1t83_j-AyQj_cNxPXgeeP/view?usp=drive_link" },
+                                    { nume: "Manual Terminal EDW 3", link: "https://drive.google.com/file/d/1H5B5VJMll6HUqhj89C5XEKoYdAoKV7aB/view?usp=drive_link" }
+                                
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "Exacta TL", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator + Terminal", link: "https://drive.google.com/file/d/1I5p-nKk0TJ3vk3bDX3eUHeses0lpH40_/view?usp=drive_link" }
+                                    
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator + Terminal", link: "https://drive.google.com/file/d/1TKE0lZmFkN1eRZYH1Dc3BAB652-ti1tc/view?usp=drive_link" }
+                                    
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "Exacta TL Geospread", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1yaV69J7CqaRwkxBtaTV_RSjCChZQRQXk/view?usp=drive_link" },
+                                    { nume: "Manual Operator + Terminal EDW 2", link: "https://drive.google.com/file/d/1gcVgS8EQT4N6hqV6C66cPdAPXPrgjSJ_/view?usp=drive_link" },
+                                    { nume: "Manual Terminal EDW 3", link: "https://drive.google.com/file/d/1Y6PwDZ46KVvP-aKCX1RoRHXX6RM41GV0/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1jmEEi8Twm-V5dqmgxaV6-u1TmkQkVu4k/view?usp=drive_link" },
+                                    { nume: "Manual Operator + Terminal EDW 2", link: "https://drive.google.com/file/d/10hOhWQ2Q38Z-0-CU6hlL7zP4yVVEmy6h/view?usp=drive_link" },
+                                    { nume: "Manual Terminal EDW 3", link: "https://drive.google.com/file/d/1H5B5VJMll6HUqhj89C5XEKoYdAoKV7aB/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    }
+                ]
+            },
+        
+        
+
+        "video": { title: "Tutorial Video", models: [] },
+        "erori": { title: "Coduri de Eroare", models: [] }
     }
+}
 };
