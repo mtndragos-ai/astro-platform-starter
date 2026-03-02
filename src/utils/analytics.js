@@ -19,6 +19,48 @@ const FIELD_DATE    = "entry.1762257326";
 // =====================================================================
 
 /**
+ * Funcție avansată pentru detectarea dispozitivului, OS-ului și a browserului
+ */
+function getDetailedDeviceInfo() {
+    if (typeof window === 'undefined') return "Necunoscut";
+    const ua = navigator.userAgent;
+    
+    // 1. Detectare tip de bază (Mobil vs Desktop)
+    let tip = "Desktop";
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) tip = "Mobil";
+
+    // 2. Detectare Sistem de Operare (și model la Android dacă e disponibil)
+    let os = "Necunoscut";
+    if (/iPhone/i.test(ua)) {
+        os = "iPhone";
+    } else if (/iPad/i.test(ua)) {
+        os = "iPad";
+    } else if (/Android/i.test(ua)) {
+        // Încercăm să extragem codul modelului la Android (ex: SM-G981B)
+        const match = ua.match(/\(Linux; Android [0-9\.]+; ([a-zA-Z0-9\- ]+) Build/i) || 
+                      ua.match(/\(Linux; U; Android [0-9\.]+; [a-zA-Z\-]+; ([a-zA-Z0-9\- ]+) Build/i);
+        os = match && match[1] ? `Android (${match[1].trim()})` : "Android";
+    } else if (/Windows NT 10/i.test(ua)) {
+        os = "Windows 10/11";
+    } else if (/Windows NT 6.3/i.test(ua) || /Windows NT 6.2/i.test(ua)) {
+        os = "Windows 8";
+    } else if (/Mac OS X/i.test(ua)) {
+        os = "Mac OS";
+    }
+
+    // 3. Detectare Browser
+    let browser = "Browser";
+    if (/Edg/i.test(ua)) browser = "Edge";
+    else if (/OPR/i.test(ua) || /Opera/i.test(ua)) browser = "Opera";
+    else if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
+    else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+    else if (/Firefox/i.test(ua)) browser = "Firefox";
+
+    // Format final: "Mobil (iPhone, Safari)" sau "Desktop (Windows 10/11, Chrome)"
+    return `${tip} (${os}, ${browser})`;
+}
+
+/**
  * Funcție internă pentru expedierea datelor către Google
  */
 function sendToSheet(data) {
@@ -54,11 +96,12 @@ function sendToSheet(data) {
 export const Analytics = {
     // Înregistrează logarea utilizatorului
     trackLogin: (user) => {
+        const deviceDetails = getDetailedDeviceInfo();
         sendToSheet({
             user: user,
             timestamp: new Date().toLocaleString("ro-RO"),
             action: "LOGIN",
-            details: "Autentificare reușită"
+            details: `Autentificare reușită | Dispozitiv: ${deviceDetails}`
         });
     },
 

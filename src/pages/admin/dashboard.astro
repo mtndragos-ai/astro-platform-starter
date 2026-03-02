@@ -234,13 +234,21 @@ import Layout from '../../layouts/Layout.astro';
                      const details = d.DETALII || d.Detalii || "";
                      if(details.includes("Mobil")) userDevices[u] = "Mobil";
                      else if (details.includes("Desktop")) userDevices[u] = "Desktop";
-                     else userDevices[u] = "N/A";
+                     // Am eliminat opțiunea "N/A" de aici pentru a permite sistemului să caute 
+                     // informația și în logările tale anterioare dacă ultima este incompletă!
                 }
             }
         });
 
+        // Dacă, după ce am verificat toate acțiunile de azi, chiar nu avem niciun dispozitiv înregistrat, abia acum punem "Nespecificat"
+        uniqueUserNamesSet.forEach(u => {
+            if (!userDevices[u]) userDevices[u] = "N/A";
+        });
+
+        // Transformare în listă și sortare alfabetică
         const sortedUsers = Array.from(uniqueUserNamesSet).sort((a, b) => a.localeCompare(b));
 
+        // Actualizăm contoarele
         document.getElementById('total-users').innerText = sortedUsers.length;
         document.getElementById('total-actions').innerText = data.length;
 
