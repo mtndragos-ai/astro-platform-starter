@@ -734,7 +734,23 @@ export const kvernelandData = {
         
 
         "video": { title: "Tutorial Video", models: [] },
-        "erori": { title: "Coduri de Eroare", models: [] }
+         "erori": { 
+                title: "Coduri de Eroare", 
+                models: [
+                    { 
+                        nume: "Bază de date Erori (Toate Modelele)", 
+                        descriere: "Tabel integrat direct în pagină", 
+                        versiuni: [
+                            { 
+                                an: "Tabel Erori", 
+                                // Am adăugat parametrii pt widget si headers false
+                                link: "/erorispreader.pdf",
+                                isIframe: true
+                            }
+                        ] 
+                    }
+                ] 
+            }
     }
 }
 };

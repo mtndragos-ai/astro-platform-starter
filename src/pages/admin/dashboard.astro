@@ -83,7 +83,7 @@ import Layout from '../../layouts/Layout.astro';
                 </div>
             </section>
 
-            <!-- FEED ACTIVITATE -->
+            <!-- FEED ACTIVITATE (ACCORDION MODERN) -->
             <section class="activity-section">
                 <div class="section-header">
                     <h2>Flux Activitate Detaliată</h2>
@@ -91,17 +91,9 @@ import Layout from '../../layouts/Layout.astro';
                     <input type="date" id="date-picker" class="date-badge" />
                 </div>
 
-                <div class="table-container-custom">
-                    <!-- Cap de tabel fixat in CSS grid -->
-                    <div class="table-header-row">
-                        <span>TEHNICIAN</span>
-                        <span>ACȚIUNE</span>
-                        <span>RESURSĂ / DETALII</span>
-                        <span class="text-right">DATA / ORA</span>
-                    </div>
-                    
-                    <div id="live-feed" class="list-wrapper">
-                        <div style="padding: 3rem; text-align: center; color: #64748b; font-weight: 600;">
+                <div class="feed-container-modern">
+                    <div id="live-feed" class="accordion-wrapper">
+                        <div style="padding: 4rem 2rem; text-align: center; color: #64748b; font-weight: 600; background: white; border-radius: 16px;">
                             Se încarcă datele din sistem...
                         </div>
                     </div>
@@ -117,42 +109,50 @@ import Layout from '../../layouts/Layout.astro';
     // =========================================================================
     const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzQKnNXhg-ujruAchI0CoAEJwnLw2e88pJwau4cfpw36ngCWWYHX2BbkRKLkQIfajVV/exec"; 
 
-    // Transformă data din "YYYY-MM-DD" în "DD.MM.YYYY"
     function formatDateForSearch(dateStr) {
         const parts = dateStr.split('-');
-        if (parts.length === 3) {
-            return `${parts[2]}.${parts[1]}.${parts[0]}`; 
-        }
+        if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`; 
         return dateStr;
     }
+
+    // Funcția modernizată care deschide/închide panoul fiecărui utilizator
+    window.toggleAccordion = function(contentId, cardId) {
+        const body = document.getElementById(contentId);
+        const card = document.getElementById(cardId);
+        
+        if (body.style.maxHeight && body.style.maxHeight !== '0px') {
+            // Închidere
+            body.style.maxHeight = '0px';
+            card.classList.remove('is-open');
+        } else {
+            // Deschidere lină
+            body.style.display = 'block';
+            card.classList.add('is-open');
+            body.style.maxHeight = body.scrollHeight + 1000 + 'px'; // +1000 pt siguranță la resize
+            
+            // Reajustăm maxHeight după scurt timp pt flexibilitate completă
+            setTimeout(() => { if(card.classList.contains('is-open')) body.style.maxHeight = 'none'; }, 400);
+        }
+    };
 
     window.addEventListener('load', () => {
         const datePicker = document.getElementById('date-picker');
 
-        // Setează automat calendarul pe ziua de azi la deschiderea paginii
         const today = new Date();
         const dd = String(today.getDate()).padStart(2, '0');
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const yyyy = today.getFullYear();
         datePicker.value = `${yyyy}-${mm}-${dd}`;
         
-        // Deschide calendarul la click oriunde pe câmp
         datePicker.addEventListener('click', function(e) {
             e.preventDefault();
-            if (typeof this.showPicker === 'function') {
-                this.showPicker();
-            }
+            if (typeof this.showPicker === 'function') this.showPicker();
         });
         
         fetchData();
-        
         document.getElementById('refresh-btn').addEventListener('click', () => fetchData());
         setInterval(() => fetchData(), 30000);
-
-        // Actualizează când managerul schimbă data
-        datePicker.addEventListener('change', () => {
-            fetchData();
-        });
+        datePicker.addEventListener('change', () => fetchData());
     });
 
     async function fetchData() {
@@ -166,7 +166,7 @@ import Layout from '../../layouts/Layout.astro';
         const searchDateStr = formatDateForSearch(selectedISODate); 
 
         if (!SHEETS_API_URL.startsWith('http')) {
-            feed.innerHTML = '<div style="padding: 3rem; text-align: center; color: #ef4444; font-weight: 600;">Eroare: Adaugă link-ul Google Apps Script în fișier.</div>';
+            feed.innerHTML = '<div style="padding: 3rem; text-align: center; color: #ef4444; font-weight: 600; background: white; border-radius: 16px;">Eroare: Adaugă link-ul Google Apps Script în fișier.</div>';
             return;
         }
 
@@ -179,7 +179,6 @@ import Layout from '../../layouts/Layout.astro';
 
             if (data.error) throw new Error(data.error);
 
-            // Filtrăm rândurile doar pentru data dorită
             const todaysData = data.reverse().filter(row => {
                 const rowDate = row.DATA || row.Data || row['Marcaj de timp'] || row.Timestamp || ""; 
                 return String(rowDate).includes(searchDateStr);
@@ -188,17 +187,12 @@ import Layout from '../../layouts/Layout.astro';
             renderData(todaysData);
             
             const currentISO = new Date().toISOString().split('T')[0];
-            if (selectedISODate === currentISO) {
-                statusText.innerText = "LIVE";
-            } else {
-                statusText.innerText = "ISTORIC";
-            }
-            
+            statusText.innerText = (selectedISODate === currentISO) ? "LIVE" : "ISTORIC";
             document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
         } catch (err) {
             console.error("Eroare preluare date: ", err);
             statusText.innerText = "OFFLINE";
-            feed.innerHTML = `<div style="padding: 3rem; text-align: center; color: #ef4444; font-weight: 600;">Eroare API: ${err.message}</div>`;
+            feed.innerHTML = `<div style="padding: 3rem; text-align: center; color: #ef4444; font-weight: 600; background: white; border-radius: 16px;">Eroare API: ${err.message}</div>`;
             activeUsersList.innerHTML = '<span class="no-data" style="color: #ef4444;">Eroare la încărcare.</span>';
         } finally {
             refreshBtn.style.opacity = "1";
@@ -215,90 +209,190 @@ import Layout from '../../layouts/Layout.astro';
         activeUsersList.innerHTML = '';
 
         if (data.length === 0) {
-            feed.innerHTML = `<div style="padding: 3rem; text-align: center; color: #64748b; font-weight: 600;">Nicio activitate înregistrată pe ${searchDateStr}.</div>`;
+            feed.innerHTML = `<div class="empty-state">Nicio activitate înregistrată pe ${searchDateStr}.</div>`;
             activeUsersList.innerHTML = `<span class="no-data">Niciun tehnician înregistrat pe ${searchDateStr}.</span>`;
             document.getElementById('total-users').innerText = "0";
             document.getElementById('total-actions').innerText = "0";
             return;
         }
 
-        // Extragere useri unici (Filtrare "Necunoscut" și "Anonim")
         const uniqueUserNamesSet = new Set();
+        const userDevices = {};
+        const groupedData = {};
+
         data.forEach(d => {
-            const u = d.USER || d.User;
+            const u = d.USER || d.User || "Anonim";
+            
+            if (!groupedData[u]) groupedData[u] = [];
+            groupedData[u].push(d);
+
             if (u && u.trim() !== "" && u.toLowerCase() !== "necunoscut" && u.toLowerCase() !== "anonim") {
                 uniqueUserNamesSet.add(u);
+                
+                const actiuneRaw = d.ACTIUNE || d.Actiune || "";
+                if (actiuneRaw.toUpperCase() === "LOGIN" && !userDevices[u]) {
+                     const details = d.DETALII || d.Detalii || "";
+                     if(details.includes("Mobil")) userDevices[u] = "Mobil";
+                     else if (details.includes("Desktop")) userDevices[u] = "Desktop";
+                     else userDevices[u] = "N/A";
+                }
             }
         });
 
-        // Transformare în listă și sortare alfabetică
         const sortedUsers = Array.from(uniqueUserNamesSet).sort((a, b) => a.localeCompare(b));
 
-        // Actualizăm contoarele
         document.getElementById('total-users').innerText = sortedUsers.length;
         document.getElementById('total-actions').innerText = data.length;
 
-        // Randare User Chips (Prezență Tehnicieni)
+        // Randare User Chips 
         if (sortedUsers.length > 0) {
             sortedUsers.forEach(user => {
                 const initial = user.charAt(0).toUpperCase();
+                let deviceIcon = '';
+                const device = userDevices[user];
+                if (device === "Mobil") deviceIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 4px; color: #059669;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+                else if (device === "Desktop") deviceIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 4px; color: #2563eb;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
+                
                 activeUsersList.innerHTML += `
                     <div class="user-chip active-user">
                         <div class="chip-avatar">${initial}</div>
-                        <span class="chip-name">${user}</span>
+                        <span class="chip-name">${user}${deviceIcon}</span>
                     </div>
                 `;
             });
         } else {
-            activeUsersList.innerHTML = `<span class="no-data">Doar activitate neînregistrată (Vizitatori/Necunoscut).</span>`;
+            activeUsersList.innerHTML = `<span class="no-data">Doar activitate neînregistrată (Vizitatori).</span>`;
         }
 
-        // Randare Tabel Activitate
-        data.forEach(row => {
-            const actiuneRaw = row.ACTIUNE || row.Actiune || "Info";
-            const actiune = String(actiuneRaw).toUpperCase();
-            const actionClass = actiune.toLowerCase().replace(/[^a-z0-9]/g, '-'); 
-            
-            const user = row.USER || row.User || "Anonim";
-            const initial = user.charAt(0).toUpperCase();
-            
-            const details = row.DETALII || row.Detalii || "-";
-            const time = row.DATA || row.Data || row['Marcaj de timp'] || "";
+        // ==========================================
+        // RANDARE TABEL ACTIVITATE (ACORDION PRIETENOS)
+        // ==========================================
+        let feedHTML = '';
 
-            let icon = '🖥️';
-            if (actiune.includes('DOWNLOAD')) icon = '📄';
-            if (actiune.includes('VIDEO')) icon = '🎬';
-            if (actiune.includes('VIZUALIZARE')) icon = '📂';
-            if (actiune.includes('LOGIN')) icon = '🟢';
-            
-            feed.innerHTML += `
-                <div class="table-data-row">
-                    <div class="user-info">
-                        <div class="mini-avatar">${initial}</div>
-                        <div class="user-text">
-                            <strong>${user}</strong>
+        sortedUsers.forEach((user, index) => {
+            const userActions = groupedData[user] || [];
+            const initial = user.charAt(0).toUpperCase();
+            const contentId = 'content-user-' + index;
+            const cardId = 'card-user-' + index;
+
+            let deviceBadge = '<span class="device-tag">Nespecificat</span>';
+            const device = userDevices[user];
+            if (device === "Mobil") deviceBadge = '<span class="device-tag mobile"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg> Mobil</span>';
+            else if (device === "Desktop") deviceBadge = '<span class="device-tag desktop"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> PC / Laptop</span>';
+
+            feedHTML += `
+                <div class="acc-card" id="${cardId}">
+                    <div class="acc-header" onclick="toggleAccordion('${contentId}', '${cardId}')">
+                        <div class="acc-header-left">
+                            <div class="acc-avatar">${initial}</div>
+                            <div class="acc-user-info">
+                                <h3>${user}</h3>
+                                <div class="acc-tags">${deviceBadge}</div>
+                            </div>
+                        </div>
+                        <div class="acc-header-right">
+                            <div class="acc-count-badge">${userActions.length} acțiuni</div>
+                            <div class="acc-toggle-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
                         </div>
                     </div>
-                    <div class="action-cell">
-                        <span class="badge-status ${actionClass}">
-                            <span class="dot"></span>
-                            ${actiune}
-                        </span>
-                    </div>
-                    <div class="res-info">
-                        <span class="res-icon">${icon}</span>
-                        ${details}
-                    </div>
-                    <div class="time-info">${time}</div>
-                </div>
+                    
+                    <div class="acc-content" id="${contentId}" style="max-height: 0px;">
+                        <div class="acc-inner-wrapper">
             `;
+
+            // Afișăm actiunile în interior, FĂRĂ coloana repetitivă cu utilizatorul
+            userActions.forEach(row => { feedHTML += createInnerRowHTML(row); });
+
+            feedHTML += `</div></div></div>`;
         });
+
+        // Randăm acțiunile necunoscute la final (dacă există)
+        const anonUsers = Object.keys(groupedData).filter(u => !sortedUsers.includes(u));
+        if(anonUsers.length > 0) {
+            let allAnonActions = [];
+            anonUsers.forEach(u => { allAnonActions = allAnonActions.concat(groupedData[u]); });
+            
+            const contentId = 'content-anon';
+            const cardId = 'card-anon';
+            
+            feedHTML += `
+                <div class="acc-card anon-card" id="${cardId}">
+                    <div class="acc-header" onclick="toggleAccordion('${contentId}', '${cardId}')">
+                        <div class="acc-header-left">
+                            <div class="acc-avatar anon-avatar">?</div>
+                            <div class="acc-user-info">
+                                <h3>Vizitatori Neînregistrați</h3>
+                                <div class="acc-tags"><span class="device-tag">Anonim</span></div>
+                            </div>
+                        </div>
+                        <div class="acc-header-right">
+                            <div class="acc-count-badge">${allAnonActions.length} acțiuni</div>
+                            <div class="acc-toggle-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="acc-content" id="${contentId}" style="max-height: 0px;">
+                        <div class="acc-inner-wrapper">
+            `;
+
+            allAnonActions.forEach(row => { feedHTML += createInnerRowHTML(row); });
+
+            feedHTML += `</div></div></div>`;
+        }
+
+        feed.innerHTML = feedHTML;
+    }
+
+    // Design-ul curat pentru rândurile din interiorul acordeonului
+    function createInnerRowHTML(row) {
+        const actiuneRaw = row.ACTIUNE || row.Actiune || "Info";
+        const actiune = String(actiuneRaw).toUpperCase();
+        const actionClass = actiune.toLowerCase().replace(/[^a-z0-9]/g, '-'); 
+        const details = row.DETALII || row.Detalii || "-";
+        
+        let rawTime = row.DATA || row.Data || row['Marcaj de timp'] || "";
+        // Curățăm puțin formatul orei dacă conține virgule
+        let timeFormatted = rawTime;
+        if (typeof rawTime === 'string' && rawTime.includes(',')) {
+            timeFormatted = rawTime.split(',')[1]?.trim() || rawTime; 
+        }
+
+        let icon = '🖥️';
+        if (actiune.includes('DOWNLOAD')) icon = '📄';
+        if (actiune.includes('VIDEO')) icon = '🎬';
+        if (actiune.includes('VIZUALIZARE')) icon = '📂';
+        if (actiune.includes('LOGIN')) icon = '🟢';
+
+        return `
+            <div class="activity-row">
+                <div class="act-time">${timeFormatted}</div>
+                <div class="act-badge-container">
+                    <span class="badge-status ${actionClass}"><span class="dot"></span>${actiune}</span>
+                </div>
+                <div class="act-details">
+                    <span class="res-icon">${icon}</span>
+                    <span class="details-text">${details}</span>
+                </div>
+            </div>
+        `;
     }
 </script>
 
 <style>
     /* CSS SCOPED (Aplicat doar elementelor statice din pagină) */
-    .admin-container { background: #f4f7fa; min-height: 100vh; font-family: 'Roboto', sans-serif; color: #1f2937; }
+    .admin-container { 
+        background: #f4f7fa; 
+        min-height: 100vh; 
+        font-family: 'Roboto', sans-serif; 
+        color: #1f2937; 
+        overflow-x: hidden; 
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+    }
     
     .admin-header { background: #003087; color: white; padding: 2.5rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
     .header-inner { max-width: 1250px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
@@ -319,7 +413,7 @@ import Layout from '../../layouts/Layout.astro';
     .back-btn { background: rgba(255,255,255,0.1); padding: 0.7rem 1.4rem; border-radius: 10px; color: white; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; }
     .back-btn:hover { background: white; color: #003087; transform: translateY(-2px); }
 
-    .stats-content { max-width: 1250px; margin: 2.5rem auto 4rem auto; padding: 0 2rem; }
+    .stats-content { max-width: 1250px; margin: 2.5rem auto 4rem auto; padding: 0 2rem; width: 100%; box-sizing: border-box; }
     
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
     .stat-card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 20px; transition: transform 0.2s; border: 1px solid #edf2f7; }
@@ -334,8 +428,7 @@ import Layout from '../../layouts/Layout.astro';
     .stat-value { font-size: 2.5rem; font-weight: 900; color: #1e293b; line-height: 1.2; display: block; }
     .stat-indicator { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
 
-    /* CSS Secțiune Nouă Prezență */
-    .active-users-section { margin-top: 2.5rem; background: linear-gradient(to right, #ffffff, #f8fafc); padding: 2rem 2.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #edf2f7; border-left: 6px solid #10b981; }
+    .active-users-section { margin-top: 2.5rem; background: linear-gradient(to right, #ffffff, #f8fafc); padding: 2rem 2.5rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #edf2f7; border-left: 6px solid #10b981; width: 100%; box-sizing: border-box; }
     .active-users-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; }
     .icon-wrapper { background: #d1fae5; color: #059669; padding: 12px; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.1); }
     .header-text-group { display: flex; flex-direction: column; }
@@ -343,47 +436,30 @@ import Layout from '../../layouts/Layout.astro';
     .section-desc { font-size: 0.85rem; color: #64748b; margin: 4px 0 0 0; font-weight: 600; }
     .users-chips-container { display: flex; flex-wrap: wrap; gap: 15px; }
 
-    .activity-section { margin-top: 3rem; }
+    .activity-section { margin-top: 3rem; width: 100%; box-sizing: border-box; }
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     .section-header h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; margin: 0; }
     
     .date-badge { background: #fff; color: #003087; padding: 8px 14px; border-radius: 12px; font-size: 0.9rem; font-weight: 800; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.03); font-family: inherit; cursor: pointer; outline: none; transition: all 0.2s; }
     .date-badge:focus, .date-badge:hover { border-color: #003087; box-shadow: 0 0 0 2px rgba(0, 48, 135, 0.1); }
 
-    .table-container-custom { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.05); border: 1px solid #edf2f7; }
-    .table-header-row { display: grid; grid-template-columns: 1.5fr 1.2fr 2.5fr 1fr; align-items: center; padding: 1.2rem 2.5rem; background: #f8fafc; border-bottom: 2px solid #f1f5f9; color: #64748b; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.1em; }
-    .text-right { text-align: right; }
-
-    /* =======================================================
-       MEDIA QUERIES - OPTIMIZARE COMPLETĂ PENTRU MOBIL 
-       ======================================================= */
-    @media (max-width: 768px) {
-        /* Header și Titlu pe Mobil */
+    @media (max-width: 1024px) {
         .header-inner { flex-direction: column; gap: 20px; text-align: center; padding: 1.5rem 1rem; }
         .title-with-status { justify-content: center; flex-wrap: wrap; }
         .title-with-status h1 { font-size: 1.5rem; }
         .brand-info p { font-size: 0.9rem; }
         .header-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .refresh-btn, .back-btn { padding: 0.75rem; font-size: 0.85rem; justify-content: center; }
+        .refresh-btn, .back-btn { padding: 0.75rem; font-size: 0.85rem; justify-content: center; width: 100%; }
 
-        /* Container principal pe Mobil */
-        .stats-content { margin-top: 1.5rem; padding: 0 1rem; margin-bottom: 2rem; }
+        .stats-content { margin-top: 1.5rem; padding: 0 1rem; margin-bottom: 2rem; width: 100%; }
+        .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
         
-        /* Secțiunea de Prezență pe Mobil */
-        .active-users-section { padding: 1.5rem; border-left: none; border-top: 6px solid #10b981; text-align: center; }
+        .active-users-section { padding: 1.5rem; border-left: none; border-top: 6px solid #10b981; text-align: center; border-radius: 16px; }
         .active-users-header { flex-direction: column; align-items: center; gap: 10px; }
         .users-chips-container { justify-content: center; }
 
-        /* Titlu Flux Activitate pe Mobil */
         .section-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-        .date-badge { width: 100%; text-align: center; padding: 12px; font-size: 1rem; }
-        
-        /* Container Tabel pe Mobil */
-        .table-container-custom { background: transparent; border: none; box-shadow: none; overflow: visible; }
-    }
-
-    @media (max-width: 1024px) {
-        .stats-grid { grid-template-columns: 1fr; } /* Cardurile cu cifre se așează unul sub altul */
+        .date-badge { width: 100%; text-align: center; padding: 12px; font-size: 1rem; box-sizing: border-box; }
     }
 </style>
 
@@ -391,114 +467,183 @@ import Layout from '../../layouts/Layout.astro';
 <!-- CSS GLOBAL PENTRU ELEMENTELE INJECTATE DIN JAVASCRIPT -->
 <!-- ===================================================================== -->
 <style is:global>
-    /* STIL BULE (CHIPS) TEHNICIENI */
+    /* STIL BULE (CHIPS) TEHNICIENI - PREZENTA */
     .user-chip { 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 12px; 
-        background: white; 
-        padding: 6px 20px 6px 6px; 
-        border-radius: 50px; 
-        border: 1px solid #e2e8f0; 
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: default;
+        display: inline-flex; align-items: center; gap: 10px; background: white; padding: 6px 16px 6px 6px; border-radius: 50px; border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: all 0.3s ease; cursor: default;
     }
     .user-chip.active-user:hover { 
-        transform: translateY(-3px) scale(1.02); 
-        box-shadow: 0 8px 20px rgba(0, 48, 135, 0.12); 
-        border-color: #003087; 
-        background: #f8fafc;
+        transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 48, 135, 0.08); border-color: #cbd5e1; background: #fcfcfc;
     }
     .user-chip .chip-avatar { 
-        width: 36px; 
-        height: 36px; 
-        background: linear-gradient(135deg, #003087, #005ce6); 
-        color: white; 
-        border-radius: 50%; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        font-size: 1.1rem; 
-        font-weight: 900; 
-        box-shadow: 0 2px 8px rgba(0, 48, 135, 0.4); 
+        width: 32px; height: 32px; background: linear-gradient(135deg, #003087, #2563eb); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; box-shadow: 0 2px 6px rgba(0, 48, 135, 0.3); 
     }
-    .user-chip .chip-name { font-size: 0.95rem; font-weight: 800; color: #1e293b; }
-    
-    .user-chip.unknown { opacity: 0.6; background: #f8fafc; border: 1px dashed #cbd5e1; }
-    .user-chip.unknown .chip-avatar { background: #94a3b8; box-shadow: none; }
-    .no-data { color: #94a3b8; font-size: 0.95rem; font-style: italic; font-weight: 600; padding: 1rem 0; }
+    .user-chip .chip-name { font-size: 0.9rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; }
+    .empty-state { padding: 4rem 2rem; text-align: center; color: #64748b; font-weight: 600; background: white; border-radius: 16px; border: 1px dashed #cbd5e1; }
 
-    /* STILURI TABEL JAVASCRIPT - DESKTOP */
-    .table-data-row { 
-        display: grid; 
-        grid-template-columns: 1.5fr 1.2fr 2.5fr 1fr; 
+    /* =======================================================
+       DESIGN MODERN CARDURI ACCORDION (PENTRU FLUX)
+       ======================================================= */
+    .accordion-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .acc-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.02);
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 0.5rem;
+    }
+    .acc-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+    .acc-card.is-open {
+        border-color: #003087;
+        box-shadow: 0 10px 30px rgba(0,48,135,0.08);
+    }
+    
+    /* Header-ul pe care dai click */
+    .acc-header {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 1.2rem 2.5rem;
-        border-bottom: 1px solid #f1f5f9; transition: all 0.2s; position: relative; 
+        padding: 1.25rem 1.5rem;
+        cursor: pointer;
+        background: #ffffff;
+        transition: background 0.3s;
+        user-select: none;
     }
-    .table-data-row:hover { background: #f8fafc; }
-    .table-data-row:last-child { border-bottom: none; }
+    .acc-header:hover { background: #f8fafc; }
+    .acc-card.is-open .acc-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
 
-    .user-info { display: flex; align-items: center; gap: 15px; }
-    .mini-avatar { width: 36px; height: 36px; background: #003087; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,48,135,0.2); }
-    .user-text strong { font-size: 0.95rem; color: #0f172a; }
+    .acc-header-left { display: flex; align-items: center; gap: 15px; }
+    .acc-avatar {
+        width: 48px; height: 48px;
+        background: linear-gradient(135deg, #003087, #3b82f6);
+        color: white; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; font-weight: 900;
+        box-shadow: 0 4px 12px rgba(0,48,135,0.2);
+    }
+    .acc-user-info { display: flex; flex-direction: column; gap: 4px; }
+    .acc-user-info h3 { margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; }
     
-    .badge-status { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+    .acc-tags { display: flex; gap: 8px; }
+    .device-tag { 
+        font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; 
+        display: inline-flex; align-items: center; gap: 4px; background: #f1f5f9; color: #64748b;
+    }
+    .device-tag.mobile { color: #059669; background: #d1fae5; }
+    .device-tag.desktop { color: #2563eb; background: #dbeafe; }
+
+    .acc-header-right { display: flex; align-items: center; gap: 15px; }
+    .acc-count-badge {
+        background: #f1f5f9; color: #475569; padding: 6px 14px; border-radius: 20px;
+        font-size: 0.85rem; font-weight: 800;
+    }
+    .acc-card.is-open .acc-count-badge { background: #e0e7ff; color: #003087; }
+    
+    .acc-toggle-btn {
+        width: 36px; height: 36px; border-radius: 50%; background: #f8fafc; color: #94a3b8;
+        display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+    }
+    .acc-card:hover .acc-toggle-btn { background: #e2e8f0; color: #0f172a; }
+    .acc-card.is-open .acc-toggle-btn { transform: rotate(180deg); background: #003087; color: white; box-shadow: 0 4px 10px rgba(0,48,135,0.3); }
+
+    /* Stiluri vizitatori necunoscuti */
+    .anon-card .acc-avatar { background: #cbd5e1; box-shadow: none; color: #475569; }
+    .anon-card .acc-user-info h3 { color: #64748b; }
+
+    /* =======================================================
+       INTERIOR ACCORDION (Rândurile de activitate - Timeline)
+       ======================================================= */
+    .acc-content {
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #fcfcfc;
+        overflow: hidden;
+    }
+    
+    .acc-inner-wrapper {
+        padding: 1rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Asigură-te că folosim display flex pentru a se alinia perfect */
+    .activity-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 16px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.2s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .activity-row:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        transform: translateX(4px);
+    }
+
+    /* Setăm lățimi fixe pentru primele coloane pe Desktop pentru aliniere de tip Tabel */
+    .act-time { font-size: 0.85rem; font-weight: 700; color: #64748b; min-width: 80px; flex-shrink: 0; }
+    .act-badge-container { min-width: 150px; flex-shrink: 0; }
+    
+    /* Ecusoanele cu Acțiuni */
+    .badge-status { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; width: fit-content; text-transform: uppercase; }
     .badge-status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    
     .login { background: #dcfce7; color: #166534; }
     .download, .download-video { background: #dbeafe; color: #1e40af; }
     .video { background: #fef3c7; color: #92400e; }
     .vizualizare { background: #f1f5f9; color: #475569; }
     .timp, .timp-petrecut { background: #f3e8ff; color: #7e22ce; }
 
-    .res-info { font-size: 0.95rem; color: #334155; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-    .res-icon { font-size: 1.2rem; }
-    .time-info { text-align: right; color: #64748b; font-weight: 800; font-size: 0.9rem; }
+    .act-details {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 0.9rem; color: #334155; font-weight: 500;
+        word-break: break-word;
+        flex-grow: 1; /* Ocupă tot spațiul rămas */
+    }
+    .act-details .res-icon { font-size: 1.1rem; flex-shrink: 0; }
 
     /* =======================================================
-       MEDIA QUERIES JAVASCRIPT (Transformare Tabel în Carduri)
+       RESPONSIVE PENTRU MOBIL
        ======================================================= */
     @media (max-width: 768px) {
-        .table-header-row { display: none; } /* Ascundem capul de tabel */
+        .acc-header { padding: 1rem; }
+        .acc-header-left { gap: 10px; }
+        .acc-avatar { width: 40px; height: 40px; font-size: 1rem; border-radius: 10px; }
+        .acc-user-info h3 { font-size: 1rem; }
         
-        .table-data-row { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; 
-            gap: 12px; 
-            padding: 1.5rem; 
-            background: white; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 16px; 
-            margin-bottom: 1rem; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-        .table-data-row:last-child { border-bottom: 1px solid #e2e8f0; }
+        .acc-count-badge { display: none; } /* Ascundem badge-ul de numar pe mobil pt a economisi spatiu */
         
-        .user-info { width: 100%; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; }
-        .action-cell { width: 100%; }
+        .acc-inner-wrapper { padding: 1rem; gap: 12px; }
         
-        /* Caseta gri pentru resursa accesată */
-        .res-info { 
-            width: 100%; 
-            background: #f8fafc; 
-            padding: 12px 15px; 
-            border-radius: 10px; 
-            font-size: 0.9rem; 
-            border: 1px solid #f1f5f9; 
-            box-sizing: border-box;
+        .activity-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 1rem;
         }
         
-        .time-info { 
-            width: 100%; 
-            text-align: left; 
-            background: transparent; 
-            padding: 0; 
-            color: #94a3b8; 
-            font-size: 0.85rem; 
-            margin-top: 5px; 
+        .act-time { font-size: 0.8rem; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; min-width: auto; }
+        .act-badge-container { min-width: auto; width: 100%; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; }
+        
+        .act-details { 
+            background: #f8fafc; padding: 10px; border-radius: 8px; 
+            width: 100%; border: 1px solid #f1f5f9; box-sizing: border-box;
+            align-items: flex-start; /* Aliniere sus pt texte lungi pe mobil */
         }
     }
 </style>
