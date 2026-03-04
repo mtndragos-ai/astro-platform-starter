@@ -1,25 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Definim categoriile pentru grila principală
+// Definim categoriile cu căi către imagini
 const categorii = [
     { 
         nume: "Tractoare", 
-        icon: "🚜", 
+        imagine: "/imagini/tractor.png", // Modifică numele fișierului dacă e nevoie
         culoare: "#003087", 
         descriere: "Seria T5, T6, T7, T8",
         link: "#" 
     },
     { 
         nume: "Combine", 
-        icon: "🌾", 
+        imagine: "/imagini/combina.png", // Modifică numele fișierului dacă e nevoie
         culoare: "#F4D03F", 
         descriere: "CR, CX, TC",
         link: "#" 
     },
     { 
         nume: "Kverneland", 
-        icon: "🔴", 
+        imagine: "/imagini/kverneland.png", // Modifică numele fișierului dacă e nevoie
         culoare: "#E30613", 
         descriere: "Implemente și Utilaje",
         link: "/kverneland" 
@@ -42,7 +42,7 @@ const categorii = [
                 </a>
 
                 <nav class="center-nav">
-                    <!-- BUTON ADMIN - ASCUNS BY DEFAULT (Restul link-urilor au fost șterse) -->
+                    <!-- BUTON ADMIN - ASCUNS BY DEFAULT -->
                     <a href="/admin/dashboard" class="nav-link admin-link" id="admin-nav-item" style="display: none; color: #dc2626;">📊 Admin</a>
                 </nav>
 
@@ -72,18 +72,19 @@ const categorii = [
                 <p>Selectează categoria de echipament pentru a accesa materialele.</p>
             </header>
 
-            <!-- Grila de Categorii -->
+            <!-- Grila de Categorii cu IMAGINI -->
             <div class="grid-container">
                 {categorii.map((item) => (
-                    <a href={item.link} class="card">
-                        <div class="card-icon" style={`background-color: ${item.culoare}20; color: ${item.culoare}`}>
-                            {item.icon}
+                    <a href={item.link} class="card" style={`border-bottom: 3px solid ${item.culoare}`}>
+                        <div class="card-image-wrapper">
+                            <!-- Imaginea Utilajului -->
+                            <img src={item.imagine} alt={item.nume} class="card-image" />
                         </div>
                         <div class="card-content">
                             <h3>{item.nume}</h3>
                             <p>{item.descriere}</p>
                         </div>
-                        <span class="arrow">→</span>
+                        <span class="arrow" style={`color: ${item.culoare}`}>→</span>
                     </a>
                 ))}
             </div>
@@ -119,13 +120,11 @@ const categorii = [
                 nameElement.textContent = fullName;
                 avatarElement.textContent = initials;
 
-                // ⭐ LOGICA PENTRU AFIȘARE BUTON ADMIN (LISTA DE ACCES) ⭐
-                const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu' ]; // Adaugă oricâți manageri vrei aici
+                const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu' ]; 
 
                 if (manageriCuAcces.includes(currentUser) && adminNavItem) {
                     adminNavItem.style.display = 'flex';
                 }
-
             }
 
             // 2. Logică Logout
@@ -156,15 +155,11 @@ const categorii = [
 </Layout>
 
 <style>
-    /* STILURI CSS */
-    /* Adăugat overflow-x: hidden pentru a bloca orice depășire laterală */
     .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; overflow-x: hidden; }
     
-    /* HEADER */
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; width: 100%; }
     .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
     
-    /* Efect de hover și cursor pe noul logo clickabil */
     .logo-section { display: flex; align-items: baseline; gap: 10px; cursor: pointer; transition: opacity 0.2s; }
     .logo-section:hover { opacity: 0.8; }
     
@@ -173,14 +168,11 @@ const categorii = [
     .yellow { color: #F4D03F; }
     .training-text { font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
     
-    /* Aliniem butonul de Admin la dreapta */
     .center-nav { display: flex; gap: 30px; height: 100%; align-items: center; justify-content: flex-end; flex-grow: 1; margin-right: 30px; }
     .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
     .nav-link:hover { color: #003087; }
-    .nav-link.active { color: #003087; border-bottom-color: #003087; }
     .admin-link { font-weight: 800 !important; }
 
-    /* PROFIL */
     .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
     .user-profile:hover { background-color: #f3f4f6; }
     .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
@@ -188,7 +180,6 @@ const categorii = [
     .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; min-width: 100px; text-align: right; }
     .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
 
-    /* DROPDOWN LOGOUT */
     .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; animation: fadeIn 0.2s ease-out; }
     .logout-dropdown.show { display: block; }
     .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
@@ -196,38 +187,52 @@ const categorii = [
     .logout-item:hover { background: #fee2e2; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* CONTENT */
     .main-content { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
     .page-intro { text-align: center; margin-bottom: 3rem; }
     .page-intro h1 { font-size: 2rem; color: #111827; margin-bottom: 0.5rem; }
 
-    /* GRILA */
     .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; }
-    .card { background: white; padding: 2.5rem 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s; border: 1px solid transparent; cursor: pointer; text-decoration: none; height: 100%; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); border-color: #F4D03F; }
-    .card-icon { font-size: 3rem; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
-    .card-content h3 { margin: 0; font-size: 1.4rem; color: #111827; font-weight: 700; }
-    .card-content p { margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #6b7280; }
-    .arrow { margin-top: auto; padding-top: 1.5rem; color: #003087; font-weight: bold; opacity: 0; transform: translateX(-10px); transition: all 0.2s; }
+    .card { 
+        background: white; 
+        padding: 2.5rem 2rem; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+        display: flex; flex-direction: column; align-items: center; text-align: center; 
+        transition: all 0.3s ease; 
+        cursor: pointer; text-decoration: none; height: 100%; 
+    }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
+    
+    /* 🌟 SOLUȚIA PENTRU IMAGINI PREA MARI ȘI FUNDAL ALB 🌟 */
+    .card-image-wrapper { 
+        width: 100%;
+        height: 110px; /* Înălțime fixă și mai mică pentru a centra totul frumos */
+        display: flex; 
+        align-items: center; justify-content: center; 
+        margin-bottom: 1.5rem; 
+    }
+    .card-image { 
+        max-width: 65%; /* Lățime maximă redusă (tractorul va fi mai mic) */
+        max-height: 90px; /* Înălțime maximă redusă (tractorul va fi mai mic) */
+        object-fit: contain;
+        transition: transform 0.4s ease;
+        
+        /* 🪄 MAGIC: Elimină fundalul alb/gri al imaginii! */
+        mix-blend-mode: multiply;
+    }
+    .card:hover .card-image { transform: scale(1.08); }
+
+    .card-content h3 { margin: 0; font-size: 1.5rem; color: #111827; font-weight: 800; }
+    .card-content p { margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #6b7280; font-weight: 500;}
+    .arrow { margin-top: auto; padding-top: 1.5rem; font-weight: 900; font-size: 1.2rem; opacity: 0; transform: translateX(-15px); transition: all 0.3s; }
     .card:hover .arrow { opacity: 1; transform: translateX(0); }
 
-    /* RESPONSIVE (Aici am reparat layout-ul pt telefon) */
     @media (max-width: 768px) {
         .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 1rem; width: 100%; }
-        
-        /* Setăm meniul să facă scroll orizontal pe telefon în loc să spargă pagina */
-        .center-nav { 
-            width: 100%; 
-            justify-content: flex-start; 
-            overflow-x: auto; 
-            padding-bottom: 5px; 
-            gap: 20px; 
-            margin-right: 0;
-            /* Ascunde scrollbar-ul nativ pentru un aspect mai curat */
-            scrollbar-width: none; 
-        }
+        .center-nav { width: 100%; justify-content: flex-start; overflow-x: auto; padding-bottom: 5px; gap: 20px; margin-right: 0; scrollbar-width: none; }
         .center-nav::-webkit-scrollbar { display: none; }
-        
         .grid-container { grid-template-columns: 1fr; }
+        .card-image-wrapper { height: 90px; }
+        .card-image { max-height: 75px; } /* Mai mic pe telefon */
     }
 </style>

@@ -62,25 +62,37 @@ import Layout from '../layouts/Layout.astro';
                 </header>
 
                 <div class="machines-grid">
-                    <a href="/kverneland/semanatori" class="machine-card">
-                        <div class="machine-image">🌱</div>
-                        <h3>Semănători</h3>
-                        <p>Optima, U-drill, Satio</p>
-                        <span class="machine-link">Selectează →</span>
+                    <a href="/kverneland/semanatori" class="machine-card" style="border-bottom: 3px solid #E30613;">
+                        <div class="machine-image-wrapper">
+                            <img src="/imagini/semanatoare.png" alt="Semănători" class="machine-photo" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Semănători</h3>
+                            <p>Optima, U-drill, Satio</p>
+                        </div>
+                        <span class="machine-link" style="color: #E30613;">→</span>
                     </a>
 
-                    <a href="/kverneland/sprayer" class="machine-card">
-                        <div class="machine-image">💦</div>
-                        <h3>Sprayer (Erbicidat)</h3>
-                        <p>iXtrack, iXter, iXtra</p>
-                        <span class="machine-link">Selectează →</span>
+                    <a href="/kverneland/sprayer" class="machine-card" style="border-bottom: 3px solid #E30613;">
+                        <div class="machine-image-wrapper">
+                            <img src="/imagini/sprayer.png" alt="Sprayer" class="machine-photo" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Sprayer (Erbicidat)</h3>
+                            <p>iXtrack, iXter, iXtra</p>
+                        </div>
+                        <span class="machine-link" style="color: #E30613;">→</span>
                     </a>
 
-                    <a href="/kverneland/spreader" class="machine-card">
-                        <div class="machine-image">🌾</div>
-                        <h3>Spreader (Fertilizat)</h3>
-                        <p>Exacta CL, HL, TL</p>
-                        <span class="machine-link">Selectează →</span>
+                    <a href="/kverneland/spreader" class="machine-card" style="border-bottom: 3px solid #E30613;">
+                        <div class="machine-image-wrapper">
+                            <img src="/imagini/spreader.png" alt="Spreader" class="machine-photo" />
+                        </div>
+                        <div class="card-content">
+                            <h3>Spreader (Fertilizat)</h3>
+                            <p>Exacta CL, HL, TL</p>
+                        </div>
+                        <span class="machine-link" style="color: #E30613;">→</span>
                     </a>
                 </div>
             </div>
@@ -105,7 +117,7 @@ import Layout from '../layouts/Layout.astro';
             const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu'];
 
             if (manageriCuAcces.includes(storedUser) && adminNavItem) {
-                adminNavItem.style.display = 'flex'; // Trebuie să fie flex ca să afișeze iconița corect
+                adminNavItem.style.display = 'flex'; 
             }
         }
 
@@ -135,7 +147,7 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
+    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
     
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
     
@@ -174,26 +186,73 @@ import Layout from '../layouts/Layout.astro';
     .logout-dropdown.show { display: block; }
     .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
     .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
-    .logout-item:hover { background-color: #fee2e2; }
+    .logout-item:hover { background: #fee2e2; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* CONTENT */
-    .main-content { max-width: 1200px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; width: 100%; box-sizing: border-box; }
     .breadcrumbs { font-size: 1rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; align-items: center; }
     .crumb-blue { color: #003087; font-weight: 700; }
     
-    .section-header { margin-bottom: 2.5rem; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
     .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
     .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
-    .machines-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .machine-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; }
-    .machine-card:hover { border-color: #003087; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-    .machine-image { font-size: 3rem; margin-bottom: 1rem; }
-    .machine-card h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #1f2937; }
-    .machine-card p { color: #6b7280; margin: 0.5rem 0 1.5rem 0; }
-    .machine-link { color: #003087; font-weight: 600; }
     
-    /* RESPONSIVITATE REPARATĂ PENTRU ANTET */
+    /* 🌟 SOLUȚIA PENTRU CARDURI - EFECTE HOVER DIN CATEGORII 🌟 */
+    .machines-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; }
+    .machine-card { 
+        background: white; 
+        padding: 2.5rem 2rem; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+        display: flex; flex-direction: column; align-items: center; text-align: center; 
+        transition: all 0.3s ease; 
+        cursor: pointer; text-decoration: none; height: 100%; 
+    }
+    .machine-card:hover { 
+        transform: translateY(-8px); 
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); 
+    }
+    
+    .machine-image-wrapper { 
+        width: 100%;
+        height: 110px; 
+        display: flex; 
+        align-items: center; justify-content: center; 
+        margin-bottom: 1.5rem; 
+    }
+    
+    .machine-photo { 
+        max-width: 65%; /* Imaginea nu va depăși niciodată 65% din lățimea cardului */
+        max-height: 90px; 
+        object-fit: contain;
+        transition: transform 0.4s ease;
+        mix-blend-mode: multiply; /* Elimină fundalul alb/gri al imaginii */
+    }
+    
+    .machine-card:hover .machine-photo { 
+        transform: scale(1.08); /* Efect de zoom la hover */
+    }
+
+    .card-content h3 { margin: 0; font-size: 1.5rem; color: #111827; font-weight: 800; }
+    .card-content p { margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #6b7280; font-weight: 500;}
+    
+    .machine-link { 
+        margin-top: auto; 
+        padding-top: 1.5rem; 
+        font-weight: 900; 
+        font-size: 1.2rem; 
+        opacity: 0; 
+        transform: translateX(-15px); 
+        transition: all 0.3s; 
+    }
+    
+    .machine-card:hover .machine-link { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+    
+    /* RESPONSIVITATE */
     @media (max-width: 768px) { 
         .header-content { flex-direction: column; align-items: stretch; padding: 1rem; gap: 15px; width: 100%; box-sizing: border-box; height: auto; } 
         
@@ -207,5 +266,9 @@ import Layout from '../layouts/Layout.astro';
         .training-text { font-size: 1.25rem; }
         .logo-section { gap: 6px; }
         .main-content { padding: 1.5rem 1rem; }
+
+        .machines-grid { grid-template-columns: 1fr; }
+        .machine-image-wrapper { height: 90px; }
+        .machine-photo { max-height: 75px; } 
     }
 </style>

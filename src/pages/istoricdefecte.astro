@@ -1,0 +1,501 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<script is:inline>
+    if (!localStorage.getItem('agro_session')) {
+        window.location.href = '/';
+    }
+</script>
+
+<Layout title="Istoric Defecte PDI | AgroConcept">
+    <div class="dashboard-container">
+        
+        <!-- HEADER CURAT -->
+        <header class="sticky-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/categorii" class="logo-section" style="text-decoration: none;">
+                        <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
+                        <span class="training-text">TRAINING</span>
+                    </a>
+                    <a href="/categorii" class="nav-link back-btn-nav">← Înapoi</a>
+                </div>
+                
+                <div class="header-right">
+                    <a href="/admin/dashboard" class="nav-link admin-link" id="admin-nav-item" style="display: none; color: #dc2626;">📊 Admin</a>
+                    <div class="user-profile" id="user-profile-trigger">
+                        <div class="user-details">
+                            <span class="user-label">TEHNICIAN LOGAT</span>
+                            <span class="user-name">...</span>
+                        </div>
+                        <div class="avatar-circle">AC</div>
+                        <div class="logout-dropdown" id="logout-menu">
+                            <div class="dropdown-arrow"></div>
+                            <button id="logout-btn" class="logout-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                Delogare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="breadcrumbs">
+                <a href="/categorii" class="crumb-link">Acasă</a>
+                <span class="separator">/</span>
+                <span class="crumb-blue">Bază de Date Defecte</span>
+            </div>
+
+            <header class="section-header">
+                <h1>Istoric Raportări PDI</h1>
+                <p>Baza de date cu problemele tehnice semnalate la livrare și rezolvările aplicate de colegi.</p>
+                
+                <!-- Bară de căutare pentru filtrare rapidă -->
+                <div class="search-bar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="search-input" placeholder="Caută după utilaj, serie sau problemă...">
+                </div>
+            </header>
+
+            <!-- Containerul unde se încarcă rapoartele -->
+            <div id="reports-container">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Se încarcă baza de date din sistem...</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</Layout>
+
+<script is:inline>
+    // ======================================================================
+    // ⚠️ LIPEȘTE AICI ACELAȘI WEB APP URL PE CARE L-AI PUS ȘI ÎN FORMULAR!
+    // ======================================================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc3eTf3kKm89RrubKe7lhUPkwW5yolcRIetGO2gyyg4ptAypoRVkajeNTsIccvwkbMaw/exec";
+
+    window.addEventListener('load', function() {
+        // Setup User Header
+        const storedUser = localStorage.getItem('agro_user');
+        const nameElement = document.querySelector('.user-name');
+        const avatarElement = document.querySelector('.avatar-circle');
+        const adminNavItem = document.getElementById('admin-nav-item');
+        
+        if (storedUser && nameElement && avatarElement) {
+            const parts = storedUser.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            let initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+            nameElement.textContent = fullName;
+            avatarElement.textContent = initials;
+            const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu'];
+            if (manageriCuAcces.includes(storedUser) && adminNavItem) adminNavItem.style.display = 'flex';
+        }
+        
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const logoutMenu = document.getElementById('logout-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (profileTrigger && logoutMenu) { profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.classList.toggle('show'); }); document.addEventListener('click', () => { logoutMenu.classList.remove('show'); }); }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.stopPropagation(); localStorage.removeItem('agro_session'); localStorage.removeItem('agro_user'); window.location.href = '/'; }); }
+
+        // Funcția de extragere ID din link Google Drive pt a crea Thumbnail
+        function getDriveThumbnail(url) {
+            if (!url) return '';
+            const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+            }
+            return '';
+        }
+
+        // Formatare prietenoasa timp pentru chat
+        function formatChatTime(dateString) {
+            try {
+                const d = new Date(dateString);
+                if (isNaN(d.getTime())) return 'Acum ceva timp';
+                return d.toLocaleDateString('ro-RO') + ' ' + d.toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
+            } catch(e) {
+                return 'Acum ceva timp';
+            }
+        }
+
+        // Acțiune deschidere/închidere rând (Acordeon)
+        window.toggleReport = function(index) {
+            const details = document.getElementById('details-' + index);
+            const icon = document.getElementById('icon-' + index).querySelector('svg');
+            const card = document.getElementById('report-card-' + index);
+
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+                icon.style.transform = 'rotate(180deg)';
+                card.style.borderColor = '#003087';
+                card.style.borderLeftColor = '#003087';
+                card.style.backgroundColor = '#f9fafb';
+            } else {
+                details.style.display = 'none';
+                icon.style.transform = 'rotate(0deg)';
+                card.style.borderColor = '#e5e7eb';
+                card.style.borderLeftColor = 'transparent';
+                card.style.backgroundColor = 'white';
+            }
+        };
+
+        // --- SISTEMUL DE CHAT / COMENTARII ---
+        window.postComment = async function(index) {
+            const input = document.getElementById('chat-input-' + index);
+            const msg = input.value.trim();
+            const sendBtn = document.getElementById('chat-btn-' + index);
+
+            if(!msg) return;
+
+            const messagesContainer = document.getElementById('chat-messages-' + index);
+            const emptyMsg = document.getElementById('empty-chat-' + index);
+            if(emptyMsg) emptyMsg.style.display = 'none';
+
+            const user = localStorage.getItem('agro_user') || 'Anonim';
+            const parts = user.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+
+            // UI: Dezactivăm inputul cât trimitem
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.style.opacity = '0.5';
+
+            try {
+                // Trimitem către Google Script
+                const payload = {
+                    action: "add_comment",
+                    reportIndex: index, // Trimitem indexul pt a ști în ce rând să salvăm
+                    user: user,
+                    msg: msg
+                };
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    // Adăugăm vizual în interfață - FĂRĂ AVATAR
+                    const msgHtml = `
+                        <div class="chat-message is-own">
+                            <div class="chat-bubble">
+                                <div class="chat-meta"><strong>${fullName}</strong> • Acum</div>
+                                <div class="chat-text">${msg}</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    messagesContainer.insertAdjacentHTML('beforeend', msgHtml);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+                    input.value = '';
+                } else {
+                    alert("Eroare la salvarea comentariului: " + result.message);
+                }
+
+            } catch(err) {
+                console.error(err);
+                alert("Nu s-a putut trimite mesajul. Verificați conexiunea.");
+            } finally {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.style.opacity = '1';
+                input.focus();
+            }
+        };
+
+        window.handleChatKeyPress = function(e, index) {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                postComment(index);
+            }
+        };
+
+        // Preluarea datelor
+        let allReports = [];
+        const container = document.getElementById('reports-container');
+        const searchInput = document.getElementById('search-input');
+
+        async function fetchReports() {
+            try {
+                if(GOOGLE_SCRIPT_URL.includes("LIPEȘTE_AICI")) {
+                    container.innerHTML = '<div class="error-state">Te rog configurează linkul API în codul paginii.</div>';
+                    return;
+                }
+
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const json = await response.json();
+
+                if (json.status === 'success') {
+                    allReports = json.data;
+                    renderReports(allReports);
+                } else {
+                    throw new Error(json.message);
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error-state">Nu am putut încărca rapoartele.<br>${error.message}</div>`;
+            }
+        }
+
+        function renderReports(reports) {
+            if (reports.length === 0) {
+                container.innerHTML = '<div class="error-state" style="color: #64748b;">Nu a fost găsit niciun raport.</div>';
+                return;
+            }
+
+            let html = '<div class="list-wide-container"><div class="list-wide">';
+            const currentUser = localStorage.getItem('agro_user') || '';
+            
+            reports.forEach((report, index) => {
+                // Spargem linkurile pozelor (care sunt despărțite prin " | ")
+                const rawLinks = (report.Link_Poze || report.Link_poze || report.link_poze || "").split('|').map(l => l.trim()).filter(l => l);
+                
+                let pozeHtml = '';
+                if (rawLinks.length > 0) {
+                    pozeHtml = `<div class="report-images">` + rawLinks.map(link => {
+                        const thumb = getDriveThumbnail(link);
+                        // Dacă am reușit să extragem ID-ul, arătăm poza, altfel un buton generic
+                        if (thumb) {
+                            return `<a href="${link}" target="_blank" class="img-link" title="Vezi poza mare" onclick="event.stopPropagation()">
+                                        <img src="${thumb}" alt="Defect" loading="lazy" />
+                                    </a>`;
+                        }
+                        return `<a href="${link}" target="_blank" class="text-link" onclick="event.stopPropagation()">🔗 Vezi Poza</a>`;
+                    }).join('') + `</div>`;
+                }
+
+                // Randare Comentarii Anterioare
+                let commentsHtml = '';
+                if (report.Comentarii && Array.isArray(report.Comentarii) && report.Comentarii.length > 0) {
+                    commentsHtml = report.Comentarii.map(comment => {
+                        const isOwn = comment.user === currentUser ? 'is-own' : '';
+                        const parts = comment.user.split(/[._]/); 
+                        const fn = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                        const time = formatChatTime(comment.timestamp);
+
+                        return `
+                            <div class="chat-message ${isOwn}">
+                                <div class="chat-bubble">
+                                    <div class="chat-meta"><strong>${fn}</strong> • ${time}</div>
+                                    <div class="chat-text">${comment.text}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    commentsHtml = `<div class="empty-chat-msg" id="empty-chat-${index}">Nu există completări. Adaugă o notă sau o soluție alternativă!</div>`;
+                }
+
+                // Generăm structura HTML de tip "Model Item Wide"
+                html += `
+                    <div class="model-item-wide" id="report-card-${index}">
+                        <div class="report-summary" onclick="toggleReport(${index})">
+                            <div class="model-info">
+                                <h3>${report.Utilaj || 'Utilaj Nespecificat'}</h3>
+                                <p>Serie: <strong>${report.Serie || '-'}</strong> &nbsp;|&nbsp; Data: ${report.Data || ''} &nbsp;|&nbsp; Tehnician: ${report.Tehnician || report.User || '-'}</p>
+                            </div>
+                            <span class="action-arrow" id="icon-${index}">
+                                Vezi detalii 
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                        </div>
+                        
+                        <div class="report-full-details" id="details-${index}" style="display: none;">
+                            <hr class="r-divider">
+                            
+                            <div class="r-section">
+                                <h4 class="r-red">🔴 Problema reclamată</h4>
+                                <div class="info-box">${report.Problema || report.Problema || 'Nicio descriere.'}</div>
+                            </div>
+                            
+                            <div class="r-section">
+                                <h4 class="r-green">🟢 Rezolvare aplicată</h4>
+                                <div class="info-box">${report.Rezolvare || report.Rezolvare || 'Nu a fost specificată.'}</div>
+                            </div>
+                            
+                            ${pozeHtml}
+
+                            <!-- CHAT / DISCUȚII PENTRU FIECARE RAPORT -->
+                            <div class="chat-section">
+                                <h4 class="chat-title">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 
+                                    Completări & Discuții
+                                </h4>
+                                <div class="chat-messages" id="chat-messages-${index}">
+                                    ${commentsHtml}
+                                </div>
+                                <div class="chat-input-wrapper">
+                                    <input type="text" id="chat-input-${index}" placeholder="Scrie o idee sau o soluție..." onkeypress="handleChatKeyPress(event, ${index})" />
+                                    <button type="button" class="chat-send-btn" id="chat-btn-${index}" onclick="postComment(${index})" title="Trimite">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            container.innerHTML = html;
+        }
+
+        // Logică de căutare
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allReports.filter(r => {
+                return (r.Utilaj && r.Utilaj.toLowerCase().includes(term)) ||
+                       (r.Serie && r.Serie.toLowerCase().includes(term)) ||
+                       (r.Problema && r.Problema.toLowerCase().includes(term));
+            });
+            renderReports(filtered);
+        });
+
+        // Pornim descărcarea
+        fetchReports();
+    });
+</script>
+
+<style>
+    /* HEADER (Identic pt uniformitate) */
+    .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; }
+    .header-right { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap; }
+    .logo-section { display: flex; align-items: baseline; gap: 8px; cursor: pointer; transition: opacity 0.2s; text-decoration: none; }
+    .logo-section:hover { opacity: 0.8; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; color: #111827; }
+    .blue { color: #003087; }
+    .yellow { color: #F4D03F; }
+    .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: auto; display: flex; align-items: center; transition: all 0.2s; white-space: nowrap; }
+    .nav-link:hover { color: #003087; }
+    .admin-link { font-weight: 800 !important; }
+    .back-btn-nav { background-color: #f1f5f9; color: #0f172a !important; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-weight: 700; height: auto !important; }
+    .back-btn-nav:hover { background-color: #e2e8f0; color: #003087 !important; }
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
+    .user-profile:hover { background-color: #f3f4f6; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; animation: fadeIn 0.2s ease-out; }
+    .logout-dropdown.show { display: block; }
+    .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
+    .logout-item:hover { background: #fee2e2; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* DESIGN PAGINĂ ISTORIC */
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+    .breadcrumbs { font-size: 0.95rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; align-items: center; font-weight: 500;}
+    .crumb-link { cursor: pointer; transition: color 0.2s; color: #6b7280; text-decoration: none; }
+    .crumb-link:hover { color: #003087; text-decoration: underline; }
+    .crumb-blue { color: #003087; font-weight: 800; }
+    .separator { color: #d1d5db; }
+
+    .section-header { margin-bottom: 2.5rem; }
+    .section-header h1 { font-size: 2.2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 900; }
+    .section-header p { color: #64748b; font-size: 1.1rem; margin: 0 0 1.5rem 0; }
+
+    .search-bar { display: flex; align-items: center; background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px 15px; width: 100%; max-width: 500px; transition: border-color 0.3s; }
+    .search-bar:focus-within { border-color: #003087; box-shadow: 0 0 0 4px rgba(0, 48, 135, 0.1); }
+    .search-bar input { border: none; outline: none; background: transparent; width: 100%; padding-left: 10px; font-size: 1rem; color: #1e293b; }
+
+</style>
+
+<!-- ===================================================================== -->
+<!-- CSS GLOBAL PENTRU ELEMENTELE INJECTATE DIN JAVASCRIPT -->
+<!-- ===================================================================== -->
+<style is:global>
+    /* DESIGN DE LISTĂ (ACORDEON WIDE) */
+    .list-wide-container { width: 100%; max-width: 100%; box-sizing: border-box; }
+    .list-wide { display: flex; flex-direction: column; gap: 16px; width: 100%; box-sizing: border-box; }
+
+    .model-item-wide { 
+        background: white; border: 1px solid #e5e7eb; border-radius: 8px; 
+        padding: 0; 
+        display: flex; flex-direction: column; 
+        transition: all 0.2s; border-left: 4px solid transparent; 
+        width: 100%; box-sizing: border-box;
+        overflow: hidden;
+    }
+    .model-item-wide:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #cbd5e1; }
+
+    .report-summary { 
+        display: flex; justify-content: space-between; align-items: center; 
+        width: 100%; cursor: pointer; user-select: none; 
+        padding: 1.5rem; background-color: transparent; transition: background-color 0.2s ease;
+    }
+    .report-summary:hover { background-color: #f8fafc; }
+    
+    .model-info { min-width: 0; flex: 1; margin-right: 15px; text-align: left; }
+    .model-info h3 { margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 800; color: #111827; word-break: break-word; }
+    .model-info p { margin: 0; color: #6b7280; font-size: 0.95rem; }
+    .model-info strong { color: #0f172a; }
+
+    .action-arrow { color: #003087; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0;}
+
+    /* Conținutul expandabil (Detaliile) */
+    .report-full-details { 
+        padding: 0 1.5rem 1.5rem 1.5rem; 
+        animation: fadeIn 0.3s ease-out; text-align: left; 
+    }
+    .r-divider { height: 1px; background: #e2e8f0; margin: 0 0 1.5rem 0; border: none; width: 100%; }
+    
+    .r-section { margin-bottom: 20px; width: 100%; }
+    .r-section h4 { 
+        margin: 0 0 8px 0; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .r-red { color: #dc2626; }
+    .r-green { color: #059669; }
+    .info-box { 
+        margin: 0; color: #334155; font-size: 1rem; line-height: 1.6; 
+        background: #ffffff; padding: 16px; border-radius: 12px; 
+        border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.01); white-space: pre-wrap; 
+    }
+
+    /* IMAGINI MINIATURI */
+    .report-images { display: flex; flex-wrap: wrap; gap: 15px; padding: 15px; background: #f8fafc; border-radius: 12px; overflow-x: auto; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;}
+    .img-link { display: block; width: 100px; height: 100px; flex-shrink: 0; border-radius: 8px; overflow: hidden; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .img-link:hover { transform: scale(1.05); }
+    .img-link img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .text-link { color: #003087; font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 5px 10px; background: white; border-radius: 6px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center;}
+
+    /* CHAT SECȚIUNE */
+    .chat-section { margin-top: 25px; border-top: 1px dashed #cbd5e1; padding-top: 20px; }
+    .chat-title { display: flex; align-items: center; gap: 8px; color: #475569; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+    .chat-messages { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+    .empty-chat-msg { font-size: 0.9rem; color: #94a3b8; font-style: italic; text-align: center; padding: 10px 0; }
+    .chat-message { display: flex; gap: 12px; align-items: flex-end; }
+    .chat-bubble { background: #f1f5f9; padding: 12px 16px; border-radius: 16px; border-bottom-left-radius: 4px; max-width: 85%; }
+    .chat-meta { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; display: flex; gap: 5px; }
+    .chat-text { font-size: 0.95rem; color: #1e293b; line-height: 1.4; word-break: break-word; }
+    .chat-message.is-own { flex-direction: row-reverse; }
+    .chat-message.is-own .chat-bubble { background: #eff6ff; border-bottom-left-radius: 16px; border-bottom-right-radius: 4px; }
+    
+    .chat-input-wrapper { display: flex; gap: 10px; align-items: center; width: 100%;}
+    .chat-input-wrapper input { flex: 1; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: inherit; font-size: 0.95rem; outline: none; transition: all 0.2s; }
+    .chat-input-wrapper input:focus { border-color: #003087; box-shadow: 0 0 0 3px rgba(0,48,135,0.1); }
+    .chat-send-btn { background: #003087; color: white; border: none; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .chat-send-btn:hover { background: #002366; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,48,135,0.2); }
+
+    /* LOADING & ERROR */
+    .loading-state, .error-state { text-align: center; padding: 3rem; background: white; border-radius: 16px; border: 1px dashed #cbd5e1; color: #64748b; font-weight: 500; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #003087; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) { 
+        .report-summary { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .action-arrow { width: 100%; justify-content: space-between; background: #f1f5f9; padding: 10px; border-radius: 8px; box-sizing: border-box;}
+    }
+</style>

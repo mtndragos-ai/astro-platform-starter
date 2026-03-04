@@ -1,0 +1,357 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<!-- Verificare Sesiune -->
+<script is:inline>
+    if (!localStorage.getItem('agro_session')) {
+        window.location.href = '/';
+    }
+</script>
+
+<Layout title="Raportare Defecte | AgroConcept Training">
+    <div class="dashboard-container">
+        
+        <!-- HEADER CURAT (Mentine design-ul site-ului) -->
+        <header class="sticky-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/categorii" class="logo-section" style="text-decoration: none;">
+                        <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
+                        <span class="training-text">TRAINING</span>
+                    </a>
+                    <a href="/categorii" class="nav-link back-btn-nav">← Înapoi</a>
+                </div>
+                
+                <div class="header-right">
+                    <a href="/admin/dashboard" class="nav-link admin-link" id="admin-nav-item" style="display: none; color: #dc2626;">📊 Admin</a>
+                    
+                    <div class="user-profile" id="user-profile-trigger">
+                        <div class="user-details">
+                            <span class="user-label">TEHNICIAN LOGAT</span>
+                            <span class="user-name">...</span>
+                        </div>
+                        <div class="avatar-circle">AC</div>
+                        <div class="logout-dropdown" id="logout-menu">
+                            <div class="dropdown-arrow"></div>
+                            <button id="logout-btn" class="logout-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                Delogare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONȚINUT PRINCIPAL -->
+        <main class="main-content">
+            <div class="breadcrumbs">
+                <a href="/categorii" class="crumb-link">Acasă</a>
+                <span class="separator">/</span>
+                <span class="crumb-blue">Raportare Defecte</span>
+            </div>
+
+            <div class="form-wrapper">
+                <header class="section-header text-center">
+                    <div class="icon-warning">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <h1>Formular Raportare Calitate</h1>
+                    <p>Orice problemă identificată la livrare sau în timpul funcționarii utilajului ne ajută să îmbunătățim calitatea utilajelor la nivel de fabrică.</p>
+                </header>
+
+                <form id="defect-form" class="defect-form">
+                    
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="utilaj">Marcă și Model Utilaj <span class="req">*</span></label>
+                            <input type="text" id="utilaj" placeholder="Ex: Kverneland Optima V / New Holland T7.315" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="serie">Serie Șasiu (PIN / VIN) <span class="req">*</span></label>
+                            <input type="text" id="serie" placeholder="Introduceți seria completă" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="problema">Descrierea Defectului <span class="req">*</span></label>
+                        <textarea id="problema" rows="4" placeholder="Descrieți detaliat problema (ex: Pierdere ulei la distribuitor, senzor lipsă, sudură fisurată etc.)" required></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="rezolvare">Rezolvare (Acțiunea luată de dvs.) <span class="req">*</span></label>
+                        <textarea id="rezolvare" rows="3" placeholder="Ex: Am înlocuit o-ringul, am strâns conducta, am comandat piesa X pe garanție etc." required></textarea>
+                    </div>
+
+                    <div class="input-group upload-group">
+                        <label class="upload-label">Atașați Fotografii (Dovada defectului) <span class="req">*</span></label>
+                        <p class="upload-hint">Selectați minim o poză clară a problemei pentru a putea trimite raportul.</p>
+                        
+                        <div class="file-drop-area" id="drop-area">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#003087" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span class="drop-text">Apasă pentru a alege poze din telefon/PC</span>
+                            <input type="file" id="poze" accept="image/*" multiple required class="file-input">
+                        </div>
+                        <div id="file-preview" class="file-preview"></div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="submit-btn">
+                        <span>Trimite Raportul</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+
+                    <div id="form-status" class="form-status" style="display: none;"></div>
+                </form>
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<script is:inline>
+    // ======================================================================
+    // ⚠️ AICI VEI PUNE LINK-UL GENERAT LA PASUL 3 (Google Apps Script)
+    // ======================================================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc3eTf3kKm89RrubKe7lhUPkwW5yolcRIetGO2gyyg4ptAypoRVkajeNTsIccvwkbMaw/exec";
+
+    window.addEventListener('load', function() {
+        // --- Setup User Header (Identic cu restul site-ului) ---
+        const storedUser = localStorage.getItem('agro_user');
+        const nameElement = document.querySelector('.user-name');
+        const avatarElement = document.querySelector('.avatar-circle');
+        const adminNavItem = document.getElementById('admin-nav-item');
+        if (storedUser && nameElement && avatarElement) {
+            const parts = storedUser.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            let initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+            nameElement.textContent = fullName;
+            avatarElement.textContent = initials;
+
+            const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu'];
+            if (manageriCuAcces.includes(storedUser) && adminNavItem) { adminNavItem.style.display = 'flex'; }
+        }
+        
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const logoutMenu = document.getElementById('logout-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (profileTrigger && logoutMenu) { profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.classList.toggle('show'); }); document.addEventListener('click', () => { logoutMenu.classList.remove('show'); }); }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.stopPropagation(); localStorage.removeItem('agro_session'); localStorage.removeItem('agro_user'); window.location.href = '/'; }); }
+
+        // --- Logica de previzualizare poze ---
+        const fileInput = document.getElementById('poze');
+        const filePreview = document.getElementById('file-preview');
+        const dropArea = document.getElementById('drop-area');
+
+        fileInput.addEventListener('change', () => {
+            filePreview.innerHTML = '';
+            if(fileInput.files.length > 0) {
+                dropArea.style.borderColor = '#10b981'; // Verde la succes
+                dropArea.style.backgroundColor = '#ecfdf5';
+                
+                Array.from(fileInput.files).forEach(file => {
+                    const span = document.createElement('span');
+                    span.className = 'file-badge';
+                    span.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> ${file.name}`;
+                    filePreview.appendChild(span);
+                });
+            } else {
+                dropArea.style.borderColor = '#cbd5e1';
+                dropArea.style.backgroundColor = '#f8fafc';
+            }
+        });
+
+        // --- Logica de trimitere formular ---
+        const form = document.getElementById('defect-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formStatus = document.getElementById('form-status');
+
+        // Funcție internă pentru a transforma pozele în text (Base64) pt a fi trimise sigur
+        const getBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve({
+                    name: file.name,
+                    mimeType: file.type,
+                    data: reader.result.split(',')[1] // Luăm doar datele brute
+                });
+                reader.onerror = error => reject(error);
+            });
+        };
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (GOOGLE_SCRIPT_URL.includes("LIPEȘTE_AICI")) {
+                showStatus('Trebuie să completezi link-ul GOOGLE_SCRIPT_URL în cod înainte de a testa.', 'error');
+                return;
+            }
+
+            // Schimbăm aspectul butonului
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = 'Se încarcă pozele... Vă rugăm așteptați.';
+            submitBtn.disabled = true;
+            formStatus.style.display = 'none';
+
+            try {
+                // 1. Convertim toate pozele selectate
+                const files = fileInput.files;
+                const base64Files = [];
+                for (let i = 0; i < files.length; i++) {
+                    const b64 = await getBase64(files[i]);
+                    base64Files.push(b64);
+                }
+
+                // 2. Pregătim Pachetul de date
+                const payload = {
+                    user: storedUser || 'Necunoscut',
+                    utilaj: document.getElementById('utilaj').value,
+                    serie: document.getElementById('serie').value,
+                    problema: document.getElementById('problema').value,
+                    rezolvare: document.getElementById('rezolvare').value,
+                    poze: base64Files
+                };
+
+                // 3. Trimitem datele către Google Script
+                submitBtn.innerHTML = 'Trimitere...';
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' } // Text plain evită erorile de CORS
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    showStatus('✅ Raportul a fost trimis cu succes! Îți mulțumim pentru contribuție.', 'success');
+                    form.reset();
+                    filePreview.innerHTML = '';
+                    dropArea.style.borderColor = '#cbd5e1';
+                    dropArea.style.backgroundColor = '#f8fafc';
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                console.error(error);
+                showStatus(`❌ A apărut o eroare la trimitere. Contactați un administrator. (Eroare: ${error.message})`, 'error');
+            } finally {
+                // Restaurăm butonul
+                submitBtn.classList.remove('loading');
+                submitBtn.innerHTML = `<span>Trimite Raportul</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showStatus(text, type) {
+            formStatus.innerHTML = text;
+            formStatus.className = `form-status status-${type}`;
+            formStatus.style.display = 'block';
+        }
+    });
+</script>
+
+<style>
+    /* HEADER (Identic pt uniformitate) */
+    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; }
+    .header-right { display: flex; align-items: center; gap: 20px; flex-wrap: nowrap; }
+    .logo-section { display: flex; align-items: baseline; gap: 8px; cursor: pointer; transition: opacity 0.2s; text-decoration: none; }
+    .logo-section:hover { opacity: 0.8; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; color: #111827; }
+    .blue { color: #003087; }
+    .yellow { color: #F4D03F; }
+    .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; height: auto; display: flex; align-items: center; transition: all 0.2s; white-space: nowrap; }
+    .nav-link:hover { color: #003087; }
+    .admin-link { font-weight: 800 !important; }
+    .back-btn-nav { background-color: #f1f5f9; color: #0f172a !important; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-weight: 700; height: auto !important; }
+    .back-btn-nav:hover { background-color: #e2e8f0; color: #003087 !important; }
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
+    .user-profile:hover { background-color: #f3f4f6; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; animation: fadeIn 0.2s ease-out; }
+    .logout-dropdown.show { display: block; }
+    .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
+    .logout-item:hover { background-color: #fee2e2; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* FORMULAR DESIGN */
+    .main-content { max-width: 1000px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+    .breadcrumbs { font-size: 0.95rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; align-items: center; font-weight: 500;}
+    .crumb-link { cursor: pointer; transition: color 0.2s; color: #6b7280; text-decoration: none; }
+    .crumb-link:hover { color: #003087; text-decoration: underline; }
+    .crumb-blue { color: #003087; font-weight: 800; }
+    .separator { color: #d1d5db; }
+
+    .form-wrapper { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 3rem 4rem; border: 1px solid #edf2f7; }
+    
+    .section-header.text-center { text-align: center; margin-bottom: 3rem; }
+    .icon-warning { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: #fef2f2; color: #ef4444; border-radius: 20px; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2); }
+    .section-header h1 { font-size: 2.2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 900; letter-spacing: -0.5px;}
+    .section-header p { color: #64748b; font-size: 1.1rem; margin: 0; font-weight: 400;}
+
+    .defect-form { display: flex; flex-direction: column; gap: 1.5rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .input-group label { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+    .req { color: #ef4444; }
+    
+    .input-group input, .input-group textarea {
+        width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid #e2e8f0;
+        background: #f8fafc; font-family: inherit; font-size: 1rem; color: #1e293b;
+        transition: all 0.3s; outline: none; box-sizing: border-box; resize: vertical;
+    }
+    .input-group input:focus, .input-group textarea:focus { border-color: #003087; background: #fff; box-shadow: 0 0 0 4px rgba(0, 48, 135, 0.1); }
+
+    /* ZONA UPLOAD POZE */
+    .upload-group { background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 1px dashed #cbd5e1; }
+    .upload-hint { margin: 0 0 15px 0; font-size: 0.85rem; color: #64748b; }
+    
+    .file-drop-area {
+        position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 2rem; background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px;
+        transition: all 0.3s; cursor: pointer; text-align: center; gap: 10px;
+    }
+    .file-drop-area:hover { border-color: #003087; background: #eff6ff; }
+    .drop-text { font-weight: 700; color: #003087; }
+    .file-input { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+    .file-preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .file-badge { background: #fff; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+
+    /* BUTON SUBMIT */
+    .submit-btn {
+        margin-top: 1rem; background: #003087; color: white; border: none; padding: 16px 24px;
+        border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 48, 135, 0.2); width: 100%;
+    }
+    .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 48, 135, 0.3); background: #002366; }
+    .submit-btn.loading { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .form-status { margin-top: 1rem; padding: 15px; border-radius: 12px; font-weight: 700; text-align: center; }
+    .status-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .status-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+    @media (max-width: 768px) { 
+        .header-content { flex-direction: column; align-items: stretch; padding: 1rem; gap: 15px; height: auto; } 
+        .header-left { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .header-right { width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; gap: 10px; }
+        .brand-text, .training-text { font-size: 1.25rem; }
+        
+        .main-content { padding: 1.5rem 1rem; }
+        .form-wrapper { padding: 2rem 1.5rem; }
+        .form-grid { grid-template-columns: 1fr; }
+        .section-header h1 { font-size: 1.8rem; }
+    }
+</style>
