@@ -49,7 +49,7 @@ import Layout from '../layouts/Layout.astro';
             <div class="breadcrumbs">
                 <a href="/categorii" class="crumb-link">Acasă</a>
                 <span class="separator">/</span>
-                <span class="crumb-blue">Raportare Defecte</span>
+                <span class="crumb-blue">Raportare Defecte Fabrică</span>
             </div>
 
             <div class="form-wrapper">
@@ -73,6 +73,12 @@ import Layout from '../layouts/Layout.astro';
                             <label for="serie">Serie Șasiu (PIN / VIN) <span class="req">*</span></label>
                             <input type="text" id="serie" placeholder="Introduceți seria completă" required>
                         </div>
+                    </div>
+
+                    <!-- Noul rând adăugat pentru Ore / Hectare -->
+                    <div class="input-group">
+                        <label for="ore_functionare">Ore de funcționare / Hectare lucrate <span class="req">*</span></label>
+                        <input type="text" id="ore_functionare" placeholder="Ex: 50 ore / 120 ha / La livrare (0 ore)" required>
                     </div>
 
                     <div class="input-group">
@@ -203,11 +209,12 @@ import Layout from '../layouts/Layout.astro';
                     base64Files.push(b64);
                 }
 
-                // 2. Pregătim Pachetul de date
+                // 2. Pregătim Pachetul de date (inclusiv noul câmp)
                 const payload = {
                     user: storedUser || 'Necunoscut',
                     utilaj: document.getElementById('utilaj').value,
                     serie: document.getElementById('serie').value,
+                    ore_functionare: document.getElementById('ore_functionare').value, // CÂMP NOU PRELUAT
                     problema: document.getElementById('problema').value,
                     rezolvare: document.getElementById('rezolvare').value,
                     poze: base64Files

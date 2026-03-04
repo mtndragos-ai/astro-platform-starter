@@ -292,6 +292,9 @@ import Layout from '../layouts/Layout.astro';
                     commentsHtml = `<div class="empty-chat-msg" id="empty-chat-${index}">Nu există completări. Adaugă o notă sau o soluție alternativă!</div>`;
                 }
 
+                // Preluăm orele de funcționare, cu un fallback în caz că sunt goale sau nedefinite în Google Sheets
+                const oreFunctionare = report.Ore_Functionare || report['Ore de functionare / Hectare lucrate'] || report.ore_functionare || 'Nespecificat';
+
                 // Generăm structura HTML de tip "Model Item Wide"
                 html += `
                     <div class="model-item-wide" id="report-card-${index}">
@@ -310,12 +313,17 @@ import Layout from '../layouts/Layout.astro';
                             <hr class="r-divider">
                             
                             <div class="r-section">
-                                <h4 class="r-red">🔴 Problema reclamată</h4>
+                                <h4 class="r-blue"><span class="status-dot blue"></span> Ore de funcționare / Hectare</h4>
+                                <div class="info-box">${oreFunctionare}</div>
+                            </div>
+
+                            <div class="r-section">
+                                <h4 class="r-red"><span class="status-dot red"></span> Problema reclamată</h4>
                                 <div class="info-box">${report.Problema || report.Problema || 'Nicio descriere.'}</div>
                             </div>
                             
                             <div class="r-section">
-                                <h4 class="r-green">🟢 Rezolvare aplicată</h4>
+                                <h4 class="r-green"><span class="status-dot green"></span> Rezolvare aplicată</h4>
                                 <div class="info-box">${report.Rezolvare || report.Rezolvare || 'Nu a fost specificată.'}</div>
                             </div>
                             
@@ -456,8 +464,15 @@ import Layout from '../layouts/Layout.astro';
         margin: 0 0 8px 0; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
         display: flex; align-items: center; gap: 8px;
     }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-dot.red { background-color: #dc2626; box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1); }
+    .status-dot.green { background-color: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1); }
+    .status-dot.blue { background-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); } /* Punctul albastru pentru Ore */
+    
     .r-red { color: #dc2626; }
     .r-green { color: #059669; }
+    .r-blue { color: #0ea5e9; } /* Culoarea pentru titlul Ore de funcționare */
+
     .info-box { 
         margin: 0; color: #334155; font-size: 1rem; line-height: 1.6; 
         background: #ffffff; padding: 16px; border-radius: 12px; 
