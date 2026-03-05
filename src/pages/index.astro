@@ -1,247 +1,141 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const backgroundUrl = "/img/tractor-bg.jpg"; 
 ---
 
 <Layout title="Login | AgroConcept Training">
-    <div class="login-page">
-        <div class="login-card">
-            <div class="logo-container">
-                <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
-                <span class="training-text">TRAINING</span>
-            </div>
-
-            <div class="login-header">
-                <h1>Acces Restricționat</h1>
-                <p>Această platformă este destinată exclusiv angajaților AgroConcept.</p>
-            </div>
-
-            <!-- BUTONUL MAGIC MICROSOFT -->
-            <button id="ms-login-btn" class="microsoft-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 21 21">
-                    <path fill="#f25022" d="M1 1h9v9H1z"/>
-                    <path fill="#00a4ef" d="M1 11h9v9H1z"/>
-                    <path fill="#7fba00" d="M11 1h9v9h-9z"/>
-                    <path fill="#ffb900" d="M11 11h9v9h-9z"/>
-                </svg>
-                Logare cu contul de Outlook
-            </button>
-
-            <div id="error-message" class="error-msg" style="display: none;"></div>
+	<main class="login-container">
+		<div class="hero-background">
+            <div class="overlay"></div>
         </div>
-    </div>
+
+        <div class="login-wrapper">
+            <div class="brand-header">
+                <h1 class="title">AGRO<span class="highlight">CONCEPT</span></h1>
+                <p class="subtitle">PORTAL TEHNIC SERVICE</p>
+            </div>
+
+            <div class="login-card">
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Utilizator</label>
+                        <input type="text" id="username" name="username" placeholder="ex: ion.popescu" required />
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Parolă</label>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required />
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        AUTENTIFICARE
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+                </form>
+                <div id="error-msg" class="error-message">Date incorecte. Încearcă din nou.</div>
+            </div>
+
+            <p class="footer-note"> AgroConcept. Uz Intern.</p>
+        </div>
+
+	</main>
 </Layout>
 
-<!-- Script pentru Autentificare Firebase cu MICROSOFT -->
-<script type="module">
-    // Importăm modulele Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithPopup, OAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+<script>
+    // --- LISTA UTILIZATORI ---
+    const USERS = [
+        { user: "dragos.munteanu", pass: "suport" },
+        { user: "cristian.boboi", pass: "suport" },
+        { user: "gabriel.chisiu", pass: "suport" },
+        { user: "alexandru.racila", pass: "suportgps" },
+        { user: "florin.marin", pass: "aftersales" },
+        { user: "vladimir.panaite", pass: "suport" },
+        { user: "tehnic", pass: "Agro2024" },
+        { user: "admin", pass: "admin" }
+    ];
 
-    // 🚨 ======================================================================
-    // 🚨 LIPEȘTE DATELE TALE FIREBASE AICI!
-    // Le găsești în Firebase Console -> Project Settings -> General -> Your apps
-    // 🚨 ======================================================================
-    const firebaseConfig = {
-  apiKey: "AIzaSyBHJXPg7aUmhNaP2_KHjluzADBoDIoU24Q",
-  authDomain: "autentificare-23aa8.firebaseapp.com",
-  projectId: "autentificare-23aa8",
-  storageBucket: "autentificare-23aa8.firebasestorage.app",
-  messagingSenderId: "175988924637",
-  appId: "1:175988924637:web:1782dcb4141deb42b23b34",
-  measurementId: "G-DQFXCF3H5L"
-};
+    // Resetăm sesiunea la încărcarea paginii
+    localStorage.removeItem('agro_session');
+    localStorage.removeItem('agro_user');
 
-    // Inițializare Firebase
-    let app;
-    try {
-        app = initializeApp(firebaseConfig);
-    } catch(e) {
-        console.error("Eroare la inițializarea Firebase. Verifică configurația.", e);
-        document.getElementById('error-message').innerText = "Configurația de autentificare lipsește. Contactați administratorul.";
-        document.getElementById('error-message').style.display = 'block';
-    }
+    // Folosim window.onload pentru a fi siguri că elementele există
+    window.addEventListener('load', () => {
+        const form = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('error-msg');
+        const userInput = document.getElementById('username');
+        const passInput = document.getElementById('password');
 
-    const auth = getAuth(app);
-    
-    // Setăm providerul pentru MICROSOFT
-    const provider = new OAuthProvider('microsoft.com');
-    
-    // Opțional: Forțăm afișarea ferestrei de alegere a contului pentru a evita logarea automată cu un cont personal greșit
-    provider.setCustomParameters({
-        prompt: 'select_account',
-        // Dacă vrei să restrângi logarea doar la tenant-ul companiei tale, poți adăuga și 'tenant' aici,
-        // dar filtrarea pe domeniu pe care o facem mai jos este de obicei suficientă și mai simplu de testat.
-        // tenant: 'ID-UL-TENANT-ULUI-TAU-AZURE' 
+        if(form) {
+            form.addEventListener('submit', async (e) => {
+                // 1. OPRIM REFRESH-UL IMEDIAT
+                e.preventDefault(); 
+                
+                // @ts-ignore
+                const enteredUser = userInput.value.trim();
+                // @ts-ignore
+                const enteredPass = passInput.value;
+
+                // Verificăm contul (Ignorăm literele mari/mici pentru utilizator)
+                const validAccount = USERS.find(account => 
+                    account.user.toLowerCase() === enteredUser.toLowerCase() && 
+                    account.pass === enteredPass
+                );
+
+                if (validAccount) {
+                    console.log("Login OK:", validAccount.user);
+
+                    // 2. Salvăm sesiunea local
+                    localStorage.setItem('agro_session', 'active');
+                    localStorage.setItem('agro_user', validAccount.user);
+
+                    // 3. Încercăm să trimitem statistica (Dinamica - nu blochează login-ul dacă fișierul lipsește)
+                    try {
+                        const module = await import('../utils/analytics.js');
+                        if(module && module.Analytics) {
+                            module.Analytics.trackLogin(validAccount.user);
+                        }
+                    } catch (err) {
+                        console.warn("Analytics nu a putut fi încărcat (nu afectează login-ul):", err);
+                    }
+
+                    // 4. Redirecționare
+                    window.location.href = `/categorii?user=${validAccount.user}`;
+                } else {
+                    console.log("Login Fail");
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                        form.style.animation = 'shake 0.5s';
+                        setTimeout(() => form.style.animation = '', 500);
+                    }
+                }
+            });
+        }
+
+        // Ascundem eroarea când utilizatorul scrie
+        userInput?.addEventListener('input', () => { if(errorMsg) errorMsg.style.display = 'none'; });
+        passInput?.addEventListener('input', () => { if(errorMsg) errorMsg.style.display = 'none'; });
     });
-
-    const loginBtn = document.getElementById('ms-login-btn');
-    const errorMsg = document.getElementById('error-message');
-
-    // DOMENIUL ACCEPTAT PENTRU LOGIN
-    const ALLOWED_DOMAIN = '@agroconcept.ro'; // <-- Schimbă cu domeniul tău dacă e altul
-
-    if(loginBtn) {
-        loginBtn.addEventListener('click', () => {
-            // Ascundem erorile vechi
-            errorMsg.style.display = 'none';
-            loginBtn.innerHTML = 'Se procesează...';
-            loginBtn.style.opacity = '0.7';
-
-            // Deschidem fereastra securizată de logare Microsoft
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    // Preluăm email-ul cu care s-a logat utilizatorul
-                    const userEmail = result.user.email;
-
-                    // 🌟 VERIFICAREA MAGICĂ: Este adresa oficială a companiei? 🌟
-                    if (userEmail && userEmail.toLowerCase().endsWith(ALLOWED_DOMAIN)) {
-                        
-                        // Creăm sesiunea locală
-                        localStorage.setItem('agro_session', 'true');
-                        
-                        // Extragem numele dinainte de @ (ex: ion.popescu) pentru a-l folosi în rapoarte
-                        const username = userEmail.split('@')[0];
-                        localStorage.setItem('agro_user', username);
-
-                        // Opțional: Trimitem înregistrarea de succes la Analytics
-                        import('../utils/analytics.js').then(module => {
-                            if(module.Analytics && module.Analytics.trackLogin) {
-                                module.Analytics.trackLogin(userEmail);
-                            }
-                        }).catch(() => { /* ignorăm dacă Analytics lipsește */ });
-
-                        // Redirecționare către panoul de categorii
-                        window.location.href = '/categorii';
-
-                    } else {
-                        // Dacă s-a logat cu un Outlook personal sau de la altă firmă, ÎL DĂM AFARĂ
-                        signOut(auth).then(() => {
-                            showError(`Acces interzis. Adresa <b>${userEmail}</b> nu aparține companiei AgroConcept.`);
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error("Eroare autentificare Microsoft:", error);
-                    // Ignorăm eroarea dacă utilizatorul pur și simplu a închis fereastra popup
-                    if (error.code !== 'auth/popup-closed-by-user') {
-                        showError("A apărut o eroare la conectare. Verificați conexiunea și încercați din nou.");
-                    }
-                })
-                .finally(() => {
-                    // Resetare buton la starea inițială
-                    loginBtn.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 21 21">
-                            <path fill="#f25022" d="M1 1h9v9H1z"/>
-                            <path fill="#00a4ef" d="M1 11h9v9H1z"/>
-                            <path fill="#7fba00" d="M11 1h9v9h-9z"/>
-                            <path fill="#ffb900" d="M11 11h9v9h-9z"/>
-                        </svg>
-                        Logare cu contul de Outlook
-                    `;
-                    loginBtn.style.opacity = '1';
-                });
-        });
-    }
-
-    function showError(message) {
-        errorMsg.innerHTML = message;
-        errorMsg.style.display = 'block';
-    }
 </script>
 
 <style>
-    .login-page {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f4f7fa;
-        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-        background-size: 20px 20px;
-        font-family: 'Roboto', sans-serif;
-    }
-
-    .login-card {
-        background: white;
-        padding: 3.5rem 3rem;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-        width: 100%;
-        max-width: 420px;
-        text-align: center;
-        border: 1px solid #f1f5f9;
-    }
-
-    .logo-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-    .brand-text { font-weight: 900; font-size: 2rem; letter-spacing: -0.5px; color: #111827;}
-    .blue { color: #003087; }
-    .yellow { color: #F4D03F; }
-    .training-text { font-weight: 300; font-size: 1.8rem; color: #9ca3af; text-transform: uppercase; margin-top: -5px; }
-
-    .login-header h1 {
-        font-size: 1.5rem;
-        color: #1e293b;
-        margin: 0 0 10px 0;
-        font-weight: 800;
-    }
-
-    .login-header p {
-        color: #64748b;
-        font-size: 0.95rem;
-        margin: 0 0 2.5rem 0;
-        line-height: 1.5;
-    }
-
-    .microsoft-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        background: white;
-        color: #334155;
-        border: 2px solid #e2e8f0;
-        padding: 14px;
-        font-size: 1.05rem;
-        font-weight: 700;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: inherit;
-    }
-
-    .microsoft-btn:hover {
-        background: #f8fafc;
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transform: translateY(-2px);
-    }
-    
-    .microsoft-btn:active {
-        transform: translateY(0);
-    }
-
-    .error-msg {
-        margin-top: 1.5rem;
-        padding: 12px;
-        background-color: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-
-    @media (max-width: 480px) {
-        .login-card {
-            padding: 2.5rem 1.5rem;
-            margin: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-    }
+    /* STILURI CSS LOGIN */
+    .login-container { position: relative; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .hero-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #002050; background-image: url('/background-tractor.jpg'); background-size: cover; background-position: center; z-index: -1; }
+    .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,48,135,0.85) 0%, rgba(0,0,0,0.7) 100%); }
+    .login-wrapper { z-index: 10; width: 90%; max-width: 400px; text-align: center; animation: fadeIn 0.8s ease-out; }
+    .title { font-size: 2.5rem; font-weight: 900; color: white; letter-spacing: 2px; margin-bottom: 5px; }
+    .highlight { color: var(--nh-yellow); }
+    .subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.8); letter-spacing: 3px; margin-bottom: 2rem; font-weight: 300; }
+    .login-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 2.5rem; border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+    .input-group { text-align: left; margin-bottom: 1.5rem; }
+    .input-group label { display: block; color: rgba(255,255,255,0.9); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; }
+    .input-group input { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-size: 1rem; transition: all 0.3s ease; }
+    .input-group input:focus { outline: none; border-color: var(--nh-yellow); background: rgba(0,0,0,0.4); }
+    .login-btn { width: 100%; padding: 14px; background-color: var(--nh-yellow); color: #000; border: none; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s ease, background 0.2s; }
+    .login-btn:hover { background-color: #ffdb4d; transform: translateY(-2px); }
+    .error-message { display: none; color: #ff6b6b; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px; }
+    .footer-note { margin-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
 </style>
