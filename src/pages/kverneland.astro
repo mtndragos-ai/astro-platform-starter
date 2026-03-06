@@ -9,7 +9,7 @@ import Layout from '../layouts/Layout.astro';
     }
 </script>
 
-<Layout title="Kverneland | AgroConcept Training">
+<Layout title="Kverneland | AgroConcept Service">
     <div class="dashboard-container">
         
         <header class="sticky-header">
@@ -19,7 +19,7 @@ import Layout from '../layouts/Layout.astro';
                 <div class="header-left">
                     <a href="/categorii" class="logo-section" style="text-decoration: none;">
                         <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
-                        <span class="training-text">TRAINING</span>
+                        <span class="training-text">SERVICE</span>
                     </a>
                     
                     <a href="/categorii" class="nav-link back-btn-nav">← Înapoi</a>
@@ -146,8 +146,22 @@ import Layout from '../layouts/Layout.astro';
     });
 </script>
 
-<style>
-    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
+<style is:global>
+    /* Forțăm background-ul alb peste tema dark globală */
+    .dashboard-container { 
+        background-color: #f8fafc !important; 
+        min-height: 100vh; 
+        color: #1f2937; 
+        font-family: 'Roboto', sans-serif; 
+        overflow-x: hidden; 
+        width: 100%; 
+        max-width: 100vw; 
+        box-sizing: border-box; 
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+    }
     
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
     
@@ -198,7 +212,7 @@ import Layout from '../layouts/Layout.astro';
     .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
     .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
     
-    /* 🌟 SOLUȚIA PENTRU CARDURI - EFECTE HOVER DIN CATEGORII 🌟 */
+    /* CARDURI KVERNELAND */
     .machines-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; }
     .machine-card { 
         background: white; 
@@ -223,15 +237,15 @@ import Layout from '../layouts/Layout.astro';
     }
     
     .machine-photo { 
-        max-width: 65%; /* Imaginea nu va depăși niciodată 65% din lățimea cardului */
+        max-width: 65%;
         max-height: 90px; 
         object-fit: contain;
         transition: transform 0.4s ease;
-        mix-blend-mode: multiply; /* Elimină fundalul alb/gri al imaginii */
+        mix-blend-mode: multiply;
     }
     
     .machine-card:hover .machine-photo { 
-        transform: scale(1.08); /* Efect de zoom la hover */
+        transform: scale(1.08); 
     }
 
     .card-content h3 { margin: 0; font-size: 1.5rem; color: #111827; font-weight: 800; }
@@ -256,10 +270,7 @@ import Layout from '../layouts/Layout.astro';
     @media (max-width: 768px) { 
         .header-content { flex-direction: column; align-items: stretch; padding: 1rem; gap: 15px; width: 100%; box-sizing: border-box; height: auto; } 
         
-        /* Pe telefon: Logo stanga, Inapoi dreapta */
         .header-left { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        
-        /* Pe telefon: Admin stanga, Profil dreapta pe randul 2 */
         .header-right { width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px; gap: 10px; }
         
         .brand-text { font-size: 1.25rem; }
