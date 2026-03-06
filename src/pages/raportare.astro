@@ -9,7 +9,7 @@ import Layout from '../layouts/Layout.astro';
     }
 </script>
 
-<Layout title="Raportare Defecte | AgroConcept Training">
+<Layout title="Raportare Defecte | AgroConcept Service">
     <div class="dashboard-container">
         
         <!-- HEADER CURAT (Mentine design-ul site-ului) -->
@@ -18,7 +18,7 @@ import Layout from '../layouts/Layout.astro';
                 <div class="header-left">
                     <a href="/categorii" class="logo-section" style="text-decoration: none;">
                         <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
-                        <span class="training-text">TRAINING</span>
+                        <span class="training-text">Service</span>
                     </a>
                     <a href="/categorii" class="nav-link back-btn-nav">← Înapoi</a>
                 </div>
@@ -49,7 +49,7 @@ import Layout from '../layouts/Layout.astro';
             <div class="breadcrumbs">
                 <a href="/categorii" class="crumb-link">Acasă</a>
                 <span class="separator">/</span>
-                <span class="crumb-blue">Raportare Defecte Fabrică</span>
+                <span class="crumb-blue">Raportare Defecte</span>
             </div>
 
             <div class="form-wrapper">
@@ -57,7 +57,7 @@ import Layout from '../layouts/Layout.astro';
                     <div class="icon-warning">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                     </div>
-                    <h1>Formular Raportare Calitate</h1>
+                    <h1>Formular Raportare</h1>
                     <p>Orice problemă identificată la livrare sau în timpul funcționarii utilajului ne ajută să îmbunătățim calitatea utilajelor la nivel de fabrică.</p>
                 </header>
 
@@ -75,10 +75,18 @@ import Layout from '../layouts/Layout.astro';
                         </div>
                     </div>
 
-                    <!-- Noul rând adăugat pentru Ore / Hectare -->
-                    <div class="input-group">
-                        <label for="ore_functionare">Ore de funcționare / Hectare lucrate <span class="req">*</span></label>
-                        <input type="text" id="ore_functionare" placeholder="Ex: 50 ore / 120 ha / La livrare (0 ore)" required>
+                    <!-- Noul rând pentru Ore și Data Defect -->
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="ore_functionare">Ore de funcționare / Hectare <span class="req">*</span></label>
+                            <input type="text" id="ore_functionare" placeholder="Ex: 50 ore / 120 ha / La livrare" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="data_defect">Data defect (Din Frontu) <span class="req">*</span></label>
+                            <input type="date" id="data_defect" required>
+                            
+                        </div>
                     </div>
 
                     <div class="input-group">
@@ -122,7 +130,7 @@ import Layout from '../layouts/Layout.astro';
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc3eTf3kKm89RrubKe7lhUPkwW5yolcRIetGO2gyyg4ptAypoRVkajeNTsIccvwkbMaw/exec";
 
     window.addEventListener('load', function() {
-        // --- Setup User Header (Identic cu restul site-ului) ---
+        // --- Setup User Header ---
         const storedUser = localStorage.getItem('agro_user');
         const nameElement = document.querySelector('.user-name');
         const avatarElement = document.querySelector('.avatar-circle');
@@ -214,7 +222,8 @@ import Layout from '../layouts/Layout.astro';
                     user: storedUser || 'Necunoscut',
                     utilaj: document.getElementById('utilaj').value,
                     serie: document.getElementById('serie').value,
-                    ore_functionare: document.getElementById('ore_functionare').value, // CÂMP NOU PRELUAT
+                    ore_functionare: document.getElementById('ore_functionare').value,
+                    data_defect: document.getElementById('data_defect').value, // <-- CÂMP NOU PRELUAT DIN FORMULAR
                     problema: document.getElementById('problema').value,
                     rezolvare: document.getElementById('rezolvare').value,
                     poze: base64Files
@@ -311,6 +320,7 @@ import Layout from '../layouts/Layout.astro';
     
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+    .field-desc { font-size: 0.85rem; color: #64748b; margin-top: -4px; font-style: italic; }
     .req { color: #ef4444; }
     
     .input-group input, .input-group textarea {

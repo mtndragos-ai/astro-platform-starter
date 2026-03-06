@@ -8,7 +8,7 @@ import Layout from '../layouts/Layout.astro';
     }
 </script>
 
-<Layout title="Istoric Defecte | AgroConcept">
+<Layout title="Istoric Defecte | AgroConcept Service">
     <div class="dashboard-container">
         
         <!-- HEADER CURAT -->
@@ -17,7 +17,7 @@ import Layout from '../layouts/Layout.astro';
                 <div class="header-left">
                     <a href="/categorii" class="logo-section" style="text-decoration: none;">
                         <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
-                        <span class="training-text">TRAINING</span>
+                        <span class="training-text">SERVICE</span>
                     </a>
                     <a href="/categorii" class="nav-link back-btn-nav">← Înapoi</a>
                 </div>
@@ -119,6 +119,35 @@ import Layout from '../layouts/Layout.astro';
                 return d.toLocaleDateString('ro-RO') + ' ' + d.toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
             } catch(e) {
                 return 'Acum ceva timp';
+            }
+        }
+
+        // Formatare curată dată pentru afișarea "Data defect" din Google Sheets
+        function formatDefectDate(dateVal) {
+            if (!dateVal || dateVal === "-" || dateVal.trim() === "") return "Nespecificat";
+            try {
+                const d = new Date(dateVal);
+                if (!isNaN(d.getTime())) {
+                    return d.toLocaleDateString('ro-RO');
+                }
+                return dateVal; // Daca e text pur și nu e o data validă
+            } catch(e) {
+                return dateVal;
+            }
+        }
+
+        // Formatare curată pentru data de înregistrare din Header (elimină T și Z)
+        function formatHeaderDate(dateVal) {
+            if (!dateVal) return "";
+            try {
+                const d = new Date(dateVal);
+                if (!isNaN(d.getTime())) {
+                    return d.toLocaleDateString('ro-RO') + ', ' + d.toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
+                }
+                // Fallback dacă nu e dată validă (ex. șir text ciudat), încercăm să înlocuim T și Z
+                return String(dateVal).replace('T', ' ').replace('Z', '').split('.')[0];
+            } catch(e) {
+                return String(dateVal).replace('T', ' ').replace('Z', '').split('.')[0];
             }
         }
 
@@ -292,8 +321,15 @@ import Layout from '../layouts/Layout.astro';
                     commentsHtml = `<div class="empty-chat-msg" id="empty-chat-${index}">Nu există completări. Adaugă o notă sau o soluție alternativă!</div>`;
                 }
 
-                // Preluăm orele de funcționare, cu un fallback în caz că sunt goale sau nedefinite în Google Sheets
+                // Preluăm câmpurile extra cu fallbacks
                 const oreFunctionare = report.Ore_Functionare || report['Ore de functionare / Hectare lucrate'] || report.ore_functionare || 'Nespecificat';
+                
+                // Extragem data defect din coloana corespunzătoare
+                const dataDefectRaw = report.Data_Defect || report['Data defect'] || report.data_defect || '-';
+                const dataDefect = formatDefectDate(dataDefectRaw);
+
+                // Formatăm data de înregistrare pentru antet
+                const dataInregistrare = formatHeaderDate(report.Data);
 
                 // Generăm structura HTML de tip "Model Item Wide"
                 html += `
@@ -301,7 +337,7 @@ import Layout from '../layouts/Layout.astro';
                         <div class="report-summary" onclick="toggleReport(${index})">
                             <div class="model-info">
                                 <h3>${report.Utilaj || 'Utilaj Nespecificat'}</h3>
-                                <p>Serie: <strong>${report.Serie || '-'}</strong> &nbsp;|&nbsp; Data: ${report.Data || ''} &nbsp;|&nbsp; Tehnician: ${report.Tehnician || report.User || '-'}</p>
+                                <p>Serie: <strong>${report.Serie || '-'}</strong> &nbsp;|&nbsp; Înregistrat la: ${dataInregistrare} &nbsp;|&nbsp; Tehnician: ${report.Tehnician || report.User || '-'}</p>
                             </div>
                             <span class="action-arrow" id="icon-${index}">
                                 Vezi detalii 
@@ -312,9 +348,15 @@ import Layout from '../layouts/Layout.astro';
                         <div class="report-full-details" id="details-${index}" style="display: none;">
                             <hr class="r-divider">
                             
-                            <div class="r-section">
-                                <h4 class="r-blue"><span class="status-dot blue"></span> Ore de funcționare / Hectare</h4>
-                                <div class="info-box">${oreFunctionare}</div>
+                            <div class="details-grid-2-cols" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div class="r-section" style="margin-bottom: 0;">
+                                    <h4 class="r-blue"><span class="status-dot blue"></span> Ore de funcționare / Hectare</h4>
+                                    <div class="info-box">${oreFunctionare}</div>
+                                </div>
+                                <div class="r-section" style="margin-bottom: 0;">
+                                    <h4 class="r-orange"><span class="status-dot orange"></span> Data Defectului</h4>
+                                    <div class="info-box">${dataDefect}</div>
+                                </div>
                             </div>
 
                             <div class="r-section">
@@ -399,7 +441,7 @@ import Layout from '../layouts/Layout.astro';
     .logout-dropdown.show { display: block; }
     .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
     .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
-    .logout-item:hover { background: #fee2e2; }
+    .logout-item:hover { background-color: #fee2e2; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* DESIGN PAGINĂ ISTORIC */
@@ -467,11 +509,13 @@ import Layout from '../layouts/Layout.astro';
     .status-dot { width: 8px; height: 8px; border-radius: 50%; }
     .status-dot.red { background-color: #dc2626; box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1); }
     .status-dot.green { background-color: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1); }
-    .status-dot.blue { background-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); } /* Punctul albastru pentru Ore */
+    .status-dot.blue { background-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); } 
+    .status-dot.orange { background-color: #f97316; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); } /* Punct portocaliu pt Data Defect */
     
     .r-red { color: #dc2626; }
     .r-green { color: #059669; }
-    .r-blue { color: #0ea5e9; } /* Culoarea pentru titlul Ore de funcționare */
+    .r-blue { color: #0ea5e9; } 
+    .r-orange { color: #f97316; } /* Text portocaliu */
 
     .info-box { 
         margin: 0; color: #334155; font-size: 1rem; line-height: 1.6; 
@@ -512,5 +556,8 @@ import Layout from '../layouts/Layout.astro';
     @media (max-width: 768px) { 
         .report-summary { flex-direction: column; align-items: flex-start; gap: 12px; }
         .action-arrow { width: 100%; justify-content: space-between; background: #f1f5f9; padding: 10px; border-radius: 8px; box-sizing: border-box;}
+        
+        /* Pe mobil le punem una sub alta */
+        .details-grid-2-cols { grid-template-columns: 1fr !important; gap: 15px !important; }
     }
 </style>
