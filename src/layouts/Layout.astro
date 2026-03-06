@@ -10,10 +10,24 @@ const { title } = Astro.props;
 <html lang="ro">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Platforma de Training AgroConcept" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content="Platforma de Service AgroConcept" />
+		
+        <!-- Adăugăm limitări de zoom recomandate pentru Web Apps pe iOS -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+		
+        <!-- Favicon standard -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		
+        <!-- ========================================== -->
+        <!-- ICONIȚE ȘI SETĂRI PENTRU IOS HOME SCREEN -->
+        <!-- ========================================== -->
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="AC Service" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <!-- ========================================== -->
+
+        <meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
         <!-- Font: Roboto pentru aspect tehnic -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
