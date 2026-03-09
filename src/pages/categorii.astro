@@ -11,7 +11,7 @@ const noutati = [
 
 // Datele pentru echipamente (acestea rămân la fel)
 const categorii = [
-    { id: 'tractoare', titlu: 'Tractoare', descriere: 'Seria T5, T6, T7, T8', img: '/imagini/tractor.png', link: '/tractoare', color: '#003087' },
+    { id: 'tractoare', titlu: 'Tractoare', descriere: 'Seria T4, T5, T6, T7, T8', img: '/imagini/tractor.png', link: '/tractoare', color: '#003087' },
     { id: 'combine', titlu: 'Combine', descriere: 'CR, CX, TC', img: '/imagini/combina.png', link: '/combine', color: '#F4D03F' },
     { id: 'kverneland', titlu: 'Kverneland', descriere: 'Implemente și Utilaje', img: '/imagini/kverneland.png', link: '/kverneland', color: '#E30613' }
 ];
@@ -153,7 +153,7 @@ const categorii = [
             nameElement.textContent = fullName;
             avatarElement.textContent = initials;
 
-            const manageriCuAcces = ['dragos.munteanu', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi'];
+            const manageriCuAcces = ['dragos.munteanu','vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'florin.marin', 'marian.cataonu'];
             if (manageriCuAcces.includes(storedUser) && adminNavItem) {
                 adminNavItem.style.display = 'flex';
             }

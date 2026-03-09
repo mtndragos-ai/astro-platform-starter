@@ -338,7 +338,7 @@ export const kvernelandData = {
                 { nume: "iXtrack", 
                         descriere: "Manual Service",
                         versiuni: [
-                            { an: "iXtrack T3, T4, T6", link: "https://drive.google.com/file/d/1WRtYjLlL10QRXbtBE2PPU0BgbQvtz-at/view?usp=drive_link" },
+                            { an: "PDI iXtrack T3, T4, T6", link: "https://drive.google.com/file/d/1WRtYjLlL10QRXbtBE2PPU0BgbQvtz-at/view?usp=drive_link" },
                             { an: "iXspray Electronics (Terminal)", link: "https://drive.google.com/file/d/15Lx39hrtviCNZAUrk14yU3KR9d3glwls/view?usp=drive_link" },
                             { an: "iXflow Pulse", link: "https://drive.google.com/file/d/1DR54jlPkT0b0emsqLanMFTH1wNSaIcE_/view?usp=drive_link" },
                             { an: "Boomguide Comfort UC5 (2 senzori)", link: "https://drive.google.com/file/d/1LejbQ7w80FKTixWIAiYmW9lUXnOw3dby/view?usp=drive_link" },

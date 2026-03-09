@@ -1,0 +1,357 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { combineData } from '../../../data/combine-data.js';
+
+export async function getStaticPaths() {
+    const paths = [];
+    for (const machine of Object.keys(combineData)) {
+        for (const type of Object.keys(combineData[machine].resources)) {
+            paths.push({
+                params: { machine, type }
+            });
+        }
+    }
+    return paths;
+}
+
+const { machine, type } = Astro.params;
+const currentMachineData = combineData[machine];
+const machineTitle = currentMachineData ? currentMachineData.title : "Utilaj";
+const resourceData = currentMachineData.resources[type];
+const pageTitle = resourceData ? resourceData.title : "Resurse";
+---
+
+<script is:inline>
+    if (!localStorage.getItem('agro_session')) {
+        window.location.href = '/';
+    }
+</script>
+
+<Layout title={`${pageTitle} - ${machineTitle} | AgroConcept Service`}>
+    <div class="dashboard-container">
+        
+        <header class="sticky-header">
+             <div class="header-content">
+                <div class="header-left">
+                    <a href="/categorii" class="logo-section" style="text-decoration: none;">
+                        <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
+                        <span class="training-text">SERVICE</span>
+                    </a>
+                    <a href={`/combine/${machine}`} class="nav-link back-btn-nav" id="header-back-link">← Înapoi</a>
+                </div>
+                <div class="header-right">
+                    <a href="/admin/dashboard" class="nav-link admin-link" id="admin-nav-item" style="display: none; color: #dc2626;">📊 Admin</a>
+                    <div class="user-profile" id="user-profile-trigger">
+                        <div class="user-details"><span class="user-label">TEHNICIAN LOGAT</span><span class="user-name">...</span></div><div class="avatar-circle">AC</div>
+                        <div class="logout-dropdown" id="logout-menu"><div class="dropdown-arrow"></div><button id="logout-btn" class="logout-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Delogare</button></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="breadcrumbs">
+                <a href="/combine" class="crumb-link">Combine</a><span class="separator">/</span>
+                <a href={`/combine/${machine}`} class="crumb-link" id="breadMachine">{machineTitle}</a><span class="separator">/</span>
+                <span class="crumb-blue" id="crumb-resource">{pageTitle}</span>
+                <span class="separator" id="sep-model" style="display:none">/</span><span class="crumb-blue" id="crumb-model" style="display:none"></span>
+                <span class="separator" id="sep-folder" style="display:none">/</span><span class="crumb-blue" id="crumb-folder" style="display:none"></span>
+            </div>
+
+            <div id="content-area">
+                <header class="section-header" id="dynamic-header">
+                    <h1 id="page-title">{machineTitle}: {pageTitle}</h1>
+                    <p id="page-subtitle">Alege opțiunea pentru a vedea variantele disponibile.</p>
+                </header>
+                
+                <div class="list-wide-container">
+                    <div class="list-wide" id="dynamic-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<script define:vars={{ initialData: resourceData?.models || [], machineTitle, pageTitle }}>
+    window.resourceData = initialData;
+    window.baseTitle = `${machineTitle}: ${pageTitle}`;
+</script>
+
+<script is:inline>
+    window.addEventListener('load', function() {
+        const storedUser = localStorage.getItem('agro_user');
+        const nameElement = document.querySelector('.user-name');
+        const avatarElement = document.querySelector('.avatar-circle');
+        const adminNavItem = document.getElementById('admin-nav-item');
+
+        if (storedUser && nameElement && avatarElement) {
+            const parts = storedUser.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            let initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+            nameElement.textContent = fullName;
+            avatarElement.textContent = initials;
+
+            const manageriCuAcces = ['admin', 'dragos.munteanu', 'florin.marin', 'vladimir.panaite', 'gabriel.chisiu', 'cristian.boboi', 'andrei.pavel', 'marian.cataonu' ];
+            if (manageriCuAcces.includes(storedUser) && adminNavItem) {
+                adminNavItem.style.display = 'flex';
+            }
+        }
+
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const logoutMenu = document.getElementById('logout-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (profileTrigger && logoutMenu) { profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.classList.toggle('show'); }); document.addEventListener('click', () => { logoutMenu.classList.remove('show'); }); }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.stopPropagation(); localStorage.removeItem('agro_session'); localStorage.removeItem('agro_user'); window.location.href = '/'; }); }
+        
+        handleNavigation();
+    });
+
+    window.addEventListener('popstate', handleNavigation);
+
+    function handleNavigation() {
+        const params = new URLSearchParams(window.location.search);
+        const modelName = params.get('model');
+        const folderName = params.get('folder');
+        const listContainer = document.getElementById('dynamic-list');
+        const pageTitleElement = document.getElementById('page-title');
+        const headerBackLink = document.getElementById('header-back-link');
+        
+        const crumbRes = document.getElementById('crumb-resource');
+        const crumbMod = document.getElementById('crumb-model');
+        const crumbFold = document.getElementById('crumb-folder');
+        const sepMod = document.getElementById('sep-model');
+        const sepFold = document.getElementById('sep-folder');
+
+        // Resetari
+        listContainer.innerHTML = '';
+        document.getElementById('dynamic-header').style.display = 'block';
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) mainContent.classList.remove('fullscreen-mode');
+
+        if (modelName) {
+            const model = window.resourceData.find(m => m.nume === modelName);
+            crumbRes.classList.add('crumb-link'); crumbRes.onclick = () => { window.history.back(); };
+            crumbMod.style.display = 'inline'; crumbMod.innerText = modelName; sepMod.style.display = 'inline';
+
+            if (folderName && model) {
+                const subcat = model.versiuni.find(v => v.an === folderName);
+                pageTitleElement.innerText = `${modelName}: ${folderName}`;
+                headerBackLink.href = "javascript:history.back()";
+                crumbMod.classList.add('crumb-link'); crumbMod.onclick = () => { window.history.back(); };
+                crumbFold.style.display = 'inline'; crumbFold.innerText = folderName; sepFold.style.display = 'inline';
+
+                subcat?.fisiere.forEach(f => {
+                    listContainer.innerHTML += `
+                        <div class="model-item-wide">
+                            <div class="model-info"><h3>${f.nume}</h3><p>Format PDF</p></div>
+                            <a href="${f.link}" target="_blank" class="action-btn-wide">Descarcă <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
+                        </div>`;
+                });
+            } else if (model) {
+                pageTitleElement.innerText = `${window.baseTitle} - ${modelName}`;
+                headerBackLink.href = "javascript:history.back()";
+                crumbFold.style.display = 'none'; sepFold.style.display = 'none';
+
+                model.versiuni.forEach(v => {
+                    if (v.isFolder) {
+                        listContainer.innerHTML += `
+                            <div class="model-item-wide clickable" onclick="navigateToFolder('${modelName}', '${v.an}')">
+                                <div class="model-info"><h3>${v.an}</h3><p>Deschide dosarul</p></div>
+                                <span class="action-arrow">Selectează <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                            </div>`;
+                    } else if (v.isIframe) {
+                        document.getElementById('dynamic-header').style.display = 'none'; 
+                        let iframeSrc = v.link;
+                        if (iframeSrc.includes('.pdf')) {
+                            iframeSrc = iframeSrc.split('#')[0] + '#toolbar=0&navpanes=0&view=FitW';
+                        }
+                        
+                        if (mainContent) mainContent.classList.add('fullscreen-mode');
+                        
+                        listContainer.innerHTML += `
+                            <div class="mobile-pdf-actions">
+                                <a href="${v.link}" target="_blank" class="native-pdf-btn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                    Deschide documentul nativ
+                                </a>
+                            </div>
+                            <div class="iframe-container-fix top-adjusted">
+                                <iframe src="${iframeSrc}" title="${v.an}"></iframe>
+                            </div>`;
+                    } else {
+                        // Determinam iconita în funcție de link (Video vs PDF)
+                        let isVideo = v.link.includes('youtube.com') || v.link.includes('youtu.be') || v.link.includes('vimeo');
+                        let btnText = isVideo ? "Vezi Video" : "Descarcă";
+                        
+                        listContainer.innerHTML += `
+                            <div class="model-item-wide">
+                                <div class="model-info"><h3>${v.an}</h3><p>${isVideo ? 'Tutorial Video' : 'Descarcă fișierul'}</p></div>
+                                <a href="${v.link}" target="_blank" class="action-btn-wide">${btnText} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
+                            </div>`;
+                    }
+                });
+            }
+        } else {
+            pageTitleElement.innerText = window.baseTitle;
+            
+            crumbRes.className = 'crumb-blue'; crumbRes.onclick = null;
+            crumbMod.style.display = 'none'; sepMod.style.display = 'none';
+            crumbFold.style.display = 'none'; sepFold.style.display = 'none';
+
+            // Fallback înapoi general la categorie 
+            const pathSegments = window.location.pathname.split('/').filter(Boolean);
+            if (pathSegments.length >= 2) {
+                const cat = pathSegments[0];
+                const mach = pathSegments[1];
+                headerBackLink.href = `/${cat}/${mach}`;
+            }
+
+            if (window.resourceData.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                        <p>Momentan nu există materiale adăugate în această secțiune.</p>
+                    </div>`;
+                return;
+            }
+
+            if (window.resourceData.length === 1 && window.resourceData[0].versiuni && window.resourceData[0].versiuni[0].isIframe) {
+                const iframeData = window.resourceData[0].versiuni[0];
+                document.getElementById('dynamic-header').style.display = 'none'; 
+                
+                let iframeSrc = iframeData.link;
+                if (iframeSrc.includes('.pdf')) {
+                    iframeSrc = iframeSrc.split('#')[0] + '#toolbar=0&navpanes=0&view=FitW';
+                }
+
+                if (mainContent) mainContent.classList.add('fullscreen-mode');
+
+                listContainer.innerHTML = `
+                    <div class="mobile-pdf-actions">
+                        <a href="${iframeData.link}" target="_blank" class="native-pdf-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Deschide documentul nativ
+                        </a>
+                    </div>
+                    <div class="iframe-container-fix top-adjusted">
+                        <iframe src="${iframeSrc}" title="Document Viewer"></iframe>
+                    </div>`;
+                return; 
+            }
+
+            window.resourceData.forEach(m => {
+                listContainer.innerHTML += `
+                    <div class="model-item-wide clickable" onclick="navigateToModel('${m.nume}')">
+                        <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'Accesează documentația'}</p></div>
+                        <span class="action-arrow">Selectează <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                    </div>`;
+            });
+        }
+    }
+
+    window.navigateToModel = (n) => { const u = new URL(window.location); u.searchParams.set('model', n); window.history.pushState({}, '', u); handleNavigation(); }
+    window.navigateToFolder = (m, f) => { const u = new URL(window.location); u.searchParams.set('folder', f); window.history.pushState({}, '', u); handleNavigation(); }
+</script>
+
+<style>
+    .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
+    
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    
+    .header-left { display: flex; align-items: center; gap: 30px; }
+    .header-right { display: flex; align-items: center; gap: 20px; }
+
+    .logo-section { display: flex; align-items: baseline; gap: 10px; cursor: pointer; transition: opacity 0.2s; }
+    .logo-section:hover { opacity: 0.8; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; }
+    .blue { color: #003087; }
+    .yellow { color: #F4D03F; }
+    .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    
+    .nav-link { text-decoration: none; color: #4b5563; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; transition: all 0.2s; white-space: nowrap; }
+    .nav-link:hover { color: #003087; }
+    .admin-link { font-weight: 800 !important; }
+
+    .back-btn-nav { background-color: #f1f5f9; color: #0f172a !important; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-weight: 700; height: auto !important; border-bottom: none !important; }
+    .back-btn-nav:hover { background-color: #e2e8f0; color: #003087 !important; }
+    
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; transition: background-color 0.2s; }
+    .user-profile:hover { background-color: #f3f4f6; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; animation: fadeIn 0.2s ease-out; }
+    .logout-dropdown.show { display: block; }
+    .dropdown-arrow { position: absolute; top: -6px; right: 14px; width: 12px; height: 12px; background: white; transform: rotate(45deg); border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; text-align: left; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
+    .logout-item:hover { background: #fee2e2; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .main-content { max-width: 1000px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+    .breadcrumbs { font-size: 1rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; align-items: center; flex-wrap: wrap; }
+    .crumb-link { cursor: pointer; transition: color 0.2s; color: #6b7280; text-decoration: none; }
+    .crumb-link:hover { color: #003087; text-decoration: underline; }
+    .crumb-blue { color: #003087; font-weight: 700; }
+    .separator { color: #d1d5db; }
+    
+    .section-header { margin-bottom: 2.5rem; }
+    .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; word-break: break-word; }
+    .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
+
+    /* RESPONSIVITATE */
+    @media (max-width: 768px) { 
+        .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 12px; width: 100%; box-sizing: border-box; } 
+        .header-left { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .header-right { width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 15px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+        
+        .logo-section { gap: 6px; }
+        .brand-text { font-size: 1.25rem; }
+        .training-text { font-size: 1.25rem; }
+        .back-btn-nav { flex-shrink: 0; padding: 6px 12px; font-size: 0.85rem; }
+        .main-content { padding: 1.5rem 1rem; }
+    }
+</style>
+
+<style is:global>
+    .list-wide-container { width: 100%; max-width: 100%; box-sizing: border-box; }
+    .list-wide { display: flex; flex-direction: column; gap: 16px; width: 100%; box-sizing: border-box; }
+    
+    .empty-state { background: white; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 3rem; text-align: center; color: #64748b; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+    .model-item-wide { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; border-left: 4px solid transparent; width: 100%; box-sizing: border-box; }
+    .model-item-wide.clickable { cursor: pointer; }
+    .model-item-wide:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #003087; border-left-color: #003087; background: #f9fafb; transform: translateY(-2px); }
+    
+    .model-info { min-width: 0; flex: 1; margin-right: 15px; }
+    .model-info h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; word-break: break-word; }
+    .model-info p { margin: 4px 0 0 0; color: #6b7280; font-size: 0.9rem; }
+    
+    .action-btn-wide { background-color: #003087; color: white; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; text-decoration: none; white-space: nowrap; flex-shrink: 0;}
+    .action-arrow { color: #003087; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0;}
+
+    /* FIX-URI IFRAME FULLSCREEN */
+    .main-content.fullscreen-mode { padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 0 !important; max-width: 100% !important; }
+    .main-content.fullscreen-mode .breadcrumbs { padding-left: 2rem; padding-right: 2rem; }
+    
+    .mobile-pdf-actions { display: none; padding: 0 2rem 1rem 2rem; }
+    .native-pdf-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background-color: #003087; color: white; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; text-decoration: none; box-shadow: 0 4px 15px rgba(0, 48, 135, 0.2); }
+    
+    .iframe-container-fix { width: 100%; height: 85vh; border-radius: 12px; overflow: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: #f8f9fa; box-sizing: border-box; border: 1px solid #e5e7eb; }
+    .iframe-container-fix.top-adjusted { margin-top: -1rem; }
+    
+    .fullscreen-mode .iframe-container-fix { border-radius: 0; border-left: none; border-right: none; border-bottom: none; box-shadow: none; height: calc(100vh - 120px); }
+    .iframe-container-fix iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; min-height: 85vh;}
+
+    @media (max-width: 768px) { 
+        .model-item-wide { flex-direction: column; align-items: flex-start; gap: 15px; } 
+        .model-info { margin-right: 0; width: 100%; }
+        .action-btn-wide { width: 100%; justify-content: center; } 
+        
+        .main-content.fullscreen-mode .breadcrumbs { padding-left: 1rem; padding-right: 1rem; }
+        .mobile-pdf-actions { display: flex; padding: 0 1rem 1.5rem 1rem; }
+        .iframe-container-fix { height: 75vh; border-radius: 8px; }
+    }
+</style>
