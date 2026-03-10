@@ -2,6 +2,22 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
+<!-- SCRIPT NOU: Verifică automat dacă sesiunea e de azi -->
+<script is:inline>
+    const today = new Date().toDateString();
+    const sessionDate = localStorage.getItem('agro_session_date');
+
+    // Dacă este deja logat și data coincide cu cea de azi, îl trimitem direct în platformă
+    if (localStorage.getItem('agro_session') && sessionDate === today) {
+        window.location.replace('/categorii');
+    } else {
+        // Dacă e a doua zi (sau nu e logat deloc), curățăm preventiv memoria veche
+        localStorage.removeItem('agro_session');
+        localStorage.removeItem('agro_user');
+        localStorage.removeItem('agro_session_date');
+    }
+</script>
+
 <Layout title="AgroConcept Service">
     <div class="login-page-fullscreen">
         <div class="login-card-modern">
@@ -89,6 +105,9 @@ import Layout from '../layouts/Layout.astro';
                     if (userEmail && userEmail.toLowerCase().endsWith(ALLOWED_DOMAIN)) {
                         
                         localStorage.setItem('agro_session', 'true');
+                        
+                        // 🌟 SETĂM DATA CURENTĂ PENTRU A EXPIRA LA MIEZUL NOPȚII 🌟
+                        localStorage.setItem('agro_session_date', new Date().toDateString());
                         
                         // Extragem numele dinainte de @ (ex: ion.popescu)
                         const username = userEmail.split('@')[0];

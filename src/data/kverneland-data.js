@@ -301,6 +301,38 @@ export const kvernelandData = {
                     }
                 ]
             },
+            "manual-asamblare": { 
+                 title: "Manual Asamblare", 
+                models: [
+			{ nume: "Asamblare microgranulator Optima",
+                         descriere: "Manual asamblare",
+                         versiuni: [
+                            { an: "Asamblare microgranulator", link: "https://drive.google.com/file/d/11FQf9xQkSJSQDrsFHnO4HbagyGZKMxgy/view?usp=drive_link" }
+                        ]
+                    },
+                    { nume: "Asamblare transport Optima TF PROFI",
+                        descriere: "Manual asamblare",
+                        versiuni: [
+                            { an: "Asamblare TF Profi", link: "https://drive.google.com/file/d/1yaYHzV5Dba44PCew78-KthFvKHXm07aw/view?usp=drive_link" }
+                        ]
+                    },
+                    { nume: "Asamblare sistem PUDAMA",
+                        descriere: "Manual asamblare",
+                        versiuni: [
+                            { an: "Asamblare PUDAMA", link: "https://drive.google.com/file/d/1fXY6mrdOXwwGrLE24pWIWEeR7SNt5pEa/view?usp=drive_link" }
+                        ]
+                    },
+                    { nume: "Asamblare transport U-drill 4001",
+                        descriere: "Manual asamblare",
+
+                        versiuni: [
+                            { an: "Asamblare transport U-drill 4001", link: "https://drive.google.com/file/d/1rnfepWxh4gw8TTth5WFDFjC-v4cJXLar/view?usp=drive_link" }
+                        ]
+                    }
+
+                ]
+            
+            },
             "video": { title: "Tutorial Video", models: [] },
             "erori": { 
                 title: "Coduri de Eroare", 
@@ -547,6 +579,19 @@ export const kvernelandData = {
                     }
                 ]
             },
+            "manual-asamblare": { 
+                 title: "Manual Asamblare", 
+                models: [
+			{ nume: "Asamblare aparatori noroi iXtrack",
+                            descriere: "Manual asamblare",
+                         versiuni: [
+                            { an: "Asamblare aparatori noroi iXtrack", link: "https://drive.google.com/file/d/1HvPpsCV9kkydMoT8ipDMpJJZs-Z6sXhp/view?usp=drive_link" }
+                        ]
+                    }
+                ]
+            
+            },
+
             "video": { title: "Tutorial Video", models: [] },
             "erori": { 
                 title: "Coduri de Eroare", 
@@ -730,7 +775,59 @@ export const kvernelandData = {
                     }
                 ]
             },
-        
+       "manual-asamblare": { 
+                title: "Manual Asamblare", 
+                models: [
+                    { nume: "Asamblare Trimflow",
+                         descriere: "Manual asamblare",
+                         versiuni: [
+                            { an: "Border plate Exacta CL", link: "https://drive.google.com/file/d/1xLAP02LHN_9oTDaIwBNvk0vfIA40Nbfr/view?usp=drive_link" },
+                            { an: "Trimflow Exacta CL - EW", link: "https://drive.google.com/file/d/1nKpJp0kcYIBhNzofdvEuZrvcJRk9HMLB/view?usp=drive_link" },
+                            { an: "Trimflow Exacta CL Geospread", link: "https://drive.google.com/file/d/1TZbwi48gcdfEHZh8eWkPR_Pe9PRSMr6i/view?usp=drive_link" },
+                            { an: "Trimflow Exacta TL", link: "https://drive.google.com/file/d/1TZbwi48gcdfEHZh8eWkPR_Pe9PRSMr6i/view?usp=drive_link" },
+                            { an: "Trimflow Exacta TL Geospread", link: "https://drive.google.com/file/d/1TZbwi48gcdfEHZh8eWkPR_Pe9PRSMr6i/view?usp=drive_link" }
+                            
+                        
+                        ] 
+                    },
+                    { nume: "Asamblare Treaptă",
+                         descriere: "Manual asamblare",
+                         versiuni: [
+                            { an: "Asamblare treapta", link: "https://drive.google.com/file/d/1lNRi0Jg1HGWxjIIoUHtJeta2faBg6eVN/view?usp=drive_link" }
+                        ]
+                    },
+                    { nume: "Asamblare hidromotor",
+                         descriere: "Manual asamblare",
+                         versiuni: [ 
+                            { an: "Asamblare hidromotor", link: "https://drive.google.com/file/d/1soLoNElN0sCcBslMRr2W1s2PoxcL6c-O/view?usp=drive_link" }   
+                ]
+            },
+            { nume: "Asamblare kit golire",
+                         descriere: "Manual asamblare",
+                         versiuni: [
+                            { an: "Asamblare kit golire", link: "https://drive.google.com/file/d/1VrNI4DTX_FwBaD5DjVPW-U9lrzxT2A8b/view?usp=drive_link" }
+                        ] 
+         },
+            { nume: "Asamblare stopuri",
+                            descriere: "Manual asamblare",
+                            versiuni: [
+                                { an: "Asamblare stopuri", link: "https://drive.google.com/file/d/1C8xy1ic8r6M5emVNawCCKeNi9O8yYbA_/view?usp=drive_link" }
+                            ]
+                        },
+            { nume: "Asamblare palete",
+                            descriere: "Manual asamblare",
+                            versiuni: [
+                                { an: "Asamblare palete", link: "https://drive.google.com/file/d/1tPJQ4WdFXb7V4inVYD0l9X5Qr5GVluu7/view?usp=drive_link" }
+                            ]
+                        },
+                        { nume: "Asamblare prelata",
+                            descriere: "Manual asamblare",
+                            versiuni: [
+                                { an: "Asamblare prelata", link: "https://drive.google.com/file/d/1kgGFT9UwG30Wj_h5fC51kRs_wvmpnLKn/view?usp=drive_link" }
+                            ]
+                        }
+                ]
+            },
         
 
         "video": { title: "Tutorial Video", models: [] },
