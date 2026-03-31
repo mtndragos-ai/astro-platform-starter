@@ -298,8 +298,62 @@ export const kvernelandData = {
                                 ]
                             } 
                         ]
+                    },
+                    { 
+                        nume: "Microgranulator Optima", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1WGTjMp9gO-hyddwn5zthEsy7vn7I5d5y/view?usp=drive_link" }
+                                ]
+                            }, 
+                            { 
+                                an: "Ghid EN", 
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1ykJ-H8Pwh-vUJwjgru3J7PW5Zt0-iMn1/view?usp=drive_link" }
+                                ]
+                            } 
+                        ]
+                    },
+                        {
+                        nume: "GEOFORCE",
+                        descriere: "Ghid Operator",
+                        versiuni: [
+                            {
+                                an: "Ghid RO",
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/11096tcvJphi94GNchrrdY7oKYGfo1w8V/view?usp=drive_link" }
+                                ]
+                            },
+                            {
+                                an: "Ghid EN",
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1GAYtjVkQHmfYjOT6BBY4GQtW6F1rfTck/view?usp=drive_link" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        nume: "PUDAMA",
+                        descriere: "Ghid Operator",
+                        versiuni: [
+                            {
+                                an: "Ghid EN",
+                                isFolder: true,
+                                fisiere: [
+                                    { nume: "Manual Operator", link: "https://drive.google.com/file/d/1t2hOlfGK195c4OTbs-V1ujAa44cIq4qc/view?usp=drive_link" }
+                                ]
+                            }
+                        ]
                     }
                 ]
+                    
             },
             "manual-asamblare": { 
                  title: "Manual Asamblare", 
