@@ -81,7 +81,7 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         </div>
                         <h3>Manual Service</h3>
-                        <p>Descarcă schemele explodate și instrucțiunile de asamblare.</p>
+                        <p class="card-desc">Descarcă schemele explodate și instrucțiunile de asamblare.</p>
                         <span class="resource-btn">Accesează PDF →</span>
                     </a>
 
@@ -90,26 +90,25 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                         </div>
                         <h3>Manual Operare</h3>
-                        <p>Ghidul operatorului pentru setări în câmp și calibrare.</p>
+                        <p class="card-desc">Ghidul operatorului pentru setări în câmp și calibrare.</p>
                         <span class="resource-btn">Accesează PDF →</span>
                     </a>
 
                     <a href={`/kverneland/${machine}/manual-asamblare`} class="resource-card">
-    <!-- Am pus o culoare Teal/Turcoaz și o iconiță cu o cheie mecanică -->
-    <div class="icon-box" style="background-color: #ccfbf1; color: #0d9488;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-    </div>
-    <h3>Manual Asamblare</h3>
-    <p class="card-desc">Ghiduri cu pașii necesari pentru asamblarea utilajelor la livrare.</p>
-    <span class="resource-btn">Accesează PDF →</span>
-</a>
+                        <div class="icon-box" style="background-color: #ccfbf1; color: #0d9488;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        </div>
+                        <h3>Manual Asamblare</h3>
+                        <p class="card-desc">Ghiduri cu pașii necesari pentru asamblarea utilajelor la livrare.</p>
+                        <span class="resource-btn" style="color: #0d9488;">Accesează PDF →</span>
+                    </a>
 
                     <a href={`/kverneland/${machine}/video`} class="resource-card">
                         <div class="icon-box red-box">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                         </div>
                         <h3>Tutorial Video</h3>
-                        <p>Vizualizează procedura de punere în funcțiune.</p>
+                        <p class="card-desc">Vizualizează procedura de punere în funcțiune.</p>
                         <span class="resource-btn">Urmărește Video →</span>
                     </a>
 
@@ -118,9 +117,22 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                         </div>
                         <h3>Coduri de Eroare</h3>
-                        <p>Identificare erori și soluții rapide.</p>
+                        <p class="card-desc">Identificare erori și soluții rapide.</p>
                         <span class="resource-btn">Caută Erori →</span>
                     </a>
+
+                    <!-- SIMULATORUL PENTRU SEMĂNĂTORI - SE AFIȘEAZĂ DOAR DACĂ E SEMĂNĂTOARE -->
+                    {machine === 'semanatori' && (
+                        <a href="/kverneland/semanatori/calculator" class="resource-card" style="border: 2px solid #fef3c7;">
+                            <div class="icon-box" style="background-color: #fffbeb; color: #d97706;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16.01" y2="14"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="16" y1="18" x2="16.01" y2="18"></line><line x1="12" y1="18" x2="12.01" y2="18"></line><line x1="8" y1="18" x2="8.01" y2="18"></line><line x1="16" y1="10" x2="16.01" y2="10"></line><line x1="12" y1="10" x2="12.01" y2="10"></line><line x1="8" y1="10" x2="8.01" y2="10"></line></svg>
+                            </div>
+                            <h3>Calculator Semănat</h3>
+                            <p class="card-desc">Simulator interactiv pentru acuratețea semănatului de precizie.</p>
+                            <span class="resource-btn" style="color: #d97706;">Deschide Simulator →</span>
+                        </a>
+                    )}
+
                 </div>
             </div>
         </main>
@@ -172,19 +184,32 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
     });
 </script>
 
-<style>
-    .dashboard-container { background-color: #ffffff; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; box-sizing: border-box; }
+<style is:global>
+    /* Container principal */
+    .dashboard-container { 
+        background-color: #f8fafc !important; 
+        min-height: 100vh; 
+        color: #1f2937; 
+        font-family: 'Roboto', sans-serif; 
+        overflow-x: hidden; 
+        width: 100%; 
+        max-width: 100vw; 
+        box-sizing: border-box; 
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+    }
     
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
     .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
     
-    /* GRUPARE NOUĂ PENTRU ANTET */
     .header-left { display: flex; align-items: center; gap: 30px; }
     .header-right { display: flex; align-items: center; gap: 20px; }
 
-    .logo-section { display: flex; align-items: baseline; gap: 10px; cursor: pointer; transition: opacity 0.2s; }
+    .logo-section { display: flex; align-items: baseline; gap: 10px; cursor: pointer; transition: opacity 0.2s; text-decoration: none;}
     .logo-section:hover { opacity: 0.8; }
-    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; color: #111827;}
     .blue { color: #003087; }
     .yellow { color: #F4D03F; }
     .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
@@ -218,22 +243,32 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
     .separator { color: #d1d5db; }
     
     .section-header { margin-bottom: 2.5rem; text-align: left; }
-    .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; word-break: break-word; }
+    .section-header h1 { font-size: 2rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 900; word-break: break-word; }
     .section-header p { color: #4b5563; font-size: 1.1rem; margin: 0; }
     
-    .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .resource-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; text-decoration: none; }
-    .resource-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #d1d5db; }
-    .icon-box { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
+    /* GRID DESKTOP */
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+    
+    .resource-card { 
+        background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 1.5rem; 
+        display: flex; flex-direction: column; align-items: flex-start; transition: transform 0.2s; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer; text-decoration: none; 
+    }
+    .resource-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); border-color: #cbd5e1; }
+    
+    .icon-box { width: 54px; height: 54px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
     .blue-box { background-color: #eff6ff; color: #2563eb; }
     .red-box { background-color: #fef2f2; color: #dc2626; }
     .green-box { background-color: #f0fdf4; color: #16a34a; }
     .purple-box { background-color: #f3e8ff; color: #9333ea; }
-    .resource-card h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
-    .resource-card p { margin: 0 0 1.5rem 0; font-size: 0.9rem; line-height: 1.5; color: #6b7280; flex-grow: 1; }
-    .resource-btn { color: #2563eb; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 5px; }
+    
+    .resource-card h3 { margin: 0 0 0.5rem 0; font-size: 1.2rem; font-weight: 800; color: #111827; }
+    .resource-card .card-desc { margin: 0 0 1.5rem 0; font-size: 0.95rem; line-height: 1.5; color: #64748b; flex-grow: 1; }
+    .resource-btn { color: #2563eb; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 5px; }
 
-    /* RESPONSIVITATE NOUĂ PENTRU ANTET */
+    /* ========================================================= */
+    /* RESPONSIVITATE MOBIL - FORMAT PĂTRAT PE 2 COLOANE         */
+    /* ========================================================= */
     @media (max-width: 768px) { 
         .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 12px; width: 100%; box-sizing: border-box; } 
         .header-left { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -243,6 +278,54 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
         .brand-text { font-size: 1.25rem; }
         .training-text { font-size: 1.25rem; }
         .back-btn-nav { flex-shrink: 0; padding: 6px 12px; font-size: 0.85rem; }
+        
         .main-content { padding: 1.5rem 1rem; }
+        .section-header h1 { font-size: 1.6rem; }
+        .section-header p { font-size: 0.95rem; }
+
+        /* FORȚĂM 2 COLOANE PE MOBIL */
+        .resources-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px;
+        }
+        
+        /* CĂSUȚE PĂTRATE CENTRATE PE MOBIL */
+        .resource-card {
+            padding: 1.5rem 1rem;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1; 
+            border-radius: 16px;
+        }
+
+        .icon-box {
+            width: 46px;
+            height: 46px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+        }
+
+        .icon-box svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .resource-card h3 {
+            font-size: 0.95rem;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .resource-card .card-desc { display: none; }
+        .resource-btn { display: none; }
+    }
+
+    @media (max-width: 360px) {
+        .resources-grid { gap: 10px; }
+        .resource-card { padding: 1rem 0.5rem; }
+        .icon-box { width: 38px; height: 38px; margin-bottom: 8px;}
+        .icon-box svg { width: 18px; height: 18px; }
+        .resource-card h3 { font-size: 0.85rem; }
     }
 </style>

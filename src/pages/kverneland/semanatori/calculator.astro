@@ -1,0 +1,342 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<script is:inline>
+    const today = new Date().toDateString();
+    const sessionDate = localStorage.getItem('agro_session_date');
+    if (!localStorage.getItem('agro_session') || sessionDate !== today) {
+        window.location.replace('/');
+    }
+</script>
+
+<Layout title="Diagnoză Semănat | AgroConcept Service">
+    <div class="dashboard-container">
+        
+        <!-- HEADER -->
+        <header class="sticky-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/categorii" class="logo-section" style="text-decoration: none;">
+                        <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
+                        <span class="training-text">SERVICE</span>
+                    </a>
+                    <a href="/kverneland/semanatori" class="nav-link back-btn-nav">← Înapoi</a>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-profile" id="user-profile-trigger">
+                        <div class="user-details">
+                            <span class="user-label">TEHNICIAN LOGAT</span>
+                            <span class="user-name">...</span>
+                        </div>
+                        <div class="avatar-circle">AC</div>
+                        <div class="logout-dropdown" id="logout-menu">
+                            <div class="dropdown-arrow"></div>
+                            <button id="logout-btn" class="logout-item">Delogare</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <div class="breadcrumbs">
+                <a href="/kverneland" class="crumb-link">Kverneland</a><span class="separator">/</span>
+                <a href="/kverneland/semanatori" class="crumb-link">Semănători</a><span class="separator">/</span>
+                <span class="crumb-blue">Instrument Diagnoză și Calibrare</span>
+            </div>
+
+            <div class="calculator-wrapper">
+                <header class="section-header text-center">
+                    <div class="icon-calc">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h1>Instrument Complet de Diagnoză și Calibrare</h1>
+                    <p>Modificați câmpurile verzi pentru a obține automat rezultatele.</p>
+                </header>
+
+                <!-- SETĂRI GENERALE -->
+                <div class="global-settings-card">
+                    <h3>Setări Generale (Se aplică tuturor calculelor)</h3>
+                    <div class="input-group global-input">
+                        <label for="row-dist" style="min-height: auto;">Distanța între rânduri (cm)</label>
+                        <input type="number" id="row-dist" class="excel-input" value="70" placeholder="ex: 70">
+                    </div>
+                </div>
+
+                <div class="calc-grid">
+                    
+                    <!-- MODUL 1: Diagnoză prin ruletă -->
+                    <div class="calc-card">
+                        <div class="card-header border-red">
+                            <h2>1. Verificare prin Ruletă</h2>
+                            <span class="subtitle">Metoda celor 11 boabe (10 intervale)</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <label for="dist-11">Distanța măsurată între boaba 1 și 11 (cm):</label>
+                                <input type="number" id="dist-11" class="excel-input" value="158" placeholder="ex: 158">
+                            </div>
+                            <!-- Aici lăsăm gol pentru a se alinia automat rezultatul la bază cu celelalte -->
+                            <div class="result-box green-result">
+                                <span class="res-label">DENSITATE REALĂ<br>(plante/ha):</span>
+                                <span class="res-value" id="res-ruleta">90,416</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODUL 2: Planificare -->
+                    <div class="calc-card">
+                        <div class="card-header border-blue">
+                            <h2>2. Planificare (Țintă)</h2>
+                            <span class="subtitle">Ce ar trebui să găsesc pe teren?</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <label for="target-density">Densitate țintă dorită (plante/ha):</label>
+                                <input type="number" id="target-density" class="excel-input" value="88000" placeholder="ex: 88000">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Distanța între semințe (cm):</label>
+                                <div class="excel-input readonly-input" id="res-dist-teoretica">16.23</div>
+                            </div>
+
+                            <div class="result-box yellow-result">
+                                <span class="res-label">ȚINTĂ RULETĂ pt 11 boabe (cm):</span>
+                                <span class="res-value" id="res-tinta">162.3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODUL 3: Diagnoză prin numărare -->
+                    <div class="calc-card">
+                        <div class="card-header border-green">
+                            <h2>3. Verificare prin Numărare</h2>
+                            <span class="subtitle">Dacă măsurați o lungime fixă</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <label for="measured-length">Lungimea măsurată pe rând (m):</label>
+                                <input type="number" id="measured-length" class="excel-input" value="8" placeholder="ex: 8">
+                            </div>
+                            <div class="input-group">
+                                <label for="seed-count">Număr de boabe găsite:</label>
+                                <input type="number" id="seed-count" class="excel-input" value="50" placeholder="ex: 50">
+                            </div>
+                            <div class="result-box green-result">
+                                <span class="res-label">DENSITATE REZULTATĂ<br>(plante/ha):</span>
+                                <span class="res-value" id="res-numarare">89,286</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<script is:inline>
+    window.addEventListener('load', function() {
+        // --- LOGICA DE PROFIL ---
+        const storedUser = localStorage.getItem('agro_user');
+        const nameElement = document.querySelector('.user-name');
+        const avatarElement = document.querySelector('.avatar-circle');
+        if (storedUser && nameElement && avatarElement) {
+            const parts = storedUser.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            let initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+            nameElement.textContent = fullName; avatarElement.textContent = initials;
+        }
+
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const logoutMenu = document.getElementById('logout-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (profileTrigger && logoutMenu) { profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.classList.toggle('show'); }); document.addEventListener('click', () => { logoutMenu.classList.remove('show'); }); }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.stopPropagation(); localStorage.removeItem('agro_session'); localStorage.removeItem('agro_user'); window.location.href = '/'; }); }
+
+        // --- LOGICA CALCULATORULUI DE DIAGNOZĂ ---
+        const rowDistInput = document.getElementById('row-dist');
+        const dist11Input = document.getElementById('dist-11');
+        const targetDensityInput = document.getElementById('target-density');
+        const measuredLengthInput = document.getElementById('measured-length');
+        const seedCountInput = document.getElementById('seed-count');
+
+        function formatNumber(num) {
+            return Math.round(num).toLocaleString('ro-RO');
+        }
+
+        function calculateResults() {
+            const rowDistCm = parseFloat(rowDistInput.value) || 0;
+
+            // 1. Modul Ruletă
+            const dist11 = parseFloat(dist11Input.value) || 0;
+            const resRuleta = document.getElementById('res-ruleta');
+            if (rowDistCm > 0 && dist11 > 0) {
+                const density = 1000000000 / (rowDistCm * dist11);
+                resRuleta.innerText = formatNumber(density);
+            } else {
+                resRuleta.innerText = "0";
+            }
+
+            // 2. Modul Planificare
+            const targetDensity = parseFloat(targetDensityInput.value) || 0;
+            const resTinta = document.getElementById('res-tinta');
+            const resDistTeoretica = document.getElementById('res-dist-teoretica');
+            if (rowDistCm > 0 && targetDensity > 0) {
+                const targetDist = 1000000000 / (targetDensity * rowDistCm);
+                const distTeoretica = targetDist / 10;
+                
+                resTinta.innerText = targetDist.toFixed(1);
+                resDistTeoretica.innerText = distTeoretica.toFixed(2);
+            } else {
+                resTinta.innerText = "0.0";
+                resDistTeoretica.innerText = "0.00";
+            }
+
+            // 3. Modul Numărare
+            const measuredLength = parseFloat(measuredLengthInput.value) || 0;
+            const seedCount = parseFloat(seedCountInput.value) || 0;
+            const resNumarare = document.getElementById('res-numarare');
+            if (rowDistCm > 0 && measuredLength > 0 && seedCount > 0) {
+                const areaM2 = measuredLength * (rowDistCm / 100);
+                const calcDensity = (seedCount / areaM2) * 10000;
+                resNumarare.innerText = formatNumber(calcDensity);
+            } else {
+                resNumarare.innerText = "0";
+            }
+        }
+
+        // Ascultători de evenimente
+        rowDistInput.addEventListener('input', calculateResults);
+        dist11Input.addEventListener('input', calculateResults);
+        targetDensityInput.addEventListener('input', calculateResults);
+        measuredLengthInput.addEventListener('input', calculateResults);
+        seedCountInput.addEventListener('input', calculateResults);
+
+        // Calculează inițial folosind datele default
+        calculateResults();
+    });
+</script>
+
+<style>
+    /* BAZA GENERALĂ */
+    .dashboard-container { background-color: #f8f9fa; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; box-sizing: border-box; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left, .header-right { display: flex; align-items: center; gap: 30px; }
+    .logo-section { display: flex; align-items: baseline; gap: 8px; cursor: pointer; text-decoration: none; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; color: #111827; }
+    .blue { color: #003087; } .yellow { color: #F4D03F; }
+    .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    .back-btn-nav { background-color: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-weight: 700; text-decoration: none; transition: 0.2s; }
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; }
+    .logout-dropdown.show { display: block; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; text-align: left; }
+    
+    .main-content { max-width: 1100px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+    .breadcrumbs { font-size: 0.95rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; font-weight: 500;}
+    .crumb-link { color: #6b7280; text-decoration: none; transition: 0.2s; } .crumb-link:hover { color: #003087; }
+    .crumb-blue { color: #003087; font-weight: 800; }
+    .separator { color: #d1d5db; }
+
+    /* DESIGN CALCULATOR */
+    .calculator-wrapper { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 3rem; border: 1px solid #edf2f7; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .icon-calc { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: #e0e7ff; color: #1d4ed8; border-radius: 20px; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.2); }
+    .section-header h1 { font-size: 2.1rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 900; letter-spacing: -0.5px;}
+    .section-header p { color: #64748b; font-size: 1.1rem; margin: 0; }
+
+    /* CĂSUȚA GENERALĂ (SUS) */
+    .global-settings-card { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; }
+    .global-settings-card h3 { margin: 0; font-size: 1.2rem; color: #0f172a; font-weight: 800; }
+    .global-input { flex-direction: row !important; align-items: center; margin: 0 !important; gap: 15px !important;}
+    .global-input label { margin: 0; }
+    .global-input input { width: 120px !important; }
+
+    /* GRILĂ 3 MODULE */
+    .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    
+    .calc-card { border: 1px solid #e2e8f0; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; background: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s;}
+    .calc-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    
+    /* ALINIERE ANTETE (H2) */
+    .card-header { 
+        padding: 1.2rem 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-top: 4px solid transparent; 
+        min-height: 95px; /* Forțează aceeași înălțime pentru toate antetele */
+        display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;
+    }
+    .card-header.border-red { border-top-color: #dc2626; }
+    .card-header.border-blue { border-top-color: #2563eb; }
+    .card-header.border-green { border-top-color: #059669; }
+    
+    .card-header h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 4px 0; color: #0f172a; }
+    .subtitle { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+
+    /* AICI E MODIFICAREA PENTRU SPAȚIERE GARANTATĂ ÎNTRE CĂSUȚE */
+    .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; gap: 1.5rem; }
+
+    /* INPUT-URI TIP EXCEL - ALINIERE PERFECTĂ Orizontală */
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    
+    .input-group label { 
+        font-weight: 600; color: #334155; font-size: 0.9rem; line-height: 1.3;
+        min-height: 38px; /* Forțează spațiu egal fie că e 1 rând sau 2 */
+        display: flex; align-items: flex-end; padding-bottom: 6px;
+    }
+    
+    .excel-input { 
+        width: 100%; padding: 12px 14px; border-radius: 8px; border: 2px solid #a7f3d0; 
+        background: #ecfdf5; font-family: 'Roboto', sans-serif; font-size: 1.2rem; font-weight: 800; 
+        color: #065f46; outline: none; box-sizing: border-box; transition: 0.2s; min-height: 52px;
+    }
+    .excel-input:focus { border-color: #059669; background: #fff; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
+    
+    .readonly-input { background: #f8fafc; border-color: #cbd5e1; color: #334155; display: flex; align-items: center; cursor: default; }
+
+    /* REZULTATE TIP EXCEL */
+    .result-box { 
+        padding: 1.5rem 1.2rem; border-radius: 12px; display: flex; flex-direction: column; align-items: center; 
+        text-align: center; gap: 12px; margin-top: auto; border: 2px solid; 
+        min-height: 120px; /* Forțează înălțimea egală pentru rezultatele de jos */
+        justify-content: center; box-sizing: border-box;
+    }
+    
+    .green-result { background: #f0fdf4; border-color: #86efac; }
+    .green-result .res-label { color: #166534; }
+    .green-result .res-value { color: #14532d; }
+    
+    .yellow-result { background: #fffbeb; border-color: #fde68a; }
+    .yellow-result .res-label { color: #92400e; }
+    .yellow-result .res-value { color: #b45309; }
+
+    .res-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;}
+    .res-value { font-size: 1.8rem; font-weight: 900; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+        .calc-grid { grid-template-columns: 1fr; }
+        .global-settings-card { flex-direction: column; align-items: stretch; gap: 15px; }
+        .global-input { flex-direction: column !important; align-items: stretch; }
+        .global-input input { width: 100% !important; }
+        .input-group label { min-height: auto; align-items: flex-start; } /* Reset pe mobil */
+        .card-header { min-height: auto; } /* Reset pe mobil */
+    }
+
+    @media (max-width: 768px) {
+        .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 15px; } 
+        .header-left, .header-right { width: 100%; justify-content: space-between; }
+        .main-content { padding: 1.5rem 1rem; }
+        .calculator-wrapper { padding: 1.5rem 1rem; }
+        .section-header h1 { font-size: 1.6rem; }
+        .calc-card { border-radius: 12px; }
+    }
+</style>
