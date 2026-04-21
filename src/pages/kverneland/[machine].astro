@@ -121,7 +121,7 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
                         <span class="resource-btn">Caută Erori →</span>
                     </a>
 
-                    <!-- SIMULATORUL PENTRU SEMĂNĂTORI - SE AFIȘEAZĂ DOAR DACĂ E SEMĂNĂTOARE -->
+                    <!-- SIMULATORUL PENTRU SEMĂNĂTORI -->
                     {machine === 'semanatori' && (
                         <a href="/kverneland/semanatori/calculator" class="resource-card" style="border: 2px solid #fef3c7;">
                             <div class="icon-box" style="background-color: #fffbeb; color: #d97706;">
@@ -133,7 +133,7 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
                         </a>
                     )}
 
-                    <!-- CALCULATOR MARCATORI PENTRU SEMĂNĂTORI -->
+                    <!-- CALCULATOR MARCATORI -->
                     {machine === 'semanatori' && (
                         <a href="/kverneland/semanatori/marcatori" class="resource-card" style="border: 2px solid #e0e7ff;">
                             <div class="icon-box" style="background-color: #e0e7ff; color: #4f46e5;">
@@ -142,6 +142,18 @@ const machineTitle = currentData ? currentData.title : "Utilaj";
                             <h3>Calculator Marcatori</h3>
                             <p class="card-desc">Calcul lungime marcatori pentru conducere pe centrul sau roata tractorului.</p>
                             <span class="resource-btn" style="color: #4f46e5;">Calculează Marcatori →</span>
+                        </a>
+                    )}
+
+                    <!-- CALCULATOR DUZE -->
+                    {machine === 'sprayer' && (
+                        <a href="/kverneland/sprayer/calculator" class="resource-card" style="border: 2px solid #cffafe;">
+                            <div class="icon-box" style="background-color: #cffafe; color: #0891b2;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                            </div>
+                            <h3>Calculator Duze (Sprayer)</h3>
+                            <p class="card-desc">Calculează automat debitul necesar sau viteza optimă în funcție de norma dorită.</p>
+                            <span class="resource-btn" style="color: #0891b2;">Calculează Debitul →</span>
                         </a>
                     )}
 

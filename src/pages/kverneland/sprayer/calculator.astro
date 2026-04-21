@@ -1,0 +1,352 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<script is:inline>
+    const today = new Date().toDateString();
+    const sessionDate = localStorage.getItem('agro_session_date');
+    if (!localStorage.getItem('agro_session') || sessionDate !== today) {
+        window.location.replace('/');
+    } else {
+        document.documentElement.classList.add('session-valid');
+    }
+</script>
+
+<Layout title="Calculator Duze Sprayer | AgroConcept Service">
+    <div class="dashboard-container">
+        
+        <!-- HEADER -->
+        <header class="sticky-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/categorii" class="logo-section" style="text-decoration: none;">
+                        <div class="brand-text"><span class="blue">AGRO</span><span class="yellow">CONCEPT</span></div>
+                        <span class="training-text">SERVICE</span>
+                    </a>
+                    <a href="/kverneland/sprayer" class="nav-link back-btn-nav">← Înapoi</a>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-profile" id="user-profile-trigger">
+                        <div class="user-details">
+                            <span class="user-label">TEHNICIAN LOGAT</span>
+                            <span class="user-name">...</span>
+                        </div>
+                        <div class="avatar-circle">AC</div>
+                        <div class="logout-dropdown" id="logout-menu">
+                            <div class="dropdown-arrow"></div>
+                            <button id="logout-btn" class="logout-item">Delogare</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN -->
+        <main class="main-content">
+            <div class="breadcrumbs">
+                <a href="/kverneland" class="crumb-link">Kverneland</a><span class="separator">/</span>
+                <a href="/kverneland/sprayer" class="crumb-link">Sprayer (Erbicidat)</a><span class="separator">/</span>
+                <span class="crumb-blue">Calculator Duze</span>
+            </div>
+
+            <div class="calculator-wrapper">
+                <header class="section-header text-center">
+                    <div class="icon-calc">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                    </div>
+                    <h1>Calibrare Duze & Viteză (Erbicidat)</h1>
+                    <p>Află debitul, viteza sau presiunea necesară pentru stropit direct pe teren.</p>
+                </header>
+
+                <!-- SETĂRI GENERALE RAMPĂ -->
+                <div class="global-settings-card">
+                    <div class="global-text">
+                        <h3>Configurație Rampă</h3>
+                        <p>Distanța standard între duze la pulverizatoarele agricole este de obicei de 50 cm.</p>
+                    </div>
+                    <div class="input-group global-input">
+                        <label for="dist_duze" style="min-height: auto;">Distanță (cm)</label>
+                        <input type="number" id="dist_duze" class="excel-input" value="50" placeholder="ex: 50">
+                    </div>
+                </div>
+
+                <div class="calc-grid">
+                    
+                    <!-- MODUL UNIC: Diagnoză Debit și Presiune -->
+                    <div class="calc-card">
+                        <div class="card-header border-purple">
+                            <h2>Calibrare Duză (Debit & Presiune)</h2>
+                            <span class="subtitle">Ce presiune setez pentru duza pe care o am?</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <label for="norma1">Norma de stropire dorită (L/Ha):</label>
+                                <input type="number" id="norma1" class="excel-input" value="150" placeholder="ex: 150">
+                            </div>
+                            <div class="input-group mt-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label for="viteza1">Viteză (km/h):</label>
+                                    <input type="number" id="viteza1" class="excel-input" value="10" placeholder="ex: 10">
+                                </div>
+                                <div>
+                                    <label for="duza1">Duză TeeJet:</label>
+                                    <select id="duza1" class="excel-input custom-select">
+                                        <option value="0.40">Portocaliu (01)</option>
+                                        <option value="0.60">Verde (015)</option>
+                                        <option value="0.80">Galben (02)</option>
+                                        <option value="1.00">Lila (025)</option>
+                                        <option value="1.20">Albastru (03)</option>
+                                        <option value="1.60" selected>Roșu (04)</option>
+                                        <option value="2.00">Maro (05)</option>
+                                        <option value="2.40">Gri (06)</option>
+                                        <option value="3.20">Alb (08)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="results-container mt-4" style="gap: 12px;">
+                                <div class="result-box cyan-result" style="width: 100%; min-height: auto; padding: 1rem;">
+                                    <span class="res-label">DEBIT NECESAR PER DUZĂ (L/min)</span>
+                                    <span class="res-value" id="res-debit">1.25</span>
+                                </div>
+                                <div class="result-box purple-result" style="width: 100%; min-height: auto; padding: 1rem;">
+                                    <span class="res-label">PRESIUNE NECESARĂ ÎN RAMPĂ (BAR)</span>
+                                    <span class="res-value" id="res-presiune">1.83</span>
+                                    <div class="speed-hint warning-hint" id="pressure-warning" style="display: none;">
+                                        ⚠️ Presiune în afara plajei optime AIXR!
+                                    </div>
+                                    <div class="speed-hint success-hint" id="pressure-success">
+                                        ✅ Presiune optimă de lucru.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<script is:inline>
+    window.addEventListener('load', function() {
+        // --- LOGICA DE PROFIL ---
+        const storedUser = localStorage.getItem('agro_user');
+        const nameElement = document.querySelector('.user-name');
+        const avatarElement = document.querySelector('.avatar-circle');
+        if (storedUser && nameElement && avatarElement) {
+            const parts = storedUser.split(/[._]/); 
+            const fullName = parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            let initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+            nameElement.textContent = fullName; avatarElement.textContent = initials;
+        }
+
+        const profileTrigger = document.getElementById('user-profile-trigger');
+        const logoutMenu = document.getElementById('logout-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        if (profileTrigger && logoutMenu) { profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.classList.toggle('show'); }); document.addEventListener('click', () => { logoutMenu.classList.remove('show'); }); }
+        if (logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.stopPropagation(); localStorage.removeItem('agro_session'); localStorage.removeItem('agro_user'); window.location.href = '/'; }); }
+
+        // --- REFERINȚE DOM ---
+        const distDuzeInput = document.getElementById('dist_duze');
+        
+        // Modul 1 (Debit & Presiune combinat)
+        const norma1Input = document.getElementById('norma1');
+        const viteza1Input = document.getElementById('viteza1');
+        const duza1Select = document.getElementById('duza1');
+        
+        const resDebit = document.getElementById('res-debit');
+        const resPresiune = document.getElementById('res-presiune');
+        const pressureWarning = document.getElementById('pressure-warning');
+        const pressureSuccess = document.getElementById('pressure-success');
+
+        // Calculează Modulul
+        function calculateResults() {
+            const distDuze = parseFloat(distDuzeInput.value) || 0;
+
+            // ==========================================
+            // 1. CALCUL DEBIT ȘI PRESIUNE
+            // ==========================================
+            const norma1 = parseFloat(norma1Input.value) || 0;
+            const viteza1 = parseFloat(viteza1Input.value) || 0;
+            const duzaFlowAt3Bar = parseFloat(duza1Select.value) || 0;
+
+            if (distDuze > 0 && norma1 > 0 && viteza1 > 0) {
+                // Ce debit e necesar efectiv (L/min) pt a acoperi norma la acea viteză
+                const debitCalc = (norma1 * viteza1 * distDuze) / 60000;
+                resDebit.innerText = debitCalc.toFixed(2);
+
+                if (duzaFlowAt3Bar > 0) {
+                    // Dacă duza dă X L/min la 3 bar, ce presiune e necesară pentru Y L/min?
+                    const presiuneCalc = 3 * Math.pow(debitCalc / duzaFlowAt3Bar, 2);
+                    resPresiune.innerText = presiuneCalc.toFixed(2);
+
+                    // Validare vizuală pentru plaja optimă (1.5 - 6 bari pt TeeJet AIXR)
+                    if (presiuneCalc < 1.5 || presiuneCalc > 6) {
+                        pressureWarning.style.display = "block";
+                        pressureSuccess.style.display = "none";
+                        resPresiune.style.color = "#dc2626"; // Roșu de atenționare
+                    } else {
+                        pressureWarning.style.display = "none";
+                        pressureSuccess.style.display = "block";
+                        resPresiune.style.color = "#4c1d95"; // Culoare mov
+                    }
+                } else {
+                    resPresiune.innerText = "0.00";
+                }
+            } else {
+                resDebit.innerText = "0.00";
+                resPresiune.innerText = "0.00";
+                pressureWarning.style.display = "none";
+                pressureSuccess.style.display = "none";
+            }
+        }
+
+        // Ascultători de evenimente (recalculează automat)
+        distDuzeInput.addEventListener('input', calculateResults);
+        
+        norma1Input.addEventListener('input', calculateResults);
+        viteza1Input.addEventListener('input', calculateResults);
+        duza1Select.addEventListener('change', calculateResults);
+        
+        // Calcul inițial
+        calculateResults();
+    });
+</script>
+
+<style is:global>
+    /* BAZA GENERALĂ */
+    .dashboard-container { background-color: #f8fafc !important; min-height: 100vh; color: #1f2937; font-family: 'Roboto', sans-serif; overflow-x: hidden; width: 100%; box-sizing: border-box; position: absolute; top: 0; left: 0; z-index: 10; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; border-bottom: 1px solid #eee; }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left, .header-right { display: flex; align-items: center; gap: 30px; }
+    .logo-section { display: flex; align-items: baseline; gap: 8px; cursor: pointer; text-decoration: none; }
+    .brand-text { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.5px; color: #111827; }
+    .blue { color: #003087; } .yellow { color: #F4D03F; }
+    .training-text { font-weight: 300; font-size: 1.5rem; color: #9ca3af; text-transform: uppercase; }
+    .back-btn-nav { background-color: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-weight: 700; text-decoration: none; transition: 0.2s; }
+    .user-profile { display: flex; align-items: center; gap: 12px; position: relative; cursor: pointer; padding: 5px; border-radius: 8px; }
+    .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+    .user-label { font-size: 0.65rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; }
+    .user-name { font-size: 0.9rem; font-weight: 600; color: #111827; }
+    .avatar-circle { width: 40px; height: 40px; background-color: #003087; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .logout-dropdown { display: none; position: absolute; top: 120%; right: 0; width: 160px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 8px; z-index: 2000; }
+    .logout-dropdown.show { display: block; }
+    .logout-item { width: 100%; background: none; border: none; padding: 10px 12px; color: #ef4444; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; text-align: left; }
+    
+    .main-content { max-width: 1000px; margin: 0 auto; padding: 2rem; width: 100%; box-sizing: border-box; }
+    .breadcrumbs { font-size: 0.95rem; margin-bottom: 2rem; display: flex; gap: 8px; color: #6b7280; font-weight: 500;}
+    .crumb-link { color: #6b7280; text-decoration: none; transition: 0.2s; } .crumb-link:hover { color: #003087; }
+    .crumb-blue { color: #003087; font-weight: 800; }
+    .separator { color: #d1d5db; }
+
+    /* DESIGN CALCULATOR */
+    .calculator-wrapper { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 3rem; border: 1px solid #edf2f7; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .icon-calc { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: #cffafe; color: #0891b2; border-radius: 20px; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(8, 145, 178, 0.2); }
+    .section-header h1 { font-size: 2.1rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 900; letter-spacing: -0.5px;}
+    .section-header p { color: #64748b; font-size: 1.1rem; margin: 0; }
+
+    /* CĂSUȚA GENERALĂ (SUS) */
+    .global-settings-card { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; max-width: 600px; margin-left: auto; margin-right: auto;}
+    .global-text h3 { margin: 0 0 5px 0; font-size: 1.2rem; color: #0f172a; font-weight: 800; }
+    .global-text p { margin: 0; font-size: 0.9rem; color: #64748b; }
+    
+    .global-input { flex-direction: row !important; align-items: center; margin: 0 !important; gap: 15px !important;}
+    .global-input label { margin: 0; font-weight: 700; color: #1e293b;}
+    .global-input input { width: 140px !important; }
+
+    /* GRILĂ 1 MODUL CENTRAT PENTRU ECHILIBRU ECRAN */
+    .calc-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; max-width: 600px; margin: 0 auto; }
+    
+    .calc-card { border: 1px solid #e2e8f0; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; background: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s;}
+    .calc-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+    
+    /* ALINIERE ANTETE (H2) */
+    .card-header { 
+        padding: 1.2rem 1.5rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-top: 4px solid transparent; 
+        display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; min-height: 95px;
+    }
+    .card-header.border-purple { border-top-color: #9333ea; }
+    
+    .card-header h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 4px 0; color: #0f172a; }
+    .subtitle { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+
+    .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+
+    /* INPUT-URI TIP EXCEL */
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .mt-3 { margin-top: 1.2rem; }
+    .mt-4 { margin-top: 1.8rem; }
+    
+    .input-group label { 
+        font-weight: 600; color: #334155; font-size: 0.9rem; line-height: 1.3;
+        display: flex; align-items: flex-end; padding-bottom: 4px;
+    }
+    
+    .excel-input { 
+        width: 100%; padding: 12px 14px; border-radius: 8px; border: 2px solid #a7f3d0; 
+        background: #ecfdf5; font-family: 'Roboto', sans-serif; font-size: 1.2rem; font-weight: 800; 
+        color: #065f46; outline: none; box-sizing: border-box; transition: 0.2s; min-height: 52px;
+    }
+    .excel-input:focus { border-color: #059669; background: #fff; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
+    
+    .custom-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23065f46%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px top 50%;
+        background-size: 16px auto;
+        padding-right: 35px;
+        cursor: pointer;
+    }
+
+    /* CONTAINER REZULTATE */
+    .results-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%; justify-content: flex-end;
+    }
+
+    /* REZULTATE TIP EXCEL */
+    .result-box { 
+        padding: 1.5rem 1rem; border-radius: 12px; display: flex; flex-direction: column; align-items: center; 
+        text-align: center; gap: 8px; border: 2px solid; 
+        justify-content: center; box-sizing: border-box; 
+    }
+    
+    .cyan-result { background: #ecfeff; border-color: #a5f3fc; }
+    .cyan-result .res-label { color: #155e75; }
+    .cyan-result .res-value { color: #164e63; }
+
+    .purple-result { background: #faf5ff; border-color: #e9d5ff; }
+    .purple-result .res-label { color: #6b21a8; }
+    .purple-result .res-value { color: #4c1d95; }
+
+    .res-label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3;}
+    .res-value { font-size: 2.2rem; font-weight: 900; line-height: 1.1; transition: color 0.3s;}
+
+    .speed-hint {
+        font-size: 0.8rem; color: #3b82f6; font-weight: 600; font-style: italic; margin-top: 5px;
+    }
+    .warning-hint { color: #dc2626; font-weight: 700;}
+    .success-hint { color: #16a34a; font-weight: 700;}
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+        .global-settings-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .global-input { flex-direction: column !important; align-items: stretch; width: 100%;}
+        .global-input input { width: 100% !important; }
+        .card-header { min-height: auto; }
+    }
+
+    @media (max-width: 768px) {
+        .header-content { flex-direction: column; height: auto; padding: 1rem; gap: 15px; } 
+        .header-left, .header-right { width: 100%; justify-content: space-between; }
+        .main-content { padding: 1.5rem 1rem; }
+        .calculator-wrapper { padding: 1.5rem 1rem; }
+        .section-header h1 { font-size: 1.6rem; }
+    }
+</style>

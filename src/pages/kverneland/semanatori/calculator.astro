@@ -7,6 +7,8 @@ import Layout from '../../../layouts/Layout.astro';
     const sessionDate = localStorage.getItem('agro_session_date');
     if (!localStorage.getItem('agro_session') || sessionDate !== today) {
         window.location.replace('/');
+    } else {
+        document.documentElement.classList.add('session-valid');
     }
 </script>
 
@@ -45,7 +47,7 @@ import Layout from '../../../layouts/Layout.astro';
             <div class="breadcrumbs">
                 <a href="/kverneland" class="crumb-link">Kverneland</a><span class="separator">/</span>
                 <a href="/kverneland/semanatori" class="crumb-link">Semănători</a><span class="separator">/</span>
-                <span class="crumb-blue">Simulator semanat</span>
+                <span class="crumb-blue">Instrument Verificare și Calibrare</span>
             </div>
 
             <div class="calculator-wrapper">
@@ -68,29 +70,10 @@ import Layout from '../../../layouts/Layout.astro';
 
                 <div class="calc-grid">
                     
-                    <!-- MODUL 1: Verificare prin ruletă -->
-                    <div class="calc-card">
-                        <div class="card-header border-red">
-                            <h2>1. Verificare prin Ruletă</h2>
-                            <span class="subtitle">Metoda celor 11 boabe (10 intervale)</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-group">
-                                <label for="dist-11">Distanța măsurată între boaba 1 și 11 (cm):</label>
-                                <input type="number" id="dist-11" class="excel-input" value="158" placeholder="ex: 158">
-                            </div>
-                            <!-- Aici lăsăm gol pentru a se alinia automat rezultatul la bază cu celelalte -->
-                            <div class="result-box green-result">
-                                <span class="res-label">DENSITATE REALĂ<br>(plante/ha):</span>
-                                <span class="res-value" id="res-ruleta">90,416</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MODUL 2: Planificare -->
+                    <!-- MODUL 1: Planificare -->
                     <div class="calc-card">
                         <div class="card-header border-blue">
-                            <h2>2. Planificare (Țintă)</h2>
+                            <h2>1. Planificare (Țintă)</h2>
                             <span class="subtitle">Ce ar trebui să găsesc pe teren?</span>
                         </div>
                         <div class="card-body">
@@ -99,22 +82,22 @@ import Layout from '../../../layouts/Layout.astro';
                                 <input type="number" id="target-density" class="excel-input" value="88000" placeholder="ex: 88000">
                             </div>
                             
-                            <div class="input-group">
+                            <div class="input-group mt-3">
                                 <label>Distanța între semințe (cm):</label>
                                 <div class="excel-input readonly-input" id="res-dist-teoretica">16.23</div>
                             </div>
 
-                            <div class="result-box yellow-result">
+                            <div class="result-box yellow-result mt-4">
                                 <span class="res-label">ȚINTĂ RULETĂ pt 11 boabe (cm):</span>
                                 <span class="res-value" id="res-tinta">162.3</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- MODUL 3: Verificare prin numărare -->
+                    <!-- MODUL 2: Verificare prin numărare -->
                     <div class="calc-card">
                         <div class="card-header border-green">
-                            <h2>3. Verificare prin Numărare</h2>
+                            <h2>2. Verificare prin Numărare</h2>
                             <span class="subtitle">Dacă măsurați o lungime fixă</span>
                         </div>
                         <div class="card-body">
@@ -122,11 +105,11 @@ import Layout from '../../../layouts/Layout.astro';
                                 <label for="measured-length">Lungimea măsurată pe rând (m):</label>
                                 <input type="number" id="measured-length" class="excel-input" value="8" placeholder="ex: 8">
                             </div>
-                            <div class="input-group">
+                            <div class="input-group mt-3">
                                 <label for="seed-count">Număr de boabe găsite:</label>
                                 <input type="number" id="seed-count" class="excel-input" value="50" placeholder="ex: 50">
                             </div>
-                            <div class="result-box green-result">
+                            <div class="result-box green-result mt-4">
                                 <span class="res-label">DENSITATE REZULTATĂ<br>(plante/ha):</span>
                                 <span class="res-value" id="res-numarare">89,286</span>
                             </div>
@@ -160,7 +143,6 @@ import Layout from '../../../layouts/Layout.astro';
 
         // --- LOGICA CALCULATORULUI DE DIAGNOZĂ ---
         const rowDistInput = document.getElementById('row-dist');
-        const dist11Input = document.getElementById('dist-11');
         const targetDensityInput = document.getElementById('target-density');
         const measuredLengthInput = document.getElementById('measured-length');
         const seedCountInput = document.getElementById('seed-count');
@@ -172,17 +154,7 @@ import Layout from '../../../layouts/Layout.astro';
         function calculateResults() {
             const rowDistCm = parseFloat(rowDistInput.value) || 0;
 
-            // 1. Modul Ruletă
-            const dist11 = parseFloat(dist11Input.value) || 0;
-            const resRuleta = document.getElementById('res-ruleta');
-            if (rowDistCm > 0 && dist11 > 0) {
-                const density = 1000000000 / (rowDistCm * dist11);
-                resRuleta.innerText = formatNumber(density);
-            } else {
-                resRuleta.innerText = "0";
-            }
-
-            // 2. Modul Planificare
+            // 1. Modul Planificare
             const targetDensity = parseFloat(targetDensityInput.value) || 0;
             const resTinta = document.getElementById('res-tinta');
             const resDistTeoretica = document.getElementById('res-dist-teoretica');
@@ -197,7 +169,7 @@ import Layout from '../../../layouts/Layout.astro';
                 resDistTeoretica.innerText = "0.00";
             }
 
-            // 3. Modul Numărare
+            // 2. Modul Numărare
             const measuredLength = parseFloat(measuredLengthInput.value) || 0;
             const seedCount = parseFloat(seedCountInput.value) || 0;
             const resNumarare = document.getElementById('res-numarare');
@@ -212,7 +184,6 @@ import Layout from '../../../layouts/Layout.astro';
 
         // Ascultători de evenimente
         rowDistInput.addEventListener('input', calculateResults);
-        dist11Input.addEventListener('input', calculateResults);
         targetDensityInput.addEventListener('input', calculateResults);
         measuredLengthInput.addEventListener('input', calculateResults);
         seedCountInput.addEventListener('input', calculateResults);
@@ -256,14 +227,14 @@ import Layout from '../../../layouts/Layout.astro';
     .section-header p { color: #64748b; font-size: 1.1rem; margin: 0; }
 
     /* CĂSUȚA GENERALĂ (SUS) */
-    .global-settings-card { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; }
+    .global-settings-card { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; max-width: 800px; margin-left: auto; margin-right: auto;}
     .global-settings-card h3 { margin: 0; font-size: 1.2rem; color: #0f172a; font-weight: 800; }
     .global-input { flex-direction: row !important; align-items: center; margin: 0 !important; gap: 15px !important;}
     .global-input label { margin: 0; }
     .global-input input { width: 120px !important; }
 
-    /* GRILĂ 3 MODULE */
-    .calc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    /* GRILĂ 2 MODULE CENTRATĂ */
+    .calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 800px; margin: 0 auto; }
     
     .calc-card { border: 1px solid #e2e8f0; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; background: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s;}
     .calc-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
@@ -274,18 +245,18 @@ import Layout from '../../../layouts/Layout.astro';
         min-height: 95px; /* Forțează aceeași înălțime pentru toate antetele */
         display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;
     }
-    .card-header.border-red { border-top-color: #dc2626; }
     .card-header.border-blue { border-top-color: #2563eb; }
     .card-header.border-green { border-top-color: #059669; }
     
     .card-header h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 4px 0; color: #0f172a; }
     .subtitle { font-size: 0.85rem; color: #64748b; font-weight: 500; }
 
-    /* AICI E MODIFICAREA PENTRU SPAȚIERE GARANTATĂ ÎNTRE CĂSUȚE */
     .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; gap: 1.5rem; }
 
     /* INPUT-URI TIP EXCEL - ALINIERE PERFECTĂ Orizontală */
     .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 1.5rem; }
     
     .input-group label { 
         font-weight: 600; color: #334155; font-size: 0.9rem; line-height: 1.3;
@@ -338,5 +309,6 @@ import Layout from '../../../layouts/Layout.astro';
         .calculator-wrapper { padding: 1.5rem 1rem; }
         .section-header h1 { font-size: 1.6rem; }
         .calc-card { border-radius: 12px; }
+        .result-box { margin-top: 1.5rem; }
     }
 </style>
