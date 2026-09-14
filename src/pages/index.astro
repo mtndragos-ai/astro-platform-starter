@@ -28,256 +28,250 @@ import Layout from '../layouts/Layout.astro';
 
             <div class="login-header">
                 <h1>Acces Restricționat</h1>
-                <p>Această platformă este destinată exclusiv angajaților AgroConcept.</p>
+                <p>Această platformă este destinată exclusiv echipei AgroConcept.</p>
             </div>
 
-            <!-- BUTONUL MAGIC MICROSOFT -->
-            <button id="ms-login-btn" class="microsoft-btn-outline">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 21 21">
-                    <path fill="#f25022" d="M1 1h9v9H1z"/>
-                    <path fill="#00a4ef" d="M1 11h9v9H1z"/>
-                    <path fill="#7fba00" d="M11 1h9v9h-9z"/>
-                    <path fill="#ffb900" d="M11 11h9v9h-9z"/>
-                </svg>
-                Logare cu contul de Outlook
-            </button>
+            <form id="custom-login-form" class="custom-login-form" onsubmit="return false;">
+                <div class="input-group">
+                    <label for="username">Nume Utilizator</label>
+                    <input type="text" id="username" placeholder="ex: prenume.nume" autocomplete="off" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Parolă</label>
+                    <input type="password" id="password" placeholder="Introdu parola" required>
+                </div>
+
+                <button type="submit" id="custom-login-btn" class="custom-btn-solid">
+                    Logare 
+                </button>
+            </form>
 
             <div id="error-message" class="error-msg-box" style="display: none;"></div>
         </div>
     </div>
 </Layout>
 
-<!-- Script pentru Autentificare Firebase cu MICROSOFT -->
-<script type="module">
-    // Importăm modulele Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithPopup, OAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-    // 🚨 DATELE TALE FIREBASE FUNCTIONALE 🚨
-    const firebaseConfig = {
-        apiKey: "AIzaSyBHJXPg7aUmhNaP2_KHjluzADBoDIoU24Q",
-        authDomain: "autentificare-23aa8.firebaseapp.com",
-        projectId: "autentificare-23aa8",
-        storageBucket: "autentificare-23aa8.firebasestorage.app",
-        messagingSenderId: "175988924637",
-        appId: "1:175988924637:web:1782dcb4141deb42b23b34",
-        measurementId: "G-DQFXCF3H5L"
+<script is:inline>
+    // ==============================================================================
+    // 🔒 BAZA DE DATE A UTILIZATORILOR TĂI (ADAUGI AICI PE CINE VREI)
+    // ==============================================================================
+    const validUsers = {
+        "dragos.munteanu": "service123",
+        "vladimir.panaite": "service123",
+        "gabriel.chisiu": "service123",
+        "cristian.boboi": "service123",
+        "marian.cataonu": "service123",
+        "stoian.gheorghe": "stoghe279",
+        "liviu.zamfir": "livzam197",
+        "claudiu.sabaru": "clasab479",
+        "adrian.mihalache": "mihadr275",
+        "eduard.voicescu": "eduvoi611",
+        "george.pietroseanu": "geopie691",
+        "vlad.popa": "vlapop519",
+        "adrian.moraru": "adrmor171",
+        "tital.arvat": "titarv450",
+        "bogdan.ciupu": "bogciu681",
+        "bogdan.ivancu": "bogiva698",
+        "marinel.mocanu": "marmoc273",
+        "ionel.orheanu": "ionorh254",
+        "daniel.ghita": "danghi328",
+        "silviu.susnea": "silsus534",
+        "gheorghita.mihai": "ghemih251",
+        "leonard.dobrila": "leodob720",
+        "adrian.chirana": "adichi412",
+        "ion.miu": "ionmiu250",
+        "filip.alexandru": "filale560",
+        "silviu.calin": "silcal589",
+        "gabriel.antonescu": "gabant606",
+        "raul.ninvea": "raunin378",
+        "calin.pirv": "calpir515",
+        "sorin.pop": "sorpop111",
+        "cristan.rotaru": "crirot481",
+        "bogdan.sanislav": "bogsan237",
+        "ioan.demeter": "ioadem660",
+        "alexandru.lazar": "alelaz505",
+        "valentin.mandreanu": "valman381",
+        "viorel.poenaru": "viopoe196",
+        "catalin.andrei": "catand301",
+        "leonard.bogzoiu": "leobog506",
+        "laurentiu.lazar": "laulaz602",
+        "ionut.vina": "ionvin636",
+        "anghel.tistu": "angtis669",
+        "sebastian.dobeanu": "sebdob416",
+        "bogdan.stolica": "bogsto439",
+        "claudiu.vintilescu": "clavin401",
+        "nicolae.virtosu": "nicvir266",
+        "marius.barbu": "marbar639",
+        "robert.burea": "robbur696",
+        "andrei.mirzea": "andmir432",
+        "petrisor.rosu": "petros247",
+        "stefan.simon": "stesim257",
+        "valerica.calin": "valcal283",
+        "petrisor.gubernu": "petgub679",
+        "alexandru.macovei": "alemac430",
+        "vlad.balan": "vlabal457",
+        "andrei.tarnauceanu": "andtar544",
+        "alexandru.racila": "alerac607",
+        "valentin.ciobanu": "valcio663",
+        "alexandru.stefan": "aleste697",
+        "adrian.ilisie": "adriili122",
+        "eduard.vasadi": "eduvas498",
+        "kevin.nagy": "kevnag615",
+        "ioan.perta": "ioaper699",
+        "bogdan.doamna": "bogdoa342",
+        "mirel.sterpu": "mirste727",
+        "daniel.magadas": "danmag721",
+        "nutu.sabados": "nutsab205",
+        "andrei.negrut": "andneg623",
+        "gabriel.kurila": "gabkur706",
+        "razvan.czirak": "razczi708",
+        "dorel.popescul": "dorpop707",
+        "paul.moldoveanu": "paumol722",
+        "cristian.simion": "crisim425",
+        "iustin.costin": "iuscos579",
+        "radu.mercas": "radmer683",
+        "gabriel.simon": "gabsim297",
+        "bogdan.boutiuc": "bogdanb522",
+        "marin.stanciu": "marsta256",
+        "florin.alexandru": "floale199",
+        "ionut.nicoara": "ionnic131",
+        "raul.mihalcea": "raumih653",
+        "alexandru.sandu": "alesan422",
+        "sebastian.dragulin": "sebdra15",
+        "remus.nistor": "remnis569",
+        "cristian.parcalab": "cripar491",
+        "mihai.rat": "mihrat60",
+        // Format: "nume.utilizator": "parola"
+        "tehnician.test": "parola1" 
     };
 
-    // Inițializare Firebase
-    let app;
-    const errorMsg = document.getElementById('error-message');
-    
-    try {
-        app = initializeApp(firebaseConfig);
-    } catch(e) {
-        console.error("Eroare la inițializarea Firebase. Verifică configurația.", e);
-        showError("Configurația de autentificare lipsește. Contactați administratorul.");
-    }
+    window.addEventListener('load', function() {
+        const loginForm = document.getElementById('custom-login-form');
+        const loginBtn = document.getElementById('custom-login-btn');
+        const errorMsg = document.getElementById('error-message');
+        const userField = document.getElementById('username');
+        const passField = document.getElementById('password');
 
-    const auth = getAuth(app);
-    
-    // Setăm providerul pentru MICROSOFT
-    const provider = new OAuthProvider('microsoft.com');
-    
-    provider.setCustomParameters({
-        prompt: 'select_account',
-    });
+        if(loginForm) {
+            loginForm.addEventListener('submit', () => {
+                // Ascundem erorile vechi
+                if(errorMsg) errorMsg.style.display = 'none';
+                
+                // Efect vizual
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = 'Se verifică...';
+                loginBtn.style.opacity = '0.8';
 
-    const loginBtn = document.getElementById('ms-login-btn');
+                // Luăm valorile scrise de user (curățăm spațiile goale)
+                const username = userField.value.trim().toLowerCase();
+                const password = passField.value.trim();
 
-    // DOMENIUL ACCEPTAT PENTRU LOGIN
-    const ALLOWED_DOMAIN = '@agroconcept.ro';
-
-    if(loginBtn) {
-        loginBtn.addEventListener('click', () => {
-            // Ascundem erorile vechi
-            if(errorMsg) errorMsg.style.display = 'none';
-            loginBtn.innerHTML = 'Se procesează...';
-            loginBtn.style.opacity = '0.7';
-
-            // Deschidem fereastra securizată de logare Microsoft
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const userEmail = result.user.email;
-
-                    // VERIFICAREA MAGICĂ: Este adresa oficială a companiei?
-                    if (userEmail && userEmail.toLowerCase().endsWith(ALLOWED_DOMAIN)) {
+                // Simulam putin timp de asteptare (0.5s) pentru un efect mai profi
+                setTimeout(() => {
+                    // VERIFICAREA MAGICĂ (Există user-ul în listă și corespunde parola?)
+                    if (validUsers.hasOwnProperty(username) && validUsers[username] === password) {
                         
+                        // Succes! Salvam Sesiunea.
                         localStorage.setItem('agro_session', 'true');
-                        
-                        // 🌟 SETĂM DATA CURENTĂ PENTRU A EXPIRA LA MIEZUL NOPȚII 🌟
                         localStorage.setItem('agro_session_date', new Date().toDateString());
-                        
-                        // Extragem numele dinainte de @ (ex: ion.popescu)
-                        const username = userEmail.split('@')[0];
                         localStorage.setItem('agro_user', username);
 
-                        // Înregistrare în Analytics
+                        // Înregistrare în Analytics (dacă există)
                         import('../utils/analytics.js').then(module => {
                             if(module.Analytics && module.Analytics.trackLogin) {
-                                module.Analytics.trackLogin(userEmail);
+                                module.Analytics.trackLogin(username);
                             }
                         }).catch(() => { });
 
+                        // Redirecționare
                         window.location.href = '/categorii';
 
                     } else {
-                        // Dacă s-a logat cu un alt cont, îl dăm afară și dăm eroare
-                        signOut(auth).then(() => {
-                            showError(`Acces interzis. Adresa <b>${userEmail}</b> nu aparține companiei AgroConcept.`);
-                            shakeForm();
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error("Eroare autentificare Microsoft:", error);
-                    if (error.code !== 'auth/popup-closed-by-user') {
-                        showError("A apărut o eroare la conectare. Verificați conexiunea și încercați din nou.");
+                        // Date greșite
+                        showError("Utilizator sau parolă incorectă!");
                         shakeForm();
+                        
+                        // Resetăm butonul
+                        loginBtn.innerHTML = originalText;
+                        loginBtn.style.opacity = '1';
                     }
-                })
-                .finally(() => {
-                    // Resetare buton la starea inițială
-                    loginBtn.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 21 21">
-                            <path fill="#f25022" d="M1 1h9v9H1z"/>
-                            <path fill="#00a4ef" d="M1 11h9v9H1z"/>
-                            <path fill="#7fba00" d="M11 1h9v9h-9z"/>
-                            <path fill="#ffb900" d="M11 11h9v9h-9z"/>
-                        </svg>
-                        Logare cu contul de Outlook
-                    `;
-                    loginBtn.style.opacity = '1';
-                });
-        });
-    }
-
-    function showError(message) {
-        if(errorMsg) {
-            errorMsg.innerHTML = message;
-            errorMsg.style.display = 'block';
+                }, 500);
+            });
         }
-    }
 
-    function shakeForm() {
-        const card = document.querySelector('.login-card-modern');
-        if(card) {
-            card.style.animation = 'shake 0.5s';
-            setTimeout(() => card.style.animation = '', 500);
+        function showError(message) {
+            if(errorMsg) {
+                errorMsg.innerHTML = message;
+                errorMsg.style.display = 'block';
+            }
         }
-    }
+
+        function shakeForm() {
+            const card = document.querySelector('.login-card-modern');
+            if(card) {
+                card.style.animation = 'shake 0.5s';
+                setTimeout(() => card.style.animation = '', 500);
+            }
+        }
+    });
 </script>
 
-<!-- Folosim is:global pentru a forța suprascrierea fundalului închis din Layout.astro -->
 <style is:global>
-    body {
-        margin: 0;
-        padding: 0;
-    }
+    body { margin: 0; padding: 0; }
 
     .login-page-fullscreen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        display: flex; align-items: center; justify-content: center;
         background-color: #f8fafc;
         background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
         background-size: 28px 28px;
         font-family: 'Roboto', sans-serif;
-        z-index: 9999; /* Ne asigurăm că stă peste orice alt element din Layout */
+        z-index: 9999;
     }
 
     .login-card-modern {
-        background: #ffffff;
-        padding: 3.5rem 3rem;
-        border-radius: 24px;
+        background: #ffffff; padding: 3.5rem 3rem; border-radius: 24px;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.05);
-        width: 100%;
-        max-width: 440px;
-        text-align: center;
-        border: 1px solid #e2e8f0;
-        box-sizing: border-box;
+        width: 100%; max-width: 440px; text-align: center;
+        border: 1px solid #e2e8f0; box-sizing: border-box;
     }
 
-    .logo-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
+    .logo-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
     .brand-text { font-weight: 900; font-size: 2.2rem; letter-spacing: -0.5px; color: #0f172a; line-height: 1;}
-    .blue { color: #003087; }
-    .yellow { color: #F4D03F; }
+    .blue { color: #003087; } .yellow { color: #F4D03F; }
     .training-text { font-weight: 300; font-size: 1.6rem; color: #9ca3af; text-transform: uppercase; margin-top: -2px;}
 
-    .login-header h1 {
-        font-size: 1.6rem;
-        color: #0f172a;
-        margin: 0 0 10px 0;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-    }
+    .login-header h1 { font-size: 1.6rem; color: #0f172a; margin: 0 0 10px 0; font-weight: 800; letter-spacing: -0.5px; }
+    .login-header p { color: #64748b; font-size: 1rem; margin: 0 0 2.5rem 0; line-height: 1.5; font-weight: 400; }
 
-    .login-header p {
-        color: #64748b;
-        font-size: 1rem;
-        margin: 0 0 2.5rem 0;
-        line-height: 1.5;
-        font-weight: 400;
-    }
-
-    .microsoft-btn-outline {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        background: #ffffff;
-        color: #0f172a;
-        border: 2px solid #0f172a;
-        padding: 14px;
-        font-size: 1.05rem;
-        font-weight: 700;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: inherit;
-    }
-
-    .microsoft-btn-outline:hover {
-        background: #f8fafc;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-        transform: translateY(-2px);
-    }
+    /* FORMULAR DESIGN NOU */
+    .custom-login-form { display: flex; flex-direction: column; gap: 1.5rem; text-align: left; }
     
-    .microsoft-btn-outline:active {
-        transform: translateY(0);
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label { font-size: 0.9rem; font-weight: 700; color: #1e293b; }
+    .input-group input { 
+        width: 100%; padding: 12px 14px; border-radius: 10px; border: 2px solid #e2e8f0; 
+        font-family: inherit; font-size: 1rem; color: #0f172a; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
     }
+    .input-group input:focus { border-color: #003087; box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.1); }
+    .input-group input::placeholder { color: #94a3b8; }
 
-    .error-msg-box {
-        margin-top: 1.5rem;
-        padding: 14px;
-        background-color: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        line-height: 1.4;
+    .custom-btn-solid {
+        width: 100%; background: #003087; color: white; border: none; padding: 14px;
+        font-size: 1.05rem; font-weight: 700; border-radius: 10px; cursor: pointer;
+        transition: all 0.2s ease; font-family: inherit; margin-top: 0.5rem;
     }
+    .custom-btn-solid:hover { background: #002366; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 48, 135, 0.2); }
+    .custom-btn-solid:active { transform: translateY(0); }
+
+    .error-msg-box { margin-top: 1.5rem; padding: 14px; background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 12px; font-size: 0.95rem; font-weight: 500; line-height: 1.4; }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
 
     @media (max-width: 480px) {
-        .login-card-modern {
-            padding: 2.5rem 1.5rem;
-            max-width: 90%;
-        }
+        .login-card-modern { padding: 2.5rem 1.5rem; max-width: 90%; }
         .brand-text { font-size: 1.8rem; }
         .training-text { font-size: 1.3rem; }
     }

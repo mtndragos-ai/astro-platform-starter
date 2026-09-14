@@ -86,7 +86,8 @@ import Layout from '../layouts/Layout.astro';
 
                     <a href="/kverneland/spreader" class="machine-card" style="border-bottom: 3px solid #E30613;">
                         <div class="machine-image-wrapper">
-                            <img src="/imagini/spreader.png" alt="Spreader" class="machine-photo" />
+                            <!-- Aici am adăugat clasa specială spreader-photo -->
+                            <img src="/imagini/spreader.png" alt="Spreader" class="machine-photo spreader-photo" />
                         </div>
                         <div class="card-content">
                             <h3>Spreader (Fertilizat)</h3>
@@ -237,11 +238,17 @@ import Layout from '../layouts/Layout.astro';
     }
     
     .machine-photo { 
-        max-width: 65%;
+        max-width: 65%; 
         max-height: 90px; 
         object-fit: contain;
         transition: transform 0.4s ease;
         mix-blend-mode: multiply;
+    }
+
+    /* CLASĂ NOUĂ DOAR PENTRU SPREADER */
+    .spreader-photo {
+        max-width: 95%; /* Permite pozei să ocupe mai mult loc stânga-dreapta */
+        max-height: 110px; /* O face mai înaltă */
     }
     
     .machine-card:hover .machine-photo { 
@@ -281,5 +288,6 @@ import Layout from '../layouts/Layout.astro';
         .machines-grid { grid-template-columns: 1fr; }
         .machine-image-wrapper { height: 90px; }
         .machine-photo { max-height: 75px; } 
+        .spreader-photo { max-height: 95px; }
     }
 </style>
