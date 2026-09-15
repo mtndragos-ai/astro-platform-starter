@@ -8,6 +8,9 @@ import { MACHINE_GROUPS, detectMachineSlugs } from './machine-groups.mjs';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Public base URL for the manual page images bucket, e.g.
+// https://pub-xxxx.r2.dev/manual-pages or https://pages.yourdomain.com
+const PAGE_IMAGE_BASE_URL = process.env.PAGE_IMAGE_BASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const EMBED_MODEL = 'text-embedding-3-small'; // must match the ingestion script
@@ -118,18 +121,39 @@ export const handler: Handler = async (event) => {
   }
 
   const contextChunks = retrievedChunks.filter((c) => c.similarity >= 0.15);
-  const context = contextChunks
+
+  // Citations are computed BEFORE the prompt is built — not just before the
+  // response — so the same numbering shown in the citation cards can also be
+  // used as inline [n] markers inside Claude's answer text. Building this
+  // list twice (once here, once implicitly in the old version's response
+  // block) would risk the two numberings drifting apart.
+  const citations = dedupeCitations(
+    contextChunks.filter((c) => c.similarity >= CITATION_MIN_SIMILARITY)
+  ).slice(0, MAX_CITATIONS);
+  const citationKeys = new Set(citations.map((c) => `${c.manualSlug}:${c.sourcePages}`));
+
+  // Numbered block: exactly the chunks that will appear as citation cards,
+  // in the same order — so [1] in the answer always points at card #1.
+  const numberedExcerpts = citations
     .map(
       (c, i) =>
         `[${i + 1}] ${c.manualTitle} — ${c.sectionTitle} (p. ${c.sourcePages})\n${c.text}`
     )
     .join('\n\n');
 
+  // Everything else retrieved stays as background grounding — Claude can
+  // still draw on it, it just isn't shown as a numbered, clickable source,
+  // since it didn't clear the higher bar to become a citation card.
+  const backgroundExcerpts = contextChunks
+    .filter((c) => !citationKeys.has(`${c.manualSlug}:${c.sourcePages}`))
+    .map((c) => `${c.manualTitle} — ${c.sectionTitle} (p. ${c.sourcePages})\n${c.text}`)
+    .join('\n\n');
+
   const systemPrompt = `You are Dispatch — a two-way-radio-style assistant helping farmers get quick, practical answers from their equipment manuals mid-job. Talk like a knowledgeable dispatcher, not a document: short, direct sentences, no headers, no document titles.
 
 The person may attach a photo (a part, a control panel, an error screen, damage) along with or instead of a typed question. Look at it directly and answer based on what you see, combined with the manual excerpts below.
 
-Answer only using the manual excerpts provided below for factual claims about the equipment. If they don't contain the answer, say so plainly rather than guessing — but you can still describe what's visible in a photo even if the manual excerpts don't cover it.
+Answer only using the numbered sources and additional background provided below for factual claims about the equipment. If they don't contain the answer, say so plainly rather than guessing — but you can still describe what's visible in a photo even if the excerpts don't cover it.
 
 The excerpts may come from more than one machine. Only use excerpts that match the machine the person is asking about. If the excerpts are all about a different machine, say you don't have the manual content for theirs rather than answering from the wrong one.
 
@@ -139,8 +163,19 @@ Always answer in the same language the person's question was asked in, even thou
 
 Formatting: use **bold** only for the specific values that matter most (torque specs, part numbers, measurements) — not whole phrases. Use a short dash-bulleted list only for multi-step procedures. Otherwise, write in plain sentences. Never use markdown headers (#, ##).
 
-Manual excerpts:
-${context || '(no matching excerpts found)'}`;
+Citing sources: the excerpts under "Numbered sources" below are each labeled [1], [2], etc. When a specific claim in your answer comes directly from one of them, add that marker right after the claim, e.g. "torque the bolt to 45 Nm [1]." Only use markers [1] through [${citations.length}] — never invent a number beyond that range, and never cite the "Additional background" excerpts, since those aren't numbered. Don't force a citation onto every sentence — only where you're stating something specific the source actually said. If nothing in the numbered sources supports a claim, don't add a marker.
+
+After your full answer, on new lines, add:
+RELATED_QUESTIONS:
+- a short natural follow-up question
+- another short natural follow-up question
+List 2 to 3 questions a person would plausibly ask next, in the same language as your answer, each under 12 words, each ending in a question mark. Base them on what's actually in the numbered sources, not generic prompts. If the conversation seems finished or no natural follow-up fits, write "RELATED_QUESTIONS:" with nothing under it.
+
+Numbered sources:
+${numberedExcerpts || '(none found at high enough confidence)'}
+
+Additional background (do not cite by number):
+${backgroundExcerpts || '(none)'}`;
 
   const userContent: any[] = [];
   if (image) {
@@ -186,26 +221,52 @@ ${context || '(no matching excerpts found)'}`;
   }
 
   const data = await response.json();
-  const answer = data.content?.find((b: any) => b.type === 'text')?.text ?? '';
+  const rawAnswer = data.content?.find((b: any) => b.type === 'text')?.text ?? '';
+  const { answer, relatedQuestions } = splitRelatedQuestions(rawAnswer);
 
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       answer,
-      citations: dedupeCitations(
-        retrievedChunks.filter((c) => c.similarity >= CITATION_MIN_SIMILARITY)
-      )
-        .slice(0, MAX_CITATIONS)
-        .map((c) => ({
-          manualTitle: c.manualTitle,
-          sectionTitle: c.sectionTitle,
-          sourcePages: c.sourcePages,
-          imageUrl: pageImageUrl(c.manualSlug, c.sourcePages),
-        })),
+      relatedQuestions,
+      citations: citations.map((c, i) => ({
+        number: i + 1,
+        manualTitle: c.manualTitle,
+        sectionTitle: c.sectionTitle,
+        sourcePages: c.sourcePages,
+        imageUrl: pageImageUrl(c.manualSlug, c.sourcePages),
+      })),
     }),
   };
 };
+
+// Splits Claude's raw response into the visible answer and the trailing
+// RELATED_QUESTIONS block instructed in the system prompt. Matched
+// case-insensitively since models don't always reproduce casing exactly.
+// Falls back to an empty list rather than throwing if the block is missing
+// or malformed — a missing related-questions section should never break
+// the actual answer.
+function splitRelatedQuestions(raw: string): { answer: string; relatedQuestions: string[] } {
+  const marker = /related_questions\s*:/i;
+  const match = raw.match(marker);
+  if (!match || match.index === undefined) {
+    return { answer: raw.trim(), relatedQuestions: [] };
+  }
+
+  const answer = raw.slice(0, match.index).trim();
+  const tail = raw.slice(match.index + match[0].length);
+
+  const relatedQuestions = tail
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => /^[-*]\s*/.test(line))
+    .map((line) => line.replace(/^[-*]\s*/, '').trim())
+    .filter((line) => line.length > 0)
+    .slice(0, 3);
+
+  return { answer, relatedQuestions };
+}
 
 // Several chunks often come from the same manual page, which would show as
 // duplicate cards pointing at the same image. Keep the highest-scoring chunk
@@ -225,13 +286,22 @@ function dedupeCitations(chunks: RetrievedChunk[]): RetrievedChunk[] {
 // scripts/upload-page-images.mjs, named p-0001.jpg (4-digit, zero-padded
 // page number). source_pages can be a single page ("255") or a range
 // ("142-145") — we use the first page as the representative image.
+// Page images live in a public bucket keyed <manual-slug>/p-0001.jpg.
+// PAGE_IMAGE_BASE_URL is the public base for that bucket — an R2 r2.dev
+// address or a custom domain. Falls back to the old Supabase Storage path
+// so the function still works if the variable isn't set yet.
 function pageImageUrl(manualSlug: string, sourcePages: string): string | null {
   if (!manualSlug) return null;
   const match = sourcePages.match(/\d+/);
   if (!match) return null;
   const pageNum = parseInt(match[0], 10);
   const padded = String(pageNum).padStart(4, '0');
-  return `${SUPABASE_URL}/storage/v1/object/public/manual-pages/${manualSlug}/p-${padded}.jpg`;
+
+  const base = PAGE_IMAGE_BASE_URL
+    ? PAGE_IMAGE_BASE_URL.replace(/\/$/, '')
+    : `${SUPABASE_URL}/storage/v1/object/public/manual-pages`;
+
+  return `${base}/${manualSlug}/p-${padded}.jpg`;
 }
 
 // The manual's content is embedded in English, so retrieval accuracy drops

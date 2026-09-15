@@ -139,6 +139,88 @@ html.dark-theme .ac-chat-subtitle { color: #94a3b8; }
 html.dark-theme .ac-chat-reset { border-color: #334155; color: #94a3b8; }
 html.dark-theme .ac-chat-reset:hover { border-color: #38bdf8; color: #38bdf8; }
 
+/* ---- chat history panel ---- */
+
+.ac-history-wrap {
+  position: relative;
+}
+
+.ac-history-panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: 260px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+  z-index: 20;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+html.dark-theme .ac-history-panel {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.ac-history-empty {
+  font-size: 0.78rem;
+  color: #64748b;
+  padding: 0.6rem;
+  margin: 0;
+  text-align: center;
+}
+html.dark-theme .ac-history-empty { color: #94a3b8; }
+
+.ac-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5em 0.6em;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+}
+.ac-history-item:hover { background: #f1f5f9; }
+html.dark-theme .ac-history-item:hover { background: #0f172a; }
+
+.ac-history-item--active { border-left: 2px solid var(--nh-blue, #003087); }
+html.dark-theme .ac-history-item--active { border-left-color: #38bdf8; }
+
+.ac-history-item-title {
+  flex: 1;
+  font-size: 0.78rem;
+  color: #1f2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html.dark-theme .ac-history-item-title { color: #f8fafc; }
+
+.ac-history-item-time {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.ac-history-item-delete {
+  flex-shrink: 0;
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.2em;
+  cursor: pointer;
+}
+.ac-history-item-delete:hover { color: var(--kverneland-red, #E30613); }
+
 .ac-chat-close {
   background: none;
   border: none;
@@ -259,17 +341,68 @@ html.dark-theme .ac-msg-markdown strong { color: #38bdf8; }
   margin-bottom: 0.5em;
 }
 
+/* ---- inline citation badges ---- */
+
+.ac-cite-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.2em;
+  height: 1.2em;
+  padding: 0 0.3em;
+  margin: 0 0.1em;
+  background: #eff6ff;
+  border: 1px solid var(--nh-blue, #003087);
+  border-radius: 4px;
+  color: var(--nh-blue, #003087);
+  font-family: inherit;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: super;
+  cursor: pointer;
+}
+.ac-cite-badge:hover { background: var(--nh-blue, #003087); color: #fff; }
+html.dark-theme .ac-cite-badge {
+  background: #0f172a;
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+html.dark-theme .ac-cite-badge:hover { background: #38bdf8; color: #0f172a; }
+
+/* ---- collapsible references ---- */
+
+.ac-references {
+  margin-top: 0.6rem;
+}
+
+.ac-references-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.2em 0;
+}
+.ac-references-toggle:hover { color: var(--nh-blue, #003087); }
+html.dark-theme .ac-references-toggle { color: #94a3b8; }
+html.dark-theme .ac-references-toggle:hover { color: #38bdf8; }
+
+.ac-references-chevron { font-size: 0.7em; }
+
 /* ---- citations ---- */
 
 .ac-citations {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e2e8f0;
+  margin-top: 0.5rem;
 }
-html.dark-theme .ac-citations { border-top-color: #334155; }
 
 .ac-citation {
   display: flex;
@@ -280,11 +413,29 @@ html.dark-theme .ac-citations { border-top-color: #334155; }
   padding: 0.4em 0.6em;
   text-decoration: none;
   color: #1f2937;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.2s ease;
 }
 .ac-citation:hover { background: #dbeafe; }
 html.dark-theme .ac-citation { background: #0f172a; color: #cbd5e1; }
 html.dark-theme .ac-citation:hover { background: #334155; }
+
+.ac-citation--highlight { box-shadow: 0 0 0 2px var(--nh-blue, #003087); }
+html.dark-theme .ac-citation--highlight { box-shadow: 0 0 0 2px #38bdf8; }
+
+.ac-citation-number {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  background: var(--nh-blue, #003087);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+html.dark-theme .ac-citation-number { background: #38bdf8; color: #0f172a; }
 
 .ac-citation-thumb {
   width: 36px;
@@ -313,6 +464,74 @@ html.dark-theme .ac-citation:hover { background: #334155; }
 html.dark-theme .ac-citation-label strong { color: #38bdf8; }
 .ac-citation-label span { color: #64748b; }
 html.dark-theme .ac-citation-label span { color: #94a3b8; }
+
+/* ---- feedback / copy / share ---- */
+
+.ac-msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.ac-action-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.2em 0.45em;
+  cursor: pointer;
+  line-height: 1;
+}
+.ac-action-btn:hover { border-color: #e2e8f0; color: #1f2937; }
+html.dark-theme .ac-action-btn:hover { border-color: #334155; color: #f8fafc; }
+
+.ac-action-btn--active { color: var(--nh-blue, #003087); border-color: var(--nh-blue, #003087); }
+html.dark-theme .ac-action-btn--active { color: #38bdf8; border-color: #38bdf8; }
+
+.ac-action-text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ---- related questions ---- */
+
+.ac-related-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.ac-related-chip {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  color: #1f2937;
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.4em 0.8em;
+  cursor: pointer;
+  text-align: left;
+}
+.ac-related-chip:hover:not(:disabled) {
+  border-color: var(--nh-blue, #003087);
+  color: var(--nh-blue, #003087);
+}
+.ac-related-chip:disabled { opacity: 0.5; cursor: not-allowed; }
+html.dark-theme .ac-related-chip {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+html.dark-theme .ac-related-chip:hover:not(:disabled) {
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
 
 /* ---- typing indicator ---- */
 

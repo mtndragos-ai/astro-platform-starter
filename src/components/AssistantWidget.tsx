@@ -4,6 +4,7 @@ import './AssistantWidget.css';
 import { MACHINE_GROUPS } from '../lib/machine-groups.mjs';
 
 type Citation = {
+  number: number;
   manualTitle: string;
   sectionTitle: string;
   sourcePages: string;
@@ -11,15 +12,89 @@ type Citation = {
 };
 
 type Message = {
+  id: string;
   role: 'user' | 'assistant';
   text: string;
   citations?: Citation[];
+  relatedQuestions?: string[];
   imagePreview?: string;
 };
 
 type PendingImage = { dataUrl: string; base64: string; mediaType: string };
 
-function renderMarkdown(text: string) {
+type SavedConversation = {
+  id: string;
+  title: string;
+  updatedAt: number;
+  messages: Message[];
+};
+
+const HISTORY_KEY = 'ac-chat-conversations';
+const FEEDBACK_KEY = 'ac-chat-feedback';
+const MAX_SAVED_CONVERSATIONS = 20;
+
+function genId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+// localStorage can throw in private browsing or when full — every call here
+// is wrapped so a storage failure never breaks the actual conversation.
+function loadHistory(): SavedConversation[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(list: SavedConversation[]) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, MAX_SAVED_CONVERSATIONS)));
+  } catch {
+    // storage unavailable or full — history just won't persist this session
+  }
+}
+
+function loadFeedback(): Record<string, 'up' | 'down'> {
+  try {
+    const raw = localStorage.getItem(FEEDBACK_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveFeedback(map: Record<string, 'up' | 'down'>) {
+  try {
+    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(map));
+  } catch {
+    // non-fatal — feedback is a nice-to-have, not core functionality
+  }
+}
+
+function relativeTime(ts: number): string {
+  const diffMs = Date.now() - ts;
+  const min = Math.floor(diffMs / 60000);
+  if (min < 1) return 'chiar acum';
+  if (min < 60) return `acum ${min} min`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `acum ${hr} h`;
+  const days = Math.floor(hr / 24);
+  if (days < 7) return `acum ${days} zile`;
+  return new Date(ts).toLocaleDateString('ro-RO');
+}
+
+function renderMarkdown(
+  text: string,
+  citations: Citation[] | undefined,
+  onCiteClick: (n: number) => void
+) {
   const withoutHeaders = text.replace(/^#{1,6}\s*/gm, '');
   const blocks = withoutHeaders.split(/\n\s*\n/).filter((b) => b.trim());
 
@@ -31,20 +106,45 @@ function renderMarkdown(text: string) {
       return (
         <ul className="ac-msg-list" key={i}>
           {lines.map((line, j) => (
-            <li key={j}>{renderInline(line.replace(/^(-|\*|\d+\.)\s/, ''))}</li>
+            <li key={j}>
+              {renderInline(line.replace(/^(-|\*|\d+\.)\s/, ''), citations, onCiteClick)}
+            </li>
           ))}
         </ul>
       );
     }
-    return <p key={i}>{renderInline(lines.join(' '))}</p>;
+    return <p key={i}>{renderInline(lines.join(' '), citations, onCiteClick)}</p>;
   });
 }
 
-function renderInline(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+function renderInline(
+  text: string,
+  citations: Citation[] | undefined,
+  onCiteClick: (n: number) => void
+) {
+  const parts = text.split(/(\*\*[^*]+\*\*|\[\d+\])/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    const citeMatch = part.match(/^\[(\d+)\]$/);
+    if (citeMatch) {
+      const n = parseInt(citeMatch[1], 10);
+      const citation = citations?.find((c) => c.number === n);
+      if (citation) {
+        return (
+          <button
+            key={i}
+            type="button"
+            className="ac-cite-badge"
+            title={`${citation.manualTitle} — ${citation.sectionTitle}, p.${citation.sourcePages}`}
+            onClick={() => onCiteClick(n)}
+          >
+            {n}
+          </button>
+        );
+      }
+      return <Fragment key={i}>{part}</Fragment>;
     }
     return <Fragment key={i}>{part}</Fragment>;
   });
@@ -95,9 +195,21 @@ export default function AssistantWidget() {
   // `.header-right` container — the same hook the dark-mode button uses.
   const [headerSlot, setHeaderSlot] = useState<Element | null>(null);
 
+  const [conversationId, setConversationId] = useState(() => genId());
+  const [savedConversations, setSavedConversations] = useState<SavedConversation[]>([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const [feedback, setFeedback] = useState<Record<string, 'up' | 'down'>>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [shareFallbackId, setShareFallbackId] = useState<string | null>(null);
+
+  const [expandedRefs, setExpandedRefs] = useState<Record<string, boolean>>({});
+  const [highlight, setHighlight] = useState<string | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  const historyPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let mount: HTMLElement | null = null;
@@ -150,6 +262,121 @@ export default function AssistantWidget() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
+  useEffect(() => {
+    setSavedConversations(loadHistory());
+    setFeedback(loadFeedback());
+  }, []);
+
+  // Close the history dropdown on an outside click.
+  useEffect(() => {
+    if (!historyOpen) return;
+    function onClick(e: MouseEvent) {
+      if (historyPanelRef.current && !historyPanelRef.current.contains(e.target as Node)) {
+        setHistoryOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [historyOpen]);
+
+  // Persist the current thread into history whenever it gains a full
+  // exchange. Keyed by conversationId, so continuing an old conversation
+  // updates its existing entry instead of forking a new one.
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const firstUser = messages.find((m) => m.role === 'user');
+    const title = (firstUser?.text || 'Conversație').slice(0, 60);
+
+    setSavedConversations((prev) => {
+      const withoutCurrent = prev.filter((c) => c.id !== conversationId);
+      const next = [
+        { id: conversationId, title, updatedAt: Date.now(), messages },
+        ...withoutCurrent,
+      ].slice(0, MAX_SAVED_CONVERSATIONS);
+      saveHistory(next);
+      return next;
+    });
+  }, [messages, conversationId]);
+
+  function startNewConversation() {
+    setMessages([]);
+    setConversationId(genId());
+    setHistoryOpen(false);
+    setPendingImage(null);
+    setImageError(null);
+  }
+
+  function loadConversation(conv: SavedConversation) {
+    setMessages(conv.messages);
+    setConversationId(conv.id);
+    setHistoryOpen(false);
+  }
+
+  function deleteConversation(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    setSavedConversations((prev) => {
+      const next = prev.filter((c) => c.id !== id);
+      saveHistory(next);
+      return next;
+    });
+  }
+
+  function setMessageFeedback(id: string, value: 'up' | 'down') {
+    setFeedback((prev) => {
+      const next = { ...prev };
+      if (next[id] === value) {
+        delete next[id];
+      } else {
+        next[id] = value;
+      }
+      saveFeedback(next);
+      return next;
+    });
+  }
+
+  async function copyText(text: string, id: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      window.setTimeout(() => setCopiedId((cur) => (cur === id ? null : cur)), 1500);
+    } catch {
+      // Clipboard API can be unavailable — fail quietly.
+    }
+  }
+
+  async function shareText(text: string, id: string) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+      } catch {
+        // person cancelled the share sheet — not an error
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      setShareFallbackId(id);
+      window.setTimeout(() => setShareFallbackId((cur) => (cur === id ? null : cur)), 1500);
+    } catch {
+      // non-fatal
+    }
+  }
+
+  function handleCiteClick(messageId: string, n: number) {
+    setExpandedRefs((prev) => ({ ...prev, [messageId]: true }));
+    const key = `${messageId}:${n}`;
+    setHighlight(key);
+    window.setTimeout(() => {
+      setHighlight((cur) => (cur === key ? null : cur));
+    }, 1400);
+    window.setTimeout(() => {
+      document.getElementById(`ac-cite-${messageId}-${n}`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }, 50);
+  }
+
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -166,18 +393,29 @@ export default function AssistantWidget() {
     }
   }
 
-  async function sendMessage(e: React.FormEvent) {
-    e.preventDefault();
-    const question = input.trim();
+  async function sendMessage(e?: React.FormEvent, overrideQuestion?: string) {
+    e?.preventDefault();
+    const isOverride = overrideQuestion !== undefined;
+    const question = (overrideQuestion ?? input).trim();
     if ((!question && !pendingImage) || loading) return;
 
-    const imageToSend = pendingImage;
+    // O întrebare conexă e doar text — nu atașăm o poză rămasă de la un
+    // mesaj anterior, fără legătură.
+    const imageToSend = isOverride ? null : pendingImage;
+
     setMessages((m) => [
       ...m,
-      { role: 'user', text: question || '(poză atașată)', imagePreview: imageToSend?.dataUrl },
+      {
+        id: genId(),
+        role: 'user',
+        text: question || '(poză atașată)',
+        imagePreview: imageToSend?.dataUrl,
+      },
     ]);
-    setInput('');
-    setPendingImage(null);
+    if (!isOverride) {
+      setInput('');
+      setPendingImage(null);
+    }
     setLoading(true);
 
     try {
@@ -203,9 +441,21 @@ export default function AssistantWidget() {
       });
       if (!res.ok) throw new Error(`Request failed: ${res.status}`);
       const data = await res.json();
-      setMessages((m) => [...m, { role: 'assistant', text: data.answer, citations: data.citations }]);
+      setMessages((m) => [
+        ...m,
+        {
+          id: genId(),
+          role: 'assistant',
+          text: data.answer,
+          citations: data.citations,
+          relatedQuestions: data.relatedQuestions,
+        },
+      ]);
     } catch {
-      setMessages((m) => [...m, { role: 'assistant', text: 'Ceva nu a mers. Mai încearcă o dată.' }]);
+      setMessages((m) => [
+        ...m,
+        { id: genId(), role: 'assistant', text: 'Ceva nu a mers. Mai încearcă o dată.' },
+      ]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -249,12 +499,57 @@ export default function AssistantWidget() {
                   <button
                     type="button"
                     className="ac-chat-reset"
-                    onClick={() => setMessages([])}
+                    onClick={startNewConversation}
                     title="Începe o conversație nouă"
                   >
                     Conversație nouă
                   </button>
                 )}
+                <div className="ac-history-wrap" ref={historyPanelRef}>
+                  <button
+                    type="button"
+                    className="ac-chat-reset"
+                    onClick={() => setHistoryOpen((v) => !v)}
+                    title="Conversații anterioare"
+                  >
+                    Istoric
+                  </button>
+                  {historyOpen && (
+                    <div className="ac-history-panel">
+                      {savedConversations.length === 0 ? (
+                        <p className="ac-history-empty">Nicio conversație salvată.</p>
+                      ) : (
+                        savedConversations
+                          .slice()
+                          .sort((a, b) => b.updatedAt - a.updatedAt)
+                          .map((conv) => (
+                            <button
+                              type="button"
+                              key={conv.id}
+                              className={`ac-history-item${
+                                conv.id === conversationId ? ' ac-history-item--active' : ''
+                              }`}
+                              onClick={() => loadConversation(conv)}
+                            >
+                              <span className="ac-history-item-title">{conv.title}</span>
+                              <span className="ac-history-item-time">
+                                {relativeTime(conv.updatedAt)}
+                              </span>
+                              <span
+                                className="ac-history-item-delete"
+                                onClick={(e) => deleteConversation(conv.id, e)}
+                                role="button"
+                                aria-label="Șterge conversația"
+                                tabIndex={-1}
+                              >
+                                &times;
+                              </span>
+                            </button>
+                          ))
+                      )}
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   className="ac-chat-close"
@@ -286,39 +581,117 @@ export default function AssistantWidget() {
                   Selectează echipamentul, apoi scrie întrebarea ta — sau atașează o poză.
                 </p>
               )}
-              {messages.map((m, i) => (
-                <div key={i} className={`ac-msg ac-msg--${m.role}`}>
+              {messages.map((m) => (
+                <div key={m.id} className={`ac-msg ac-msg--${m.role}`}>
                   {m.imagePreview && (
                     <img className="ac-msg-image" src={m.imagePreview} alt="Poză atașată" />
                   )}
                   {m.role === 'assistant' ? (
-                    <div className="ac-msg-markdown">{renderMarkdown(m.text)}</div>
+                    <div className="ac-msg-markdown">
+                      {renderMarkdown(m.text, m.citations, (n) => handleCiteClick(m.id, n))}
+                    </div>
                   ) : (
                     <span>{m.text}</span>
                   )}
+
                   {m.citations && m.citations.length > 0 && (
-                    <div className="ac-citations">
-                      {m.citations.map((c, j) => (
-                        <a
-                          key={j}
-                          className="ac-citation"
-                          href={c.imageUrl ?? undefined}
-                          target="_blank"
-                          rel="noreferrer"
+                    <div className="ac-references">
+                      <button
+                        type="button"
+                        className="ac-references-toggle"
+                        onClick={() =>
+                          setExpandedRefs((prev) => ({ ...prev, [m.id]: !(prev[m.id] ?? true) }))
+                        }
+                      >
+                        {m.citations.length === 1
+                          ? '1 referință'
+                          : `${m.citations.length} referințe`}
+                        <span className="ac-references-chevron">
+                          {(expandedRefs[m.id] ?? true) ? '\u25BE' : '\u25B8'}
+                        </span>
+                      </button>
+                      {(expandedRefs[m.id] ?? true) && (
+                        <div className="ac-citations">
+                          {m.citations.map((c) => (
+                            <a
+                              key={c.number}
+                              id={`ac-cite-${m.id}-${c.number}`}
+                              className={`ac-citation${
+                                highlight === `${m.id}:${c.number}` ? ' ac-citation--highlight' : ''
+                              }`}
+                              href={c.imageUrl ?? undefined}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <span className="ac-citation-number">{c.number}</span>
+                              {c.imageUrl && (
+                                <img
+                                  className="ac-citation-thumb"
+                                  src={c.imageUrl}
+                                  alt={`Pagina ${c.sourcePages}`}
+                                  loading="lazy"
+                                />
+                              )}
+                              <span className="ac-citation-label">
+                                <strong>{c.manualTitle}</strong>
+                                <span>{c.sectionTitle} · p.{c.sourcePages}</span>
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {m.role === 'assistant' && (
+                    <div className="ac-msg-actions">
+                      <button
+                        type="button"
+                        className={`ac-action-btn${feedback[m.id] === 'up' ? ' ac-action-btn--active' : ''}`}
+                        onClick={() => setMessageFeedback(m.id, 'up')}
+                        aria-label="Util"
+                        title="Util"
+                      >
+                        &#128077;
+                      </button>
+                      <button
+                        type="button"
+                        className={`ac-action-btn${feedback[m.id] === 'down' ? ' ac-action-btn--active' : ''}`}
+                        onClick={() => setMessageFeedback(m.id, 'down')}
+                        aria-label="Nu a ajutat"
+                        title="Nu a ajutat"
+                      >
+                        &#128078;
+                      </button>
+                      <button
+                        type="button"
+                        className="ac-action-btn ac-action-text"
+                        onClick={() => copyText(m.text, m.id)}
+                      >
+                        {copiedId === m.id ? 'Copiat' : 'Copiază'}
+                      </button>
+                      <button
+                        type="button"
+                        className="ac-action-btn ac-action-text"
+                        onClick={() => shareText(m.text, m.id)}
+                      >
+                        {shareFallbackId === m.id ? 'Copiat' : 'Distribuie'}
+                      </button>
+                    </div>
+                  )}
+
+                  {m.relatedQuestions && m.relatedQuestions.length > 0 && (
+                    <div className="ac-related-questions">
+                      {m.relatedQuestions.map((q, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className="ac-related-chip"
+                          disabled={loading}
+                          onClick={() => sendMessage(undefined, q)}
                         >
-                          {c.imageUrl && (
-                            <img
-                              className="ac-citation-thumb"
-                              src={c.imageUrl}
-                              alt={`Pagina ${c.sourcePages}`}
-                              loading="lazy"
-                            />
-                          )}
-                          <span className="ac-citation-label">
-                            <strong>{c.manualTitle}</strong>
-                            <span>{c.sectionTitle} · p.{c.sourcePages}</span>
-                          </span>
-                        </a>
+                          {q}
+                        </button>
                       ))}
                     </div>
                   )}
