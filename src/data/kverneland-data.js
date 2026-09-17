@@ -385,9 +385,25 @@ export const kvernelandData = {
                     }
 
                 ]
-            
+
             },
-            "video": { title: "Tutorial Video", models: [] },
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Training Optima SX",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/PUNE-AICI-ID-VIDEO-OPTIMA-SX/view?usp=drive_link"
+                    },
+                    {
+                        nume: "Training Optima TF Profi",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/PUNE-AICI-ID-VIDEO-OPTIMA-TF-PROFI/view?usp=drive_link"
+                    }
+                ]
+            },
             "erori": { 
                 title: "Coduri de Eroare", 
                 models: [
@@ -633,8 +649,8 @@ export const kvernelandData = {
                     }
                 ]
             },
-            "manual-asamblare": { 
-                 title: "Manual Asamblare", 
+            "manual-asamblare": {
+                 title: "Manual Asamblare",
                 models: [
 			{ nume: "Asamblare aparatori noroi iXtrack",
                             descriere: "Manual asamblare",
@@ -643,10 +659,26 @@ export const kvernelandData = {
                         ]
                     }
                 ]
-            
+
             },
 
-            "video": { title: "Tutorial Video", models: [] },
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Kverneland iXtrack Walkaround",
+                        descriere: "Prezentare generală a utilajului",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/119fCQm14monb-t7eeO8sBPnKHWIVLAfb/view?usp=drive_link"
+                    },
+                    {
+                        nume: "Kverneland trailed sprayers - Basic troubleshooting and PDI",
+                        descriere: "Depanare de bază și PDI (Pre-Delivery Inspection)",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/1f-vsDNIY_aARGtmk4xS2rrQbQ2sxG47-/view?usp=drive_link"
+                    }
+                ]
+            },
             "erori": { 
                 title: "Coduri de Eroare", 
                 models: [
@@ -882,9 +914,19 @@ export const kvernelandData = {
                         }
                 ]
             },
-        
 
-        "video": { title: "Tutorial Video", models: [] },
+
+        "video": {
+            title: "Tutorial Video",
+            models: [
+                {
+                    nume: "Training Spreader",
+                    descriere: "Tutorial video",
+                    isVideo: true,
+                    link: "https://drive.google.com/file/d/1ymfwAteB_PkBinoHXN0mDILB2dY_H73u/view?usp=drive_link"
+                }
+            ]
+        },
          "erori": { 
                 title: "Coduri de Eroare", 
                 models: [
@@ -900,8 +942,38 @@ export const kvernelandData = {
                             }
                         ] 
                     }
-                ] 
+                ]
             }
     }
-}
+    },
+    "cultivator": {
+        title: "Cultivatoare dezmiriștitoare",
+        resources: {
+            "manual-operare": {
+                title: "Manual Operare",
+                models: [
+                    { nume: "CTC", descriere: "Manual Operare", link: "https://drive.google.com/file/d/1cK6VNaQ07MTDqDobtBcjK6GfQ1bkpdaT/view?usp=drive_link" },
+                    { nume: "Enduro", descriere: "Manual Operare", link: "https://drive.google.com/file/d/1mQhW98cLbOirx_TRmlqn17LOOR73cSRR/view?usp=drive_link" }
+                ]
+            },
+            "manual-asamblare": {
+                title: "Manual Asamblare",
+                models: [
+                    { nume: "CTC", descriere: "Manual Asamblare", link: "https://drive.google.com/file/d/1KY1lVBICYeKK0UTOgvJ2JYSyHBPGby95/view?usp=drive_link" },
+                    { nume: "Enduro", descriere: "Manual Asamblare", link: "https://drive.google.com/file/d/1kE-7mraNeFtlZDwR1n9yRbSxV_LH5wLB/view?usp=drive_link" }
+                ]
+            },
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Training cultivatoare dezmiriștitoare",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/19tkF88Mr7zjLhYBxMP4xCYR2-Nkh-Goc/view?usp=drive_link"
+                    }
+                ]
+            }
+        }
+    }
 };
