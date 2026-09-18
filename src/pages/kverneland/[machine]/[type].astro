@@ -3,7 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import { kvernelandData } from '../../../data/kverneland-data.js';
 
 export async function getStaticPaths() {
-  const machines = ['semanatori', 'sprayer', 'spreader'];
+  const machines = ['semanatori', 'sprayer', 'spreader', 'cultivator'];
   const types = ['manual-service', 'manual-operare', 'manual-asamblare', 'video', 'erori'];
   let paths = [];
   machines.forEach(m => { types.forEach(t => { paths.push({ params: { machine: m, type: t } }); }); });
@@ -65,12 +65,28 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
                     <h1 id="page-title">{machineTitle}: {resourceTitle}</h1>
                     <p id="page-subtitle">Alege opțiunea pentru a vedea variantele disponibile.</p>
                 </header>
-                
+
                 <div class="list-wide-container">
                     <div class="list-wide" id="dynamic-list"></div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- POP-UP PLAYER PENTRU TUTORIALE VIDEO -->
+    <div class="video-modal-overlay" id="video-modal" onclick="if (event.target === this) window.closeVideoModal();">
+        <div class="video-modal-box">
+            <div class="video-modal-header">
+                <h3 id="video-modal-title"></h3>
+                <button type="button" class="video-modal-close" onclick="window.closeVideoModal();" aria-label="Închide">&times;</button>
+            </div>
+            <div class="video-modal-body">
+                <iframe id="video-modal-frame" src="" title="Video tutorial" allow="autoplay; fullscreen" allowfullscreen frameborder="0"></iframe>
+                <div id="video-modal-placeholder" class="video-modal-placeholder">
+                    Linkul acestui video nu este încă disponibil.
+                </div>
+            </div>
+        </div>
     </div>
 </Layout>
 
@@ -222,18 +238,80 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
                 return; 
             }
 
-            window.resourceData.forEach(m => {
-                listContainer.innerHTML += `
-                    <div class="model-item-wide clickable" onclick="navigateToModel('${m.nume}')">
-                        <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'Accesează documentația'}</p></div>
-                        <span class="action-arrow">Selectează <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-                    </div>`;
+            window.resourceData.forEach((m, idx) => {
+                if (m.isVideo) {
+                    listContainer.innerHTML += `
+                        <div class="model-item-wide clickable video-item" onclick="window.openVideoModal(${idx})">
+                            <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'Tutorial video'}</p></div>
+                            <span class="action-arrow">Vizionează <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+                        </div>`;
+                } else if (m.link) {
+                    // Model cu link direct (fără sub-variante) - un singur click deschide fișierul din Drive.
+                    listContainer.innerHTML += `
+                        <div class="model-item-wide">
+                            <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'Descarcă fișierul'}</p></div>
+                            <a href="${m.link}" target="_blank" class="action-btn-wide">Descarcă <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
+                        </div>`;
+                } else {
+                    listContainer.innerHTML += `
+                        <div class="model-item-wide clickable" onclick="navigateToModel('${m.nume}')">
+                            <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'Accesează documentația'}</p></div>
+                            <span class="action-arrow">Selectează <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                        </div>`;
+                }
             });
         }
     }
 
     window.navigateToModel = (n) => { const u = new URL(window.location); u.searchParams.set('model', n); window.history.pushState({}, '', u); handleNavigation(); }
     window.navigateToFolder = (m, f) => { const u = new URL(window.location); u.searchParams.set('folder', f); window.history.pushState({}, '', u); handleNavigation(); }
+
+    // POP-UP PLAYER PENTRU TUTORIALE VIDEO
+    function extractDriveFileId(link) {
+        if (!link) return null;
+        const match = link.match(/\/d\/([a-zA-Z0-9_-]+)/) || link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    }
+
+    window.openVideoModal = function (idx) {
+        const video = window.resourceData[idx];
+        if (!video) return;
+
+        const modal = document.getElementById('video-modal');
+        const frame = document.getElementById('video-modal-frame');
+        const titleEl = document.getElementById('video-modal-title');
+        const placeholder = document.getElementById('video-modal-placeholder');
+
+        titleEl.textContent = video.nume;
+
+        const fileId = extractDriveFileId(video.link);
+        const isPlaceholderLink = !video.link || video.link.includes('PUNE-AICI');
+
+        if (fileId && !isPlaceholderLink) {
+            frame.src = `https://drive.google.com/file/d/${fileId}/preview`;
+            frame.style.display = 'block';
+            placeholder.style.display = 'none';
+        } else {
+            frame.src = '';
+            frame.style.display = 'none';
+            placeholder.style.display = 'flex';
+        }
+
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeVideoModal = function () {
+        const modal = document.getElementById('video-modal');
+        const frame = document.getElementById('video-modal-frame');
+        modal.classList.remove('open');
+        frame.src = ''; // oprește playback-ul la închidere
+        document.body.style.overflow = '';
+    };
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') window.closeVideoModal();
+    });
 </script>
 
 <style>
@@ -327,13 +405,81 @@ const resourceTitle = currentResourceData ? currentResourceData.title : "Resurs�
     .fullscreen-mode .iframe-container-fix { border-radius: 0; border-left: none; border-right: none; border-bottom: none; box-shadow: none; height: calc(100vh - 120px); }
     .iframe-container-fix iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; min-height: 85vh;}
 
-    @media (max-width: 768px) { 
-        .model-item-wide { flex-direction: column; align-items: flex-start; gap: 15px; } 
+    @media (max-width: 768px) {
+        .model-item-wide { flex-direction: column; align-items: flex-start; gap: 15px; }
         .model-info { margin-right: 0; width: 100%; }
-        .action-btn-wide { width: 100%; justify-content: center; } 
-        
+        .action-btn-wide { width: 100%; justify-content: center; }
+
         .main-content.fullscreen-mode .breadcrumbs { padding-left: 1rem; padding-right: 1rem; }
         .mobile-pdf-actions { display: flex; padding: 0 1rem 1.5rem 1rem; }
         .iframe-container-fix { height: 75vh; border-radius: 8px; }
+    }
+
+    /* POP-UP PLAYER PENTRU TUTORIALE VIDEO */
+    .video-item .action-arrow { color: #003087; }
+
+    .video-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.75);
+        z-index: 3000;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+    .video-modal-overlay.open { display: flex; }
+
+    .video-modal-box {
+        background: #0f172a;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 960px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .video-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        background: #111827;
+        gap: 12px;
+    }
+    .video-modal-header h3 { color: #fff; margin: 0; font-size: 1.05rem; font-weight: 700; }
+
+    .video-modal-close {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0 4px;
+        flex-shrink: 0;
+    }
+    .video-modal-close:hover { color: #F4D03F; }
+
+    .video-modal-body { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+    .video-modal-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .video-modal-placeholder {
+        display: none;
+        position: absolute;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        font-size: 0.95rem;
+        text-align: center;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+        .video-modal-overlay { padding: 0; }
+        .video-modal-box { max-width: 100%; height: 100%; border-radius: 0; display: flex; flex-direction: column; }
+        .video-modal-body { flex: 1; aspect-ratio: auto; }
     }
 </style>
