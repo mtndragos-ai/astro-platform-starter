@@ -385,10 +385,32 @@ export const kvernelandData = {
                     }
 
                 ]
-            
+
             },
-            "video": { title: "Tutorial Video", models: [] },
-            "erori": { 
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Training Optima SX",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/11ZfpOPeavyTaUNbyL8fD8OTMQw9oS8Da/view?usp=drive_link"
+                    },
+                    {
+                        nume: "Training Optima TF Profi",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/1SDXEopMg2fKFprGnONZJXBk8hZWNgfJM/view?usp=drive_link"
+                    },
+                    {
+                        nume: "Training U-Drill",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/1VtSpxjwAcWUiVJ98WM-j7F3GaqeSeKGR/view?usp=drive_link"
+                    }
+                ]
+            },
+            "erori": {
                 title: "Coduri de Eroare", 
                 models: [
                     { 
@@ -633,8 +655,8 @@ export const kvernelandData = {
                     }
                 ]
             },
-            "manual-asamblare": { 
-                 title: "Manual Asamblare", 
+            "manual-asamblare": {
+                 title: "Manual Asamblare",
                 models: [
 			{ nume: "Asamblare aparatori noroi iXtrack",
                             descriere: "Manual asamblare",
@@ -643,10 +665,26 @@ export const kvernelandData = {
                         ]
                     }
                 ]
-            
+
             },
 
-            "video": { title: "Tutorial Video", models: [] },
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Kverneland iXtrack Walkaround",
+                        descriere: "Prezentare generală a utilajului",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/119fCQm14monb-t7eeO8sBPnKHWIVLAfb/view?usp=drive_link"
+                    },
+                    {
+                        nume: "Kverneland trailed sprayers - Basic troubleshooting and PDI",
+                        descriere: "Depanare de bază și PDI (Pre-Delivery Inspection)",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/1f-vsDNIY_aARGtmk4xS2rrQbQ2sxG47-/view?usp=drive_link"
+                    }
+                ]
+            },
             "erori": { 
                 title: "Coduri de Eroare", 
                 models: [
@@ -882,9 +920,19 @@ export const kvernelandData = {
                         }
                 ]
             },
-        
 
-        "video": { title: "Tutorial Video", models: [] },
+
+        "video": {
+            title: "Tutorial Video",
+            models: [
+                {
+                    nume: "Training Spreader",
+                    descriere: "Tutorial video",
+                    isVideo: true,
+                    link: "https://drive.google.com/file/d/1ymfwAteB_PkBinoHXN0mDILB2dY_H73u/view?usp=drive_link"
+                }
+            ]
+        },
          "erori": { 
                 title: "Coduri de Eroare", 
                 models: [
@@ -900,8 +948,74 @@ export const kvernelandData = {
                             }
                         ] 
                     }
-                ] 
+                ]
             }
     }
-}
+    },
+    "cultivator": {
+        title: "Cultivatoare dezmiriștitoare",
+        resources: {
+            "manual-operare": {
+                title: "Manual Operare",
+                models: [
+                    { nume: "CTC", descriere: "Manual Operare", link: "https://drive.google.com/file/d/1cK6VNaQ07MTDqDobtBcjK6GfQ1bkpdaT/view?usp=drive_link" },
+                    { nume: "Enduro", descriere: "Manual Operare", link: "https://drive.google.com/file/d/1mQhW98cLbOirx_TRmlqn17LOOR73cSRR/view?usp=drive_link" }
+                ]
+            },
+            "manual-asamblare": {
+                title: "Manual Asamblare",
+                models: [
+                    { nume: "CTC", descriere: "Manual Asamblare", link: "https://drive.google.com/file/d/1KY1lVBICYeKK0UTOgvJ2JYSyHBPGby95/view?usp=drive_link" },
+                    { nume: "Enduro", descriere: "Manual Asamblare", link: "https://drive.google.com/file/d/1kE-7mraNeFtlZDwR1n9yRbSxV_LH5wLB/view?usp=drive_link" }
+                ]
+            },
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Training cultivatoare dezmiriștitoare",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/19tkF88Mr7zjLhYBxMP4xCYR2-Nkh-Goc/view?usp=drive_link"
+                    }
+                ]
+            }
+        }
+    },
+    "qualidisc": {
+        title: "Qualidisc",
+        resources: {
+            "manual-service": {
+                title: "Manual Service",
+                models: [
+                    { nume: "Qualidisc Pro/Farmer", descriere: "Manual Service", link: "https://drive.google.com/file/d/1wx9206smIKH-lxe3c6rvTdKnwys0G7Y8/view?usp=drive_link" }
+                ]
+            },
+            "manual-operare": {
+                title: "Manual Operare",
+                models: [
+                    { nume: "Qualidisc Farmer 01T", descriere: "Manual Operare", link: "https://drive.google.com/file/d/1gAWmRsIySIMq0mPF2wYwi0JaP_TB4NXT/view?usp=drive_link" },
+                    { nume: "Qualidisc Pro 01T", descriere: "Manual Operare", link: "https://drive.google.com/file/d/1sixEx3oiNnvg3fzsa7YYrYNqICUHMjRY/view?usp=drive_link" }
+                ]
+            },
+            "manual-asamblare": {
+                title: "Manual Asamblare",
+                models: [
+                    { nume: "Qualidisc Pro 01T", descriere: "Manual Asamblare", link: "https://drive.google.com/file/d/13IBh4hVm4i1L8SG7OoQdZbPrbJEfh5Ap/view?usp=drive_link" },
+                    { nume: "Qualidisc Farmer 01T", descriere: "Manual Asamblare", link: "https://drive.google.com/file/d/15lKhxzuy9iXi--UA6Rh-5lyIl6C0FGZk/view?usp=drive_link" }
+                ]
+            },
+            "video": {
+                title: "Tutorial Video",
+                models: [
+                    {
+                        nume: "Training Qualidisc Pro/Farmer",
+                        descriere: "Tutorial video",
+                        isVideo: true,
+                        link: "https://drive.google.com/file/d/1V5XSCwvydXg3voqn9SI6pmfXV0_DUed0/view?usp=drive_link"
+                    }
+                ]
+            }
+        }
+    }
 };
