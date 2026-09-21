@@ -22,11 +22,28 @@ export const MACHINE_GROUPS = [
     id: 'ixtrack',
     label: 'iXtrack (T3 / T4 / T6)',
     keywords: ['ixtrack', 'ix track', 't3', 't4', 't6'],
+    // iXspray is the control terminal/software that runs on the iXtrack —
+    // not a separate machine. iXflow Pulse (PWM nozzle control) and
+    // Boomguide (automatic boom height compensation) are likewise features
+    // of the iXtrack that live inside/alongside the iXspray terminal, not
+    // separate machines. A person typing "ixtrack" is often really asking
+    // about one of these, so all their manuals are included here too
+    // rather than only under their own separate groups below.
     slugs: [
       'ixtrack-t3-operators',
       'ixtrack-t4-operators',
       'ixtrack-t6-operators',
       'pdi-ixtrack-t',
+      'kverneland-ixspray',
+      'ixspray-operators',
+      'kverneland-ixflow-pulse',
+      'ixflow-pulse-operators',
+      'boomguide-comfort-uc5',
+      'boomguide-comfort-uc7',
+      'boomguide-pro-uc5',
+      'boomguide-pro-uc7',
+      'boomguide-pro-active-uc5',
+      'boomguide-pro-active-uc7',
     ],
   },
   {
@@ -49,7 +66,20 @@ export const MACHINE_GROUPS = [
     id: 'ixspray',
     label: 'iXspray (electronics / terminal)',
     keywords: ['ixspray'],
-    slugs: ['kverneland-ixspray', 'ixspray-operators'],
+    // iXflow Pulse and Boomguide are features accessed through the iXspray
+    // terminal, not separate machines — include their manuals here too.
+    slugs: [
+      'kverneland-ixspray',
+      'ixspray-operators',
+      'kverneland-ixflow-pulse',
+      'ixflow-pulse-operators',
+      'boomguide-comfort-uc5',
+      'boomguide-comfort-uc7',
+      'boomguide-pro-uc5',
+      'boomguide-pro-uc7',
+      'boomguide-pro-active-uc5',
+      'boomguide-pro-active-uc7',
+    ],
   },
   {
     id: 'ixflow',

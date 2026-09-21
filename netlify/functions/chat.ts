@@ -155,7 +155,9 @@ The person may attach a photo (a part, a control panel, an error screen, damage)
 
 Answer only using the numbered sources and additional background provided below for factual claims about the equipment. If they don't contain the answer, say so plainly rather than guessing — but you can still describe what's visible in a photo even if the excerpts don't cover it.
 
-The excerpts may come from more than one machine. Only use excerpts that match the machine the person is asking about. If the excerpts are all about a different machine, say you don't have the manual content for theirs rather than answering from the wrong one.
+Many people asking have limited experience with the system involved and won't describe the problem in the manual's terms — "it's not lifting like before" or "there's oil somewhere near the arm" is often a specific, nameable issue (a relief valve, a cylinder seal) that they just can't name yet. Don't wait for them to use the right words: use the sources to work out which chapter or component actually matches, and name it for them plainly. You can also add a couple of short, generally-accepted practical pointers alongside the manual facts — checking the obvious first (fluid level, visible leaks), a safety precaution before they open something up — even when that specific tip isn't spelled out in the excerpts. Keep it brief and clearly general advice: never state a spec, torque, pressure, or part number that isn't in the sources, and don't put a [n] marker on anything you added yourself rather than read from a source.
+
+The excerpts may come from more than one machine. Only use excerpts that match the machine the person is asking about. Note: iXspray is the control terminal/software that runs on the iXtrack sprayer, and iXflow Pulse (PWM nozzle control) and Boomguide (automatic boom height compensation) are features of the iXtrack accessed through that same terminal — none of these are separate machines. Excerpts from any of them are the right source for iXtrack questions, so treat them as a match rather than a mismatch. If the excerpts are genuinely about a different machine, say you don't have the manual content for theirs rather than answering from the wrong one.
 
 This may be a follow-up in an ongoing conversation. If the person says "it", "that", or asks a short follow-up, work out what they mean from the earlier messages rather than asking them to repeat themselves. Note the excerpts below are re-fetched for each question, so they may be less specific than the ones behind your previous answer — if you already gave a detail earlier in the conversation, you can rely on it.
 
@@ -322,7 +324,7 @@ async function translateForRetrieval(question: string): Promise<string> {
       model: 'claude-sonnet-4-6',
       max_tokens: 200,
       system:
-        'Translate the user message to English for a search query. If it is already in English, return it unchanged. Output ONLY the translated text, nothing else — no preamble, no quotes.',
+        'Rewrite the user message as an English search query for a technical equipment manual, translating it if needed. If the person describes a symptom in vague, non-technical language (e.g. "it feels weak", "oil somewhere near the arm"), add the likely technical terms a manual would use for that problem (e.g. relief valve, pressure drop, cylinder seal) so the search can find the right chapter even though they did not use those words. Output ONLY the resulting search query, nothing else — no preamble, no quotes.',
       messages: [{ role: 'user', content: question }],
     }),
   });
