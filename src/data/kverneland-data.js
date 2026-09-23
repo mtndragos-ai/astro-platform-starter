@@ -220,7 +220,7 @@ export const kvernelandData = {
                                 isFolder: true, 
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1py4gyKIi7QzpzK5UUC6Z7A0Jz2WbaKHx/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1dkOw3hvOFm4G5ScLOAu5QmZI81b6CAik/view?usp=drive_link" }
                                 ]
                             }, 
                             { 
@@ -228,7 +228,7 @@ export const kvernelandData = {
                                 isFolder: true,
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1pl-mPJGm9u2l4vZ_Mchp_gg7nlyeSL3I/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1UYtJhHXlY5dqHglQnjMv14Pl8DqAMNnr/view?usp=drive_link" }
                                 ]
                             } 
                         ]
@@ -242,7 +242,7 @@ export const kvernelandData = {
                                 isFolder: true, 
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1JBAdGAyulNUKoateDvCV58p29WWQ3qso/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1dkOw3hvOFm4G5ScLOAu5QmZI81b6CAik/view?usp=drive_link" }
                                 ]
                             }, 
                             { 
@@ -250,7 +250,7 @@ export const kvernelandData = {
                                 isFolder: true,
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1oEqISXeMJAu25L7_iIKyEvKWldRx4kem/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1UYtJhHXlY5dqHglQnjMv14Pl8DqAMNnr/view?usp=drive_link" }
                                 ]
                             } 
                         ]
