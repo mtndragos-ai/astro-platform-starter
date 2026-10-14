@@ -22,28 +22,11 @@ export const MACHINE_GROUPS = [
     id: 'ixtrack',
     label: 'iXtrack (T3 / T4 / T6)',
     keywords: ['ixtrack', 'ix track', 't3', 't4', 't6'],
-    // iXspray is the control terminal/software that runs on the iXtrack —
-    // not a separate machine. iXflow Pulse (PWM nozzle control) and
-    // Boomguide (automatic boom height compensation) are likewise features
-    // of the iXtrack that live inside/alongside the iXspray terminal, not
-    // separate machines. A person typing "ixtrack" is often really asking
-    // about one of these, so all their manuals are included here too
-    // rather than only under their own separate groups below.
     slugs: [
       'ixtrack-t3-operators',
       'ixtrack-t4-operators',
       'ixtrack-t6-operators',
       'pdi-ixtrack-t',
-      'kverneland-ixspray',
-      'ixspray-operators',
-      'kverneland-ixflow-pulse',
-      'ixflow-pulse-operators',
-      'boomguide-comfort-uc5',
-      'boomguide-comfort-uc7',
-      'boomguide-pro-uc5',
-      'boomguide-pro-uc7',
-      'boomguide-pro-active-uc5',
-      'boomguide-pro-active-uc7',
     ],
   },
   {
@@ -66,20 +49,7 @@ export const MACHINE_GROUPS = [
     id: 'ixspray',
     label: 'iXspray (electronics / terminal)',
     keywords: ['ixspray'],
-    // iXflow Pulse and Boomguide are features accessed through the iXspray
-    // terminal, not separate machines — include their manuals here too.
-    slugs: [
-      'kverneland-ixspray',
-      'ixspray-operators',
-      'kverneland-ixflow-pulse',
-      'ixflow-pulse-operators',
-      'boomguide-comfort-uc5',
-      'boomguide-comfort-uc7',
-      'boomguide-pro-uc5',
-      'boomguide-pro-uc7',
-      'boomguide-pro-active-uc5',
-      'boomguide-pro-active-uc7',
-    ],
+    slugs: ['kverneland-ixspray', 'ixspray-operators'],
   },
   {
     id: 'ixflow',
@@ -137,7 +107,7 @@ export const MACHINE_GROUPS = [
   {
     id: 't7',
     label: 'New Holland T7 Stage V',
-    keywords: ['t7', 'autocommand', 'auto command', 'new holland', 't7.195', 't7.215', 't7.230', 't7.245', 't7.260', 't7.270'],
+    keywords: ['t7', 'autocommand', 'auto command', 't7.195', 't7.215', 't7.230', 't7.245', 't7.260', 't7.270'],
     slugs: [
       't7-contents',
       't7-introduction',
@@ -159,6 +129,12 @@ export const MACHINE_GROUPS = [
       't7-platform-cab-bodywork-decals',
       't7-special-tool-index',
     ],
+  },
+  {
+    id: 'nh-m-series',
+    label: 'New Holland M100\u2013M160',
+    keywords: ['m100', 'm115', 'm135', 'm160', 'm-series', 'm series', 'm 100', 'm 115', 'm 135', 'm 160'],
+    slugs: ['nh-m-series-service'],
   },
 ];
 
