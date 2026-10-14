@@ -14,7 +14,8 @@ const noutati = [
 const categorii = [
     { id: 'tractoare', titlu: 'Tractoare', descriere: 'Seria T4, T5, T6, T7, T8', img: '/imagini/tractor.png', link: '/tractoare', color: '#003087' },
     { id: 'combine', titlu: 'Combine', descriere: 'CR, CX, TC', img: '/imagini/combina.png', link: '/combine', color: '#F4D03F' },
-    { id: 'kverneland', titlu: 'Kverneland', descriere: 'Implemente și Utilaje', img: '/imagini/kverneland.png', link: '/kverneland', color: '#E30613' }
+    { id: 'kverneland', titlu: 'Kverneland', descriere: 'Implemente și Utilaje', img: '/imagini/kverneland.png', link: '/kverneland', color: '#E30613' },
+    { id: 'tic', titlu: 'TIC CNH', descriere: '', img: '/imagini/tic.png', link: '/tic', color: '#10b981' }
 ];
 ---
 
@@ -127,7 +128,7 @@ const categorii = [
                             <img src={cat.img} alt={cat.titlu} loading="lazy" />
                         </div>
                         <h3>{cat.titlu}</h3>
-                        <p>{cat.descriere}</p>
+                        {cat.descriere && <p>{cat.descriere}</p>}
                     </a>
                 ))}
             </div>
@@ -344,7 +345,7 @@ const categorii = [
     .section-welcome h1 { font-size: 1.8rem; font-weight: 900; color: #111827; margin: 0 0 5px 0; }
     .section-welcome p { font-size: 1rem; color: #64748b; margin: 0; }
 
-    .categorii-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1050px; margin: 0 auto; }
+    .categorii-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1300px; margin: 0 auto; }
     
     .categorie-card { 
         background: white; padding: 2rem 1.5rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); 

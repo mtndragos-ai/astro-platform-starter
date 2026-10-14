@@ -738,7 +738,7 @@ export default function AssistantWidget() {
                 className="ac-chat-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ex: Unde este compensatorul?"
+                placeholder="Ex: Calibrare debitmetru iXtrack"
                 disabled={loading}
               />
               <button
