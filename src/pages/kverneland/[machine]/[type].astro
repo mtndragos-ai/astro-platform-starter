@@ -4,7 +4,7 @@ import { kvernelandData } from '../../../data/kverneland-data.js';
 
 export async function getStaticPaths() {
   const machines = ['semanatori', 'sprayer', 'spreader', 'cultivator', 'qualidisc'];
-  const types = ['manual-service', 'manual-operare', 'manual-asamblare', 'video', 'erori'];
+  const types = ['manual-service', 'manual-operare', 'manual-asamblare', 'video', 'erori', 'tabele-imprastiere'];
   let paths = [];
   machines.forEach(m => { types.forEach(t => { paths.push({ params: { machine: m, type: t } }); }); });
   return paths;

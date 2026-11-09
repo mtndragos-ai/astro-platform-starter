@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Import THD în Istoric</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #f3f5f9;
+    --surface: #ffffff;
+    --surface-sunken: #eef1f7;
+    --border: #dbe1ec;
+    --text: #1c2433;
+    --text-muted: #5b6678;
+    --accent: #003087;
+    --accent-soft: #e8edf9;
+    --accent-ink: #ffffff;
+    --success: #0a7a52;
+    --success-soft: #e4f6ee;
+    --error: #c22b2b;
+    --error-soft: #fcebeb;
+    --warning: #a3590a;
+    --warning-soft: #fbeedd;
+    --font-display: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+    --font-body: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11151d; --surface: #1a2029; --surface-sunken: #141922; --border: #2b3342;
+      --text: #e6e9f0; --text-muted: #96a0b4; --accent: #6e93e8; --accent-soft: #212d47;
+      --accent-ink: #0d1424; --success: #4fd39a; --success-soft: #16342a; --error: #f09090;
+      --error-soft: #3a1c1c; --warning: #f0b26a; --warning-soft: #3a2a14; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11151d; --surface: #1a2029; --surface-sunken: #141922; --border: #2b3342;
+    --text: #e6e9f0; --text-muted: #96a0b4; --accent: #6e93e8; --accent-soft: #212d47;
+    --accent-ink: #0d1424; --success: #4fd39a; --success-soft: #16342a; --error: #f09090;
+    --error-soft: #3a1c1c; --warning: #f0b26a; --warning-soft: #3a2a14; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 32px 120px;
+  }
+  a { color: var(--accent); }
+
+  .page { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+  .masthead { display: flex; flex-direction: column; gap: 6px; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent); font-weight: 600;
+  }
+  h1 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 800; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  .sub { color: var(--text-muted); font-size: 1rem; line-height: 1.55; margin: 0; max-width: 62ch; }
+
+  .notice {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--accent-soft); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; font-size: 0.9rem; line-height: 1.5;
+  }
+  .notice .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 6px; flex-shrink: 0; }
+  .notice strong { font-weight: 700; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+
+  .dropzone {
+    padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    text-align: center; border: 1.5px dashed var(--border); border-radius: 16px; background: var(--surface);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone svg { color: var(--accent); }
+  .dropzone-title { font-weight: 700; font-size: 1.02rem; }
+  .dropzone-hint { color: var(--text-muted); font-size: 0.85rem; max-width: 46ch; }
+  .file-btn {
+    margin-top: 4px; border: 1px solid var(--accent); color: var(--accent); background: transparent;
+    font-weight: 700; font-size: 0.88rem; padding: 9px 18px; border-radius: 999px; cursor: pointer;
+  }
+  .file-btn:hover { background: var(--accent-soft); }
+  #file-input { display: none; }
+
+  .load-errors { font-size: 0.85rem; color: var(--error); display: flex; flex-direction: column; gap: 4px; }
+
+  .queue-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .queue-head h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; margin: 0; }
+  .queue-count { color: var(--text-muted); font-size: 0.85rem; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .empty-state {
+    padding: 40px 24px; text-align: center; color: var(--text-muted); font-size: 0.92rem;
+    border: 1px dashed var(--border); border-radius: 16px;
+  }
+
+  .ticket-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .ticket { padding: 0; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+  .ticket[data-status="sent"] { opacity: 0.72; }
+  .ticket-summary {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none;
+  }
+  .ticket-summary input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); flex-shrink: 0; }
+  .ticket-main { min-width: 0; flex: 1; }
+  .ticket-title {
+    font-weight: 700; font-size: 0.98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ticket-tag {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); background: var(--accent-soft);
+    padding: 1px 7px; border-radius: 6px; margin-right: 6px;
+  }
+  .ticket-meta { color: var(--text-muted); font-size: 0.82rem; margin-top: 2px; }
+  .ticket-meta span + span::before { content: '·'; margin: 0 6px; }
+
+  .status-badge {
+    font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+  }
+  .status-badge[data-s="pending"] { background: var(--surface-sunken); color: var(--text-muted); }
+  .status-badge[data-s="sending"] { background: var(--warning-soft); color: var(--warning); }
+  .status-badge[data-s="sent"] { background: var(--success-soft); color: var(--success); }
+  .status-badge[data-s="error"] { background: var(--error-soft); color: var(--error); }
+
+  .chevron { color: var(--text-muted); flex-shrink: 0; transition: transform 0.15s; }
+  .ticket.open .chevron { transform: rotate(180deg); }
+
+  .ticket-detail { display: none; padding: 0 16px 18px 16px; border-top: 1px solid var(--border); }
+  .ticket.open .ticket-detail { display: block; }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 14px; }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .field input, .field textarea {
+    width: 100%; font-family: var(--font-body); font-size: 0.92rem; color: var(--text);
+    background: var(--surface-sunken); border: 1px solid var(--border); border-radius: 9px;
+    padding: 8px 10px; resize: vertical; outline: none;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--accent); background: var(--surface); }
+  .field input[disabled], .field textarea[disabled] { opacity: 0.6; }
+  .field textarea { min-height: 72px; line-height: 1.45; font-family: var(--font-mono); font-size: 0.82rem; }
+  .field .hint { font-size: 0.85rem; color: var(--text-muted); padding: 2px 0; }
+
+  .ticket-actions { display: flex; gap: 10px; align-items: center; padding-top: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--font-body); font-weight: 700; font-size: 0.86rem; border-radius: 9px; cursor: pointer;
+    padding: 8px 16px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn:disabled { cursor: not-allowed; opacity: 0.5; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--text-muted); }
+  .btn.ghost:hover { color: var(--error); }
+  .error-msg { font-size: 0.82rem; color: var(--error); flex-basis: 100%; }
+
+  .action-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+    padding-top: 14px;
+    background: linear-gradient(to top, var(--bg) 60%, transparent);
+    display: none;
+  }
+  .action-bar.visible { display: flex; justify-content: center; }
+  .action-bar-inner {
+    max-width: 880px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  .progress-text { font-size: 0.85rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .progress-text strong { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .action-bar-inner { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <span class="eyebrow">AgroConcept Service · Istoric Raportări</span>
+    <h1>Import tichete THD</h1>
+    <p class="sub">Încarcă fișierele <code>thd-*.json</code> exportate din portalul CNH, verifică cum se mapează fiecare la un raport, apoi trimite-le în aceeași bază de date ca rapoartele interne — fiecare marcat clar ca provenind dintr-un tichet THD.</p>
+  </div>
+
+  <div class="notice">
+    <span class="dot"></span>
+    <div>
+      <strong>Fără email de alertă.</strong> Fiecare trimitere pleacă cu steagul <code>silent</code> activat, ca să nu inunde <code>suporttehnic@agroconcept.ro</code> cu zeci de alerte pentru tichete deja urmărite în CNH. Asta funcționează doar dacă ai adăugat deja verificarea <code>if (!data.silent)</code> în Apps Script.
+    </div>
+  </div>
+
+  <div class="notice">
+    <span class="dot"></span>
+    <div>
+      <strong>Atașamente.</strong> Dacă tichetul a fost exportat cu scriptul de export v7 (sau mai nou), fișierele atașate în CNH care au putut fi descărcate automat (sub 15 MB, pe același domeniu) sunt deja incluse și se încarcă pe Drive odată cu trimiterea — vezi câte sunt "pregătite" pe fiecare tichet, mai jos. Fișierele exportate cu o versiune mai veche, sau care au fost sărite, nu se trimit automat.
+    </div>
+  </div>
+
+  <div class="dropzone" id="dropzone">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <div class="dropzone-title">Trage fișierele aici sau alege-le manual</div>
+    <div class="dropzone-hint">Acceptă unul sau mai multe fișiere <code>thd-&lt;număr tichet&gt;.json</code> generate de scriptul de export. Le poți încărca în mai multe reprize — un tichet deja încărcat se actualizează, nu se dublează.</div>
+    <button type="button" class="file-btn" id="file-btn">Alege fișiere JSON</button>
+    <input type="file" id="file-input" accept="application/json,.json" multiple>
+    <div class="load-errors" id="load-errors" hidden></div>
+  </div>
+
+  <div class="queue-head">
+    <h2>Tichete încărcate</h2>
+    <span class="queue-count" id="queue-count">0 tichete</span>
+  </div>
+
+  <div id="empty-state" class="empty-state">
+    Niciun tichet încărcat încă. Rulează <code>thd-detail-export.js</code> pe tichetele CNH pe care vrei să le imporți, apoi încarcă fișierele JSON rezultate mai sus.
+  </div>
+
+  <div class="ticket-list" id="ticket-list"></div>
+</div>
+
+<div class="action-bar" id="action-bar">
+  <div class="action-bar-inner">
+    <span class="progress-text" id="progress-text"><strong>0</strong> selectate</span>
+    <button type="button" class="btn primary" id="send-selected-btn">Trimite selectate</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc3eTf3kKm89RrubKe7lhUPkwW5yolcRIetGO2gyyg4ptAypoRVkajeNTsIccvwkbMaw/exec";
+
+  var state = { tickets: [], loadErrors: [] };
+
+  function deriveTechUser(fields) {
+    var rc = (fields['Responsible contact'] || '').trim();
+    if (rc.indexOf('@') !== -1) return rc.split('@')[0].toLowerCase();
+    if (rc) return rc.toLowerCase().replace(/\s+/g, '.');
+    return 'thd.import';
+  }
+
+  function toISODate(s) {
+    if (!s) return '';
+    s = String(s).trim();
+    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[1] + '-' + m[2] + '-' + m[3];
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (m) {
+      var mm = m[1].length < 2 ? '0' + m[1] : m[1];
+      var dd = m[2].length < 2 ? '0' + m[2] : m[2];
+      return m[3] + '-' + mm + '-' + dd;
+    }
+    return s;
+  }
+
+  function buildProblema(raw) {
+    var f = raw.fields || {};
+    var parts = [];
+    if (f['Symptom']) parts.push('Symptom:\n' + f['Symptom']);
+    if (f['Action taken']) parts.push('Action taken:\n' + f['Action taken']);
+    if (f['Question']) parts.push('Question:\n' + f['Question']);
+    return parts.length ? parts.join('\n\n') : '(fără descriere în tichet)';
+  }
+
+  function buildRezolvare(raw) {
+    var notes = raw.notes || [];
+    if (!notes.length) return '(Fără conversație încă în tichetul CNH.)';
+    return notes.map(function (n) {
+      if (n.author || n.date || n.text) {
+        var header = [n.author, n.date].filter(Boolean).join(' · ');
+        return (header ? header + ':\n' : '') + (n.text || '');
+      }
+      return n.raw || '';
+    }).join('\n\n---\n\n');
+  }
+
+  // Summarizes raw.attachments (from thd-detail-export v7+) into counts for
+  // display: how many have actual bytes ready to upload vs. how many were
+  // skipped (too big / different domain / fetch error) vs. older exports
+  // that never tried to fetch attachments at all.
+  function summarizeAttachments(raw) {
+    var atts = (raw && raw.attachments) || [];
+    var ready = atts.filter(function (a) { return a.dataBase64; }).length;
+    var skipped = atts.filter(function (a) { return !a.dataBase64 && a.fetchError; }).length;
+    var unknown = atts.length - ready - skipped;
+    return { total: atts.length, ready: ready, skipped: skipped, unknown: unknown };
+  }
+
+  function mapTicket(raw, fileName) {
+    var f = raw.fields || {};
+    var ticketId = raw.ticketId || f['Request No'] || 'necunoscut';
+    var model = f['Product Model'] || f['Commercial model'] || 'Model necunoscut';
+    return {
+      id: String(ticketId),
+      fileName: fileName,
+      raw: raw,
+      selected: true,
+      status: 'pending',
+      statusMessage: '',
+      attachments: summarizeAttachments(raw),
+      payload: {
+        user: deriveTechUser(f),
+        utilaj: '[THD #' + ticketId + '] ' + model,
+        serie: f['Serial Number/VIN'] || f['Van'] || '-',
+        ore_functionare: f['Usage 1'] || f['Usage 2'] || 'Nespecificat',
+        data_defect: toISODate(f['Submitted On'] || ''),
+        problema: buildProblema(raw),
+        rezolvare: buildRezolvare(raw)
+      }
+    };
+  }
+
+  var fileInput = document.getElementById('file-input');
+  var fileBtn = document.getElementById('file-btn');
+  var dropzone = document.getElementById('dropzone');
+  var loadErrorsEl = document.getElementById('load-errors');
+  var listEl = document.getElementById('ticket-list');
+  var emptyState = document.getElementById('empty-state');
+  var queueCount = document.getElementById('queue-count');
+  var actionBar = document.getElementById('action-bar');
+  var progressText = document.getElementById('progress-text');
+  var sendSelectedBtn = document.getElementById('send-selected-btn');
+
+  fileBtn.addEventListener('click', function () { fileInput.click(); });
+  dropzone.addEventListener('click', function (e) { if (e.target === dropzone) fileInput.click(); });
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.remove('drag'); });
+  });
+  dropzone.addEventListener('drop', function (e) {
+    if (e.dataTransfer && e.dataTransfer.files) loadFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', function (e) { loadFiles(e.target.files); e.target.value = ''; });
+
+  function loadFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    var remaining = files.length;
+    if (!remaining) return;
+    files.forEach(function (file) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var json = JSON.parse(reader.result);
+          var mapped = mapTicket(json, file.name);
+          var idx = -1;
+          for (var i = 0; i < state.tickets.length; i++) { if (state.tickets[i].id === mapped.id) { idx = i; break; } }
+          if (idx >= 0) state.tickets[idx] = mapped; else state.tickets.push(mapped);
+        } catch (err) {
+          state.loadErrors.push(file.name + ': fișier JSON invalid (' + err.message + ')');
+        }
+        remaining--;
+        if (remaining === 0) renderAll();
+      };
+      reader.onerror = function () {
+        state.loadErrors.push(file.name + ': nu a putut fi citit');
+        remaining--;
+        if (remaining === 0) renderAll();
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  var statusLabels = { pending: 'În așteptare', sending: 'Se trimite…', sent: 'Trimis', error: 'Eroare' };
+
+  function attachmentsSummaryHtml(a) {
+    if (!a || !a.total) {
+      return '<label>Atașamente</label><div class="hint">Niciun atașament găsit în acest export.</div>';
+    }
+    var bits = [];
+    if (a.ready) bits.push(a.ready + ' pregătite pentru upload (poze, PDF, video)');
+    if (a.skipped) bits.push(a.skipped + ' sărite (alt tip de fișier, prea mari, sau alt domeniu — vezi consola la export)');
+    if (a.unknown) bits.push(a.unknown + ' din export vechi (fără descărcare — reexportă tichetul cu scriptul nou pentru ele)');
+    return '<label>Atașamente (' + a.total + ')</label><div class="hint">' + escapeHtml(bits.join(' · ')) + '</div>';
+  }
+
+  function renderAll() {
+    if (state.loadErrors.length) {
+      loadErrorsEl.hidden = false;
+      loadErrorsEl.innerHTML = state.loadErrors.map(function (e) { return '<div>' + escapeHtml(e) + '</div>'; }).join('');
+    } else {
+      loadErrorsEl.hidden = true;
+    }
+
+    queueCount.textContent = state.tickets.length + (state.tickets.length === 1 ? ' tichet' : ' tichete');
+    emptyState.hidden = state.tickets.length > 0;
+
+    listEl.innerHTML = state.tickets.map(function (t, i) {
+      var p = t.payload;
+      var locked = t.status === 'sent' || t.status === 'sending';
+      return (
+        '<div class="ticket" id="ticket-' + i + '" data-status="' + t.status + '">' +
+          '<div class="ticket-summary" data-toggle="' + i + '">' +
+            '<input type="checkbox" data-select="' + i + '" ' + (t.selected ? 'checked' : '') + (locked ? ' disabled' : '') + ' onclick="event.stopPropagation()">' +
+            '<div class="ticket-main">' +
+              '<div class="ticket-title"><span class="ticket-tag">#' + escapeHtml(t.id) + '</span>' + escapeHtml(p.utilaj.replace(/^\[THD #[^\]]+\]\s*/, '')) + '</div>' +
+              '<div class="ticket-meta"><span>' + escapeHtml(p.serie) + '</span><span>' + escapeHtml(t.fileName) + '</span></div>' +
+            '</div>' +
+            '<span class="status-badge" data-s="' + t.status + '">' + statusLabels[t.status] + '</span>' +
+            '<svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>' +
+          '</div>' +
+          '<div class="ticket-detail">' +
+            '<div class="field-grid">' +
+              '<div class="field"><label>Tehnician</label><input data-field="user" data-i="' + i + '" value="' + escapeHtml(p.user) + '"' + (locked ? ' disabled' : '') + '></div>' +
+              '<div class="field"><label>Serie</label><input data-field="serie" data-i="' + i + '" value="' + escapeHtml(p.serie) + '"' + (locked ? ' disabled' : '') + '></div>' +
+              '<div class="field"><label>Utilaj</label><input data-field="utilaj" data-i="' + i + '" value="' + escapeHtml(p.utilaj) + '"' + (locked ? ' disabled' : '') + '></div>' +
+              '<div class="field"><label>Ore / hectare</label><input data-field="ore_functionare" data-i="' + i + '" value="' + escapeHtml(p.ore_functionare) + '"' + (locked ? ' disabled' : '') + '></div>' +
+              '<div class="field full"><label>Data defect</label><input type="date" data-field="data_defect" data-i="' + i + '" value="' + escapeHtml(p.data_defect) + '"' + (locked ? ' disabled' : '') + '></div>' +
+              '<div class="field full"><label>Problema reclamată</label><textarea data-field="problema" data-i="' + i + '"' + (locked ? ' disabled' : '') + '>' + escapeHtml(p.problema) + '</textarea></div>' +
+              '<div class="field full"><label>Rezolvare</label><textarea data-field="rezolvare" data-i="' + i + '" style="min-height:120px"' + (locked ? ' disabled' : '') + '>' + escapeHtml(p.rezolvare) + '</textarea></div>' +
+              '<div class="field full">' + attachmentsSummaryHtml(t.attachments) + '</div>' +
+            '</div>' +
+            '<div class="ticket-actions">' +
+              '<button type="button" class="btn primary" data-send="' + i + '"' + (locked ? ' disabled' : '') + '>' + (t.status === 'sending' ? 'Se trimite…' : 'Trimite acest tichet') + '</button>' +
+              '<button type="button" class="btn ghost" data-remove="' + i + '"' + (t.status === 'sending' ? ' disabled' : '') + '>Elimină din listă</button>' +
+              (t.status === 'error' ? '<span class="error-msg">' + escapeHtml(t.statusMessage) + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    bindRowEvents();
+    updateActionBar();
+  }
+
+  function bindRowEvents() {
+    listEl.querySelectorAll('[data-toggle]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var card = document.getElementById('ticket-' + el.getAttribute('data-toggle'));
+        card.classList.toggle('open');
+      });
+    });
+    listEl.querySelectorAll('[data-select]').forEach(function (el) {
+      el.addEventListener('change', function () {
+        state.tickets[+el.getAttribute('data-select')].selected = el.checked;
+        updateActionBar();
+      });
+    });
+    listEl.querySelectorAll('[data-field]').forEach(function (el) {
+      el.addEventListener('input', function () {
+        var i = +el.getAttribute('data-i');
+        var field = el.getAttribute('data-field');
+        state.tickets[i].payload[field] = el.value;
+        if (field === 'utilaj') {
+          var titleEl = document.querySelector('#ticket-' + i + ' .ticket-title');
+          if (titleEl) titleEl.lastChild.textContent = ' ' + el.value.replace(/^\[THD #[^\]]+\]\s*/, '');
+        }
+      });
+    });
+    listEl.querySelectorAll('[data-send]').forEach(function (el) {
+      el.addEventListener('click', function () { sendTicket(+el.getAttribute('data-send')); });
+    });
+    listEl.querySelectorAll('[data-remove]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        state.tickets.splice(+el.getAttribute('data-remove'), 1);
+        renderAll();
+      });
+    });
+  }
+
+  function updateCardStatus(i) {
+    var t = state.tickets[i];
+    var card = document.getElementById('ticket-' + i);
+    if (!card) return;
+    card.setAttribute('data-status', t.status);
+    var badge = card.querySelector('.status-badge');
+    badge.setAttribute('data-s', t.status);
+    badge.textContent = statusLabels[t.status];
+    var sendBtn = card.querySelector('[data-send]');
+    var removeBtn = card.querySelector('[data-remove]');
+    var checkbox = card.querySelector('[data-select]');
+    var locked = t.status === 'sent' || t.status === 'sending';
+    sendBtn.disabled = locked;
+    sendBtn.textContent = t.status === 'sending' ? 'Se trimite…' : 'Trimite acest tichet';
+    removeBtn.disabled = t.status === 'sending';
+    checkbox.disabled = locked;
+    card.querySelectorAll('input, textarea').forEach(function (f) { f.disabled = locked; });
+    var actions = card.querySelector('.ticket-actions');
+    var existingErr = actions.querySelector('.error-msg');
+    if (existingErr) existingErr.remove();
+    if (t.status === 'error') {
+      var span = document.createElement('span');
+      span.className = 'error-msg';
+      span.textContent = t.statusMessage;
+      actions.appendChild(span);
+    }
+    updateActionBar();
+  }
+
+  function updateActionBar() {
+    var selectable = state.tickets.filter(function (t) { return t.status !== 'sent' && t.status !== 'sending'; });
+    var selected = selectable.filter(function (t) { return t.selected; });
+    actionBar.classList.toggle('visible', state.tickets.length > 0);
+    var sentCount = state.tickets.filter(function (t) { return t.status === 'sent'; }).length;
+    progressText.innerHTML = '<strong>' + selected.length + '</strong> selectate' + (sentCount ? ' · <strong>' + sentCount + '</strong> trimise' : '');
+    sendSelectedBtn.disabled = selected.length === 0;
+  }
+
+  // Builds the "poze" array the Apps Script expects ({data, mimeType} per
+  // file, base64) from this ticket's exported attachments — only the ones
+  // thd-detail-export.js (v7+) actually managed to download the bytes for.
+  // Attachments it skipped (too big, different domain, fetch error, or an
+  // older export that never tried) are left out; those still need to be
+  // attached to the ticket by hand if you want them on the portal.
+  function buildPoze(raw) {
+    var atts = (raw && raw.attachments) || [];
+    return atts.filter(function (a) { return a.dataBase64; }).map(function (a) {
+      return { data: a.dataBase64, mimeType: a.mimeType || 'application/octet-stream' };
+    });
+  }
+
+  // Google's Apps Script web app can, in practice, hang on a large request
+  // instead of returning a clean error — the connection just never closes.
+  // Without a timeout, that would lock a ticket on "Se trimite..." forever
+  // with no way to recover. 100s is generous for a normal-sized ticket and
+  // still catches a stuck large-attachment request in reasonable time.
+  var SEND_TIMEOUT_MS = 100000;
+
+  function sendTicket(i) {
+    var t = state.tickets[i];
+    if (t.status === 'sending' || t.status === 'sent') return Promise.resolve();
+    t.status = 'sending';
+    updateCardStatus(i);
+    var body = JSON.stringify({
+      user: t.payload.user,
+      utilaj: t.payload.utilaj,
+      serie: t.payload.serie,
+      ore_functionare: t.payload.ore_functionare,
+      data_defect: t.payload.data_defect,
+      problema: t.payload.problema,
+      rezolvare: t.payload.rezolvare,
+      poze: buildPoze(t.raw),
+      silent: true
+    });
+    var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timedOut = false;
+    var timer = controller ? setTimeout(function () { timedOut = true; controller.abort(); }, SEND_TIMEOUT_MS) : null;
+    return fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      body: body,
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      signal: controller ? controller.signal : undefined
+    }).then(function (resp) { return resp.json(); }).then(function (json) {
+      if (timer) clearTimeout(timer);
+      if (json.status === 'success') {
+        t.status = 'sent';
+        t.statusMessage = '';
+      } else {
+        t.status = 'error';
+        t.statusMessage = json.message || 'Eroare necunoscută din Apps Script.';
+      }
+      updateCardStatus(i);
+    }).catch(function (err) {
+      if (timer) clearTimeout(timer);
+      t.status = 'error';
+      t.statusMessage = timedOut
+        ? 'Trimiterea a durat peste ' + Math.round(SEND_TIMEOUT_MS / 1000) + 's și browserul a renunțat să mai aștepte — probabil un atașament prea mare pentru Apps Script. Nu e sigur dacă s-a salvat pe server sau nu: verifică în Istoric Raportări înainte să retrimiți, ca să nu apară de două ori.'
+        : 'Eroare de rețea: ' + err.message;
+      updateCardStatus(i);
+    });
+  }
+
+  function delay(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  sendSelectedBtn.addEventListener('click', function () {
+    var indices = [];
+    state.tickets.forEach(function (t, i) {
+      if (t.selected && t.status !== 'sent' && t.status !== 'sending') indices.push(i);
+    });
+    sendSelectedBtn.disabled = true;
+    (function next(k) {
+      if (k >= indices.length) { sendSelectedBtn.disabled = false; return; }
+      sendTicket(indices[k]).then(function () { return delay(600); }).then(function () { next(k + 1); });
+    })(0);
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

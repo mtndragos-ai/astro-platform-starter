@@ -438,8 +438,9 @@ export const kvernelandData = {
                     { nume: "Ikarus",
                          descriere: "Manual Service", 
                          versiuni: [
-                            { an: "Ikarus S", link: "https://drive.google.com/file/d/1HNMzoQjOtaqA7NfSUbkxeHM5ffOcWg0Q/view?usp=drive_link" }
-
+                            { an: "Ikarus S", link: "https://drive.google.com/file/d/1HNMzoQjOtaqA7NfSUbkxeHM5ffOcWg0Q/view?usp=drive_link" },
+                            { an: "FMA Sprayer Electronics", link: "https://drive.google.com/file/d/1BiHor7B9FQdcWKf4dvuy1U6LrISxWazM/view?usp=drive_link" },
+                            { an: "FMC Sprayer Electronics", link: "https://drive.google.com/file/d/1wQOpsfeGYX1dd4y12OtTji-tf9fOqK8k/view?usp=drive_link" }
 
                          ] 
                 },
@@ -649,6 +650,21 @@ export const kvernelandData = {
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1aiHnYTAYUHyKezKLOsUbSNVRjdqdg3sA/view?usp=drive_link" }
                                     
+                                ]
+                            } 
+                        ]
+                    },
+                    { 
+                        nume: "Ikarus", 
+                        descriere: "Ghid Operator", 
+                        versiuni: [ 
+                            { 
+                                an: "Ghid RO", 
+                                isFolder: true, 
+                                fisiere: [
+                                    { nume: "Manual Operator Ikarus S", link: "https://drive.google.com/file/d/1D2EAiHwN3o0YDoxW59TeQid7mdKcJlGq/view?usp=drive_link" },
+                                    { nume: "FMA Ikarus", link: "https://drive.google.com/file/d/1QHK1cuAn2lZ0kZht3pb3ZpWAMogTJyQX/view?usp=drive_link" },
+                                    { nume: "FMC Ikarus", link: "https://drive.google.com/file/d/17V5md-Q85F1Vfin7zAb4aKKhfTAXnCwv/view?usp=drive_link" }
                                 ]
                             } 
                         ]
@@ -948,6 +964,14 @@ export const kvernelandData = {
                             }
                         ] 
                     }
+                ]
+            },
+            "tabele-imprastiere": {
+                title: "Tabele Împrăștiere",
+                models: [
+                    { nume: "Exacta CL EW", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1sFaRM_55rKBxg_YXcNMviYSWplmdDVyx/view?usp=drive_link" },
+                    { nume: "Exacta CL Geospread", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1zQSlnFAwMjfHBjUhGiEH2UQNQVKqhz-X/view?usp=drive_link" },
+                    { nume: "Exacta TL Geospread", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1yNFwnKknBDxX6e2npe2PjlG3AqikfGAI/view?usp=drive_link" }
                 ]
             }
     }
