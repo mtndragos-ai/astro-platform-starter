@@ -220,7 +220,7 @@ export const kvernelandData = {
                                 isFolder: true, 
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1py4gyKIi7QzpzK5UUC6Z7A0Jz2WbaKHx/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1dkOw3hvOFm4G5ScLOAu5QmZI81b6CAik/view?usp=drive_link" }
                                 ]
                             }, 
                             { 
@@ -228,7 +228,7 @@ export const kvernelandData = {
                                 isFolder: true,
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1pl-mPJGm9u2l4vZ_Mchp_gg7nlyeSL3I/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1UYtJhHXlY5dqHglQnjMv14Pl8DqAMNnr/view?usp=drive_link" }
                                 ]
                             } 
                         ]
@@ -242,7 +242,7 @@ export const kvernelandData = {
                                 isFolder: true, 
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1JBAdGAyulNUKoateDvCV58p29WWQ3qso/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1dkOw3hvOFm4G5ScLOAu5QmZI81b6CAik/view?usp=drive_link" }
                                 ]
                             }, 
                             { 
@@ -250,7 +250,7 @@ export const kvernelandData = {
                                 isFolder: true,
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1oEqISXeMJAu25L7_iIKyEvKWldRx4kem/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1UYtJhHXlY5dqHglQnjMv14Pl8DqAMNnr/view?usp=drive_link" }
                                 ]
                             } 
                         ]
@@ -264,7 +264,7 @@ export const kvernelandData = {
                                 isFolder: true, 
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1n7psk4jKCKcGItUI_QkSXgxvif5nedhp/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1dkOw3hvOFm4G5ScLOAu5QmZI81b6CAik/view?usp=drive_link" }
                                 ]
                             }, 
                             { 
@@ -272,7 +272,7 @@ export const kvernelandData = {
                                 isFolder: true,
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1IWQrHtmyD3g1m088cxHSaSjYO3TP2hau/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1UYtJhHXlY5dqHglQnjMv14Pl8DqAMNnr/view?usp=drive_link" }
                                 ]
                             } 
                         ]
@@ -286,7 +286,7 @@ export const kvernelandData = {
                                 isFolder: true, 
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1jiItMG8O-bmrqEjRKI7EUQNMSAFqMCLY/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1BGwO5GSiFAQ9pf7v2OwyD1poR29wC-bv/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1dkOw3hvOFm4G5ScLOAu5QmZI81b6CAik/view?usp=drive_link" }
                                 ]
                             }, 
                             { 
@@ -294,7 +294,7 @@ export const kvernelandData = {
                                 isFolder: true,
                                 fisiere: [
                                     { nume: "Manual Operator", link: "https://drive.google.com/file/d/1wEU1bGre8Q4PvSoebvh1ms9rmPE7U8kf/view?usp=drive_link" },
-                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1uQHyUjSNTFDJBDJwujUCn-ciKDWvL2Cn/view?usp=drive_link" }
+                                    { nume: "Manual Terminal", link: "https://drive.google.com/file/d/1UYtJhHXlY5dqHglQnjMv14Pl8DqAMNnr/view?usp=drive_link" }
                                 ]
                             } 
                         ]
@@ -965,6 +965,7 @@ export const kvernelandData = {
                         ] 
                     }
                 ]
+<<<<<<< HEAD
             },
             "tabele-imprastiere": {
                 title: "Tabele Împrăștiere",
@@ -973,6 +974,8 @@ export const kvernelandData = {
                     { nume: "Exacta CL Geospread", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1zQSlnFAwMjfHBjUhGiEH2UQNQVKqhz-X/view?usp=drive_link" },
                     { nume: "Exacta TL Geospread", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1yNFwnKknBDxX6e2npe2PjlG3AqikfGAI/view?usp=drive_link" }
                 ]
+=======
+>>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
             }
     }
     },
