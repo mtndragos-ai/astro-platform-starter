@@ -965,7 +965,6 @@ export const kvernelandData = {
                         ] 
                     }
                 ]
-<<<<<<< HEAD
             },
             "tabele-imprastiere": {
                 title: "Tabele Împrăștiere",
@@ -974,8 +973,6 @@ export const kvernelandData = {
                     { nume: "Exacta CL Geospread", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1zQSlnFAwMjfHBjUhGiEH2UQNQVKqhz-X/view?usp=drive_link" },
                     { nume: "Exacta TL Geospread", descriere: "Tabel împrăștiere", link: "https://drive.google.com/file/d/1yNFwnKknBDxX6e2npe2PjlG3AqikfGAI/view?usp=drive_link" }
                 ]
-=======
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
             }
     }
     },

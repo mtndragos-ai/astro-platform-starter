@@ -3,23 +3,11 @@ import Layout from '../../../layouts/Layout.astro';
 import { kvernelandData } from '../../../data/kverneland-data.js';
 
 export async function getStaticPaths() {
-<<<<<<< HEAD
   const machines = ['semanatori', 'sprayer', 'spreader', 'cultivator', 'qualidisc'];
   const types = ['manual-service', 'manual-operare', 'manual-asamblare', 'video', 'erori', 'tabele-imprastiere'];
   let paths = [];
   machines.forEach(m => { types.forEach(t => { paths.push({ params: { machine: m, type: t } }); }); });
   return paths;
-=======
-    const machines = ['semanatori', 'sprayer', 'spreader', 'cultivator', 'qualidisc'];
-    const types = ['manual-service', 'manual-operare', 'manual-asamblare', 'video', 'erori'];
-    let paths = [];
-    machines.forEach((m) => {
-        types.forEach((t) => {
-            paths.push({ params: { machine: m, type: t } });
-        });
-    });
-    return paths;
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
 }
 
 const { machine, type } = Astro.params;
@@ -112,13 +100,9 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
             </div>
             <div class="video-modal-body">
                 <iframe id="video-modal-frame" src="" title="Video tutorial" allow="autoplay; fullscreen" allowfullscreen frameborder="0"></iframe>
-<<<<<<< HEAD
                 <div id="video-modal-placeholder" class="video-modal-placeholder">
                     Linkul acestui video nu este Ã®ncÄƒ disponibil.
                 </div>
-=======
-                <div id="video-modal-placeholder" class="video-modal-placeholder">Linkul acestui video nu este Ã®ncÄƒ disponibil.</div>
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
             </div>
         </div>
     </div>
@@ -321,18 +305,8 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
                     // Model cu link direct (fÄƒrÄƒ sub-variante) - un singur click deschide fiÈ™ierul din Drive.
                     listContainer.innerHTML += `
                         <div class="model-item-wide">
-<<<<<<< HEAD
                             <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'VizualizeazÄƒ fiÈ™ierul'}</p></div>
                             <a href="${m.link}" target="_blank" class="action-btn-wide">VizualizeazÄƒ <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
-=======
-<<<<<<< HEAD
-                            <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'VizualizeazÄƒ fiÈ™ierul'}</p></div>
-                            <a href="${m.link}" target="_blank" class="action-btn-wide">VizualizeazÄƒ <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
-=======
-                            <div class="model-info"><h3>${m.nume}</h3><p>${m.descriere || 'DescarcÄƒ fiÈ™ierul'}</p></div>
-                            <a href="${m.link}" target="_blank" class="action-btn-wide">DescarcÄƒ <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a>
->>>>>>> a6ee0569427d957139319c17aa6c7e7da7efe703
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
                         </div>`;
                 } else {
                     listContainer.innerHTML += `
@@ -345,23 +319,8 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
         }
     }
 
-<<<<<<< HEAD
     window.navigateToModel = (n) => { const u = new URL(window.location); u.searchParams.set('model', n); window.history.pushState({}, '', u); handleNavigation(); }
     window.navigateToFolder = (m, f) => { const u = new URL(window.location); u.searchParams.set('folder', f); window.history.pushState({}, '', u); handleNavigation(); }
-=======
-    window.navigateToModel = (n) => {
-        const u = new URL(window.location);
-        u.searchParams.set('model', n);
-        window.history.pushState({}, '', u);
-        handleNavigation();
-    };
-    window.navigateToFolder = (m, f) => {
-        const u = new URL(window.location);
-        u.searchParams.set('folder', f);
-        window.history.pushState({}, '', u);
-        handleNavigation();
-    };
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
 
     // POP-UP PLAYER PENTRU TUTORIALE VIDEO
     function extractDriveFileId(link) {
@@ -794,7 +753,6 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
     }
 
     /* FIX-URI IFRAME FULLSCREEN */
-<<<<<<< HEAD
     .main-content.fullscreen-mode { padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 0 !important; max-width: 100% !important; }
     .main-content.fullscreen-mode .breadcrumbs { padding-left: 2rem; padding-right: 2rem; }
     
@@ -819,104 +777,6 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
 
     /* POP-UP PLAYER PENTRU TUTORIALE VIDEO */
     .video-item .action-arrow { color: #003087; }
-=======
-    .main-content.fullscreen-mode {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        padding-bottom: 0 !important;
-        max-width: 100% !important;
-    }
-    .main-content.fullscreen-mode .breadcrumbs {
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-
-    .mobile-pdf-actions {
-        display: none;
-        padding: 0 2rem 1rem 2rem;
-    }
-    .native-pdf-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        background-color: #003087;
-        color: white;
-        padding: 14px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 1rem;
-        text-decoration: none;
-        box-shadow: 0 4px 15px rgba(0, 48, 135, 0.2);
-    }
-
-    .iframe-container-fix {
-        width: 100%;
-        height: 85vh;
-        border-radius: 12px;
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        background: #f8f9fa;
-        box-sizing: border-box;
-        border: 1px solid #e5e7eb;
-    }
-    .iframe-container-fix.top-adjusted {
-        margin-top: -1rem;
-    }
-
-    .fullscreen-mode .iframe-container-fix {
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        box-shadow: none;
-        height: calc(100vh - 120px);
-    }
-    .iframe-container-fix iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-        display: block;
-        background: #fff;
-        min-height: 85vh;
-    }
-
-    @media (max-width: 768px) {
-        .model-item-wide {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-        .model-info {
-            margin-right: 0;
-            width: 100%;
-        }
-        .action-btn-wide {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .main-content.fullscreen-mode .breadcrumbs {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        .mobile-pdf-actions {
-            display: flex;
-            padding: 0 1rem 1.5rem 1rem;
-        }
-        .iframe-container-fix {
-            height: 75vh;
-            border-radius: 8px;
-        }
-    }
-
-    /* POP-UP PLAYER PENTRU TUTORIALE VIDEO */
-    .video-item .action-arrow {
-        color: #003087;
-    }
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
 
     .video-modal-overlay {
         display: none;
@@ -929,13 +789,7 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
         padding: 2rem;
         box-sizing: border-box;
     }
-<<<<<<< HEAD
     .video-modal-overlay.open { display: flex; }
-=======
-    .video-modal-overlay.open {
-        display: flex;
-    }
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
 
     .video-modal-box {
         background: #0f172a;
@@ -943,11 +797,7 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
         width: 100%;
         max-width: 960px;
         overflow: hidden;
-<<<<<<< HEAD
         box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-=======
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
     }
 
     .video-modal-header {
@@ -958,16 +808,7 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
         background: #111827;
         gap: 12px;
     }
-<<<<<<< HEAD
     .video-modal-header h3 { color: #fff; margin: 0; font-size: 1.05rem; font-weight: 700; }
-=======
-    .video-modal-header h3 {
-        color: #fff;
-        margin: 0;
-        font-size: 1.05rem;
-        font-weight: 700;
-    }
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
 
     .video-modal-close {
         background: none;
@@ -979,30 +820,10 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
         padding: 0 4px;
         flex-shrink: 0;
     }
-<<<<<<< HEAD
     .video-modal-close:hover { color: #F4D03F; }
 
     .video-modal-body { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
     .video-modal-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
-=======
-    .video-modal-close:hover {
-        color: #f4d03f;
-    }
-
-    .video-modal-body {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        background: #000;
-    }
-    .video-modal-body iframe {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-    }
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
     .video-modal-placeholder {
         display: none;
         position: absolute;
@@ -1017,27 +838,8 @@ const resourceTitle = currentResourceData ? currentResourceData.title : 'ResursÄ
     }
 
     @media (max-width: 768px) {
-<<<<<<< HEAD
         .video-modal-overlay { padding: 0; }
         .video-modal-box { max-width: 100%; height: 100%; border-radius: 0; display: flex; flex-direction: column; }
         .video-modal-body { flex: 1; aspect-ratio: auto; }
     }
 </style>
-=======
-        .video-modal-overlay {
-            padding: 0;
-        }
-        .video-modal-box {
-            max-width: 100%;
-            height: 100%;
-            border-radius: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .video-modal-body {
-            flex: 1;
-            aspect-ratio: auto;
-        }
-    }
-</style>
->>>>>>> 105279a895ded0cd96b959a8785e8e1b2db20f26
